@@ -118,5 +118,11 @@ foreach (array_keys($aVariants) as $sVariant) {
     } elseif (preg_match('/^([^0-9=\?]+|([A-Z]+\[[0-9]+\])+)$/i', $sVariant) && !preg_match('/(spl)/', $sVariant)) {
         // This removes sequences.
         unset($aVariants[$sVariant]);
+    } elseif (preg_match('/(gene|variant)/i', $sVariant)) {
+        // This removes mockup variant syntax.
+        unset($aVariants[$sVariant]);
+    } elseif (preg_match('/^(del|der|dup|ins|inv|r|t)\([0-9XYM]/', $sVariant)) {
+        // This removes ISCN variants.
+        unset($aVariants[$sVariant]);
     }
 }
