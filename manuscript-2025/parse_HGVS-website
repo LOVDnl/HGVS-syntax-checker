@@ -133,3 +133,16 @@ foreach (array_keys($aVariants) as $sVariant) {
         }
     }
 }
+
+ksort($aVariants);
+
+
+
+if ($aExamples) {
+    echo "Not all examples have been added to their respective pages:\n";
+    var_dump($aExamples);
+}
+
+foreach ($aVariants as $sVariant => $aVariant) {
+    print("$sVariant\t$aVariant[0]\t$aVariant[1]\n");
+}
