@@ -84,6 +84,15 @@ foreach ($aFiles as $sFile) {
                 unset($aExamples[$aMatches[1]]);
             }
         }
+
+        // First find incorrect examples; they are labeled as such.
+        if (preg_match_all('/<code class="invalid">([^<]+)<\/code>/', $sLine, $aMatches)) {
+            for ($i = 0; isset($aMatches[1][$i]); $i++) {
+                $aVariants[$aMatches[1][$i]] = [$sFile, 'invalid'];
+                $iVariantsFound++;
+                $sLine = str_replace($aMatches[0][$i], str_repeat('X', strlen($aMatches[0][$i])), $sLine);
+            }
+        }
     }
 
     echo " [$iVariantsFound]\n";
