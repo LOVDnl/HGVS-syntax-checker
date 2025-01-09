@@ -62,3 +62,29 @@ foreach ($aSyntax as $sMolecule => $aTypes) {
     }
 }
 
+// Next, parse all the Markdown docs. We'll find variants in the recommendations,
+//  background, and community consultation pages.
+$iVariantsFound = 0;
+exec('find . -iname \*md | sort', $aFiles);
+foreach ($aFiles as $sFile) {
+    echo "Parsing $sFile";
+    // Variant descriptions aren't split over several lines, so parse each line separately.
+    $aFile = file($sFile, FILE_IGNORE_NEW_LINES);
+    foreach ($aFile as $sLine) {
+        // If this page has examples, include them.
+        if (preg_match('/docs\/syntax.yaml (.+)$/', $sLine, $aMatches)) {
+            if (isset($aExamples[$aMatches[1]])) {
+                $aVariants = array_merge(
+                    $aVariants,
+                    array_combine(
+                        $aExamples[$aMatches[1]],
+                        array_fill(0, count($aExamples[$aMatches[1]]), [$sFile, 'valid'])
+                    )
+                );
+                unset($aExamples[$aMatches[1]]);
+            }
+        }
+    }
+
+    echo " [$iVariantsFound]\n";
+}
