@@ -1,0 +1,43 @@
+#!/bin/php
+<?php
+// Created  2024-12-30
+// Modified 2024-12-30
+
+if (!function_exists('yaml_parse_file')) {
+    die("This script requires the php-yaml extension; please install it first and then try again.\n\n");
+}
+
+if (empty($_SERVER['argc']) || $_SERVER['argc'] != 2) {
+    if (empty($_SERVER['argv'])) {
+        $_SERVER['argv'] = array(
+            basename(__FILE__),
+        );
+    }
+    die('Usage: ' . $_SERVER['argv'][0] . " <path_to_HGVS_nomenclature_website>\n\n");
+}
+
+// Check the remote to make sure we have the correct repository.
+$sPath = $_SERVER['argv'][1];
+if (!is_dir($sPath) || !is_readable($sPath)) {
+    die("Could not read this directory.\n\n");
+}
+
+chdir($sPath);
+exec('git remote -v 2>/dev/null', $aGitRemotes);
+$bHGVS = false;
+foreach ($aGitRemotes as $sLine) {
+    list(,$sURL,) = preg_split('/\s+/', $sLine);
+    if ($sURL == 'git@github.com:HGVSnomenclature/hgvs-nomenclature.git') {
+        $bHGVS = true;
+        break;
+    }
+}
+
+if (!$bHGVS) {
+    die("The given directory is not the repository of the HGVS nomenclature website.\n\n");
+}
+
+$sGitRoot = exec("git rev-parse --show-toplevel 2>/dev/null");
+if (!$sGitRoot) {
+    die("Could not locate the repository's root directory.\n\n");
+}
