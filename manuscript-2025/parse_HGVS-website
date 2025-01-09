@@ -93,6 +93,18 @@ foreach ($aFiles as $sFile) {
                 $sLine = str_replace($aMatches[0][$i], str_repeat('X', strlen($aMatches[0][$i])), $sLine);
             }
         }
+
+        // Remove <code...></code> tags and turn them into simple backticks.
+        // Then, remove duplicate backticks from nested code tags.
+        $sLine = preg_replace(['/(<code[^>]*>|<\/code>)/', '/``+/'], ['`', ''], $sLine);
+        // Then, find variants between backticks.
+        if (preg_match_all('/`([^ `]{5,})`/', $sLine, $aMatches)) {
+            for ($i = 0; isset($aMatches[1][$i]); $i++) {
+                $aVariants[$aMatches[1][$i]] = [$sFile, 'valid?'];
+                $iVariantsFound++;
+                $sLine = str_replace($aMatches[0][$i], str_repeat('*', strlen($aMatches[0][$i])), $sLine);
+            }
+        }
     }
 
     echo " [$iVariantsFound]\n";
