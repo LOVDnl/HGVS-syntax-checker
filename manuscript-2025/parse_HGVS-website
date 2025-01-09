@@ -109,3 +109,14 @@ foreach ($aFiles as $sFile) {
 
     echo " [$iVariantsFound]\n";
 }
+
+// Clean up; Remove anything clearly not a variant.
+foreach (array_keys($aVariants) as $sVariant) {
+    if (ctype_digit(substr($sVariant, -1)) && !preg_match('/(::|\||con|del|dup|ext|fs|ins|\.0$)/', $sVariant)) {
+        // This removes reference sequences and positions.
+        unset($aVariants[$sVariant]);
+    } elseif (preg_match('/^([^0-9=\?]+|([A-Z]+\[[0-9]+\])+)$/i', $sVariant) && !preg_match('/(spl)/', $sVariant)) {
+        // This removes sequences.
+        unset($aVariants[$sVariant]);
+    }
+}
