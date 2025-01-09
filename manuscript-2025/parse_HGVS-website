@@ -124,5 +124,12 @@ foreach (array_keys($aVariants) as $sVariant) {
     } elseif (preg_match('/^(del|der|dup|ins|inv|r|t)\([0-9XYM]/', $sVariant)) {
         // This removes ISCN variants.
         unset($aVariants[$sVariant]);
+    } else {
+        // Fix possible escaping preventing Markdown formatting to occur.
+        $sVariantFixed = str_replace(['\_', '\*'], ['_', '*'], $sVariant);
+        if ($sVariant != $sVariantFixed) {
+            $aVariants[$sVariantFixed] = $aVariants[$sVariant];
+            unset($aVariants[$sVariant]);
+        }
     }
 }
