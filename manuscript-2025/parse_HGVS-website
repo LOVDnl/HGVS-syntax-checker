@@ -41,3 +41,24 @@ $sGitRoot = exec("git rev-parse --show-toplevel 2>/dev/null");
 if (!$sGitRoot) {
     die("Could not locate the repository's root directory.\n\n");
 }
+
+chdir($sGitRoot . '/docs');
+
+$aExamples = array();
+$aVariants = array();
+
+// Collect data from the syntax.yaml.
+$aSyntax = yaml_parse_file('./syntax.yaml');
+unset($aSyntax['element_descriptions']);
+foreach ($aSyntax as $sMolecule => $aTypes) {
+    foreach ($aTypes as $sType => $aType) {
+        foreach ($aType['forms'] as $aForm) {
+            if (isset($aForm['examples'])) {
+                foreach ($aForm['examples'] as $sExample) {
+                    $aExamples[$sMolecule . '.' . $sType][] = $sExample;
+                }
+            }
+        }
+    }
+}
+
