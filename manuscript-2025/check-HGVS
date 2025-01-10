@@ -50,7 +50,12 @@ foreach ($aInput as $aLine) {
     $HGVS = new HGVS($sVariant);
     $HGVS->allowMissingReferenceSequence(); // Don't freak out if there is no refseq.
     $aOutput[] = ($HGVS->isValid()? 'valid' : 'invalid');
-    $aOutput[] = json_encode($HGVS->getMessages());
+    $aMessages = $HGVS->getMessages();
+    // Hide some common messages that are not important to us.
+    foreach (['IALLWILDTYPE', 'IREFSEQMISSING', 'IRNA', 'IPROTEIN', 'WNOTSUPPORTED'] as $sCode) {
+        unset($aMessages[$sCode]);
+    }
+    $aOutput[] = json_encode($aMessages);
     $aCorrectedValues = $HGVS->getCorrectedValues();
     if (!$aCorrectedValues) {
         $aOutput[] = '-';
