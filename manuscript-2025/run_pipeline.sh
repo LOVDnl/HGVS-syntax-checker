@@ -54,3 +54,32 @@ else
         diff -u $OUT $OUTNEW | less -SM;
     fi
 fi;
+
+
+
+# Isolate variants that show a difference in result.
+IN=$OUT;
+
+# The worst category first; example variants that I don't recognize.
+OUT="$PREFIX.D.diff.true-valid-but-not-recognized.txt";
+if [ ! -f $OUT ];
+then
+    grep -E "(^input|\svalid\sinvalid)" $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    grep -E "(^input|\svalid\sinvalid)" $IN > $OUTNEW;
+
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
