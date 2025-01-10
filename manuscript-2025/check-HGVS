@@ -38,3 +38,29 @@ $aOutput[] = 'we_say_valid';
 $aOutput[] = 'messages';
 $aOutput[] = 'fix_if_invalid';
 $aOutput[] = 'fix_confidence';
+print(implode("\t", $aOutput) . "\n");
+
+// Load the library.
+require '../HGVS.php';
+
+// Loop through the data and assess the variants.
+foreach ($aInput as $aLine) {
+    $aOutput = $aLine;
+    $sVariant = $aLine[0];
+    $HGVS = new HGVS($sVariant);
+    $HGVS->allowMissingReferenceSequence(); // Don't freak out if there is no refseq.
+    $aOutput[] = ($HGVS->isValid()? 'valid' : 'invalid');
+    $aOutput[] = json_encode($HGVS->getMessages());
+    $aCorrectedValues = $HGVS->getCorrectedValues();
+    if (!$aCorrectedValues) {
+        $aOutput[] = '-';
+        $aOutput[] = '-';
+    } elseif (count($aCorrectedValues) > 1) {
+        $aOutput[] = json_encode(array_keys($aCorrectedValues));
+        $aOutput[] = json_encode(array_values($aCorrectedValues));
+    } else {
+        $aOutput[] = key($aCorrectedValues);
+        $aOutput[] = current($aCorrectedValues);
+    }
+    print(implode("\t", $aOutput) . "\n");
+}
