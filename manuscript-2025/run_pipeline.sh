@@ -83,3 +83,27 @@ else
         fi
     fi;
 fi;
+
+# Then, invalid variants that I think are valid.
+OUT="$PREFIX.D.diff.true-invalid-but-considered-valid.txt";
+if [ ! -f $OUT ];
+then
+    grep -E "(^input|\sinvalid\!?\svalid)" $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    grep -E "(^input|\sinvalid\!?\svalid)" $IN > $OUTNEW;
+
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
