@@ -154,3 +154,9 @@ else
         fi
     fi;
 fi;
+
+
+
+# Isolate DNA variants only. Remove everything clearly RNA and protein.
+OUT="$PREFIX.E.DNA-only.txt";
+grep -vE "((^|[:[])r\.|(^|[:[])p\.|(^|[:[])[A-Z][a-z]{2})|^NG_012232.1\(NM_004006.2\)\s" $IN > $OUT;
