@@ -210,3 +210,26 @@ else
         fi
     fi;
 fi;
+
+# Then, probably valid variants that I think are invalid.
+OUT="$PREFIX.F.DNA-only-diff.probably-valid-but-considered-invalid.txt";
+if [ ! -f $OUT ];
+then
+    grep -E "(^input|\svalid\?\sinvalid)" $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    grep -E "(^input|\svalid\?\sinvalid)" $IN > $OUTNEW;
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
