@@ -256,3 +256,12 @@ else
         fi
     fi;
 fi;
+
+# Clean up empty files.
+for file in "$PREFIX.F.DNA-only-diff.true-valid-but-not-recognized.txt" "$PREFIX.F.DNA-only-diff.true-invalid-but-considered-valid.txt" "$PREFIX.F.DNA-only-diff.probably-valid-but-considered-invalid.txt" "$PREFIX.F.DNA-only-diff.probably-valid-but-true-invalid.txt";
+do
+    if [ "$(cat $file | wc -l)" -eq "1" ];
+    then
+        rm $file;
+    fi
+done
