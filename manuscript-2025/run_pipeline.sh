@@ -233,3 +233,26 @@ else
         fi
     fi;
 fi;
+
+# Finally, probably valid variants that we manually marked as truly invalid. These are errors on the HGVS website.
+OUT="$PREFIX.F.DNA-only-diff.probably-valid-but-true-invalid.txt";
+if [ ! -f $OUT ];
+then
+    grep -E "(^input|\sinvalid\!\sinvalid)" $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    grep -E "(^input|\sinvalid\!\sinvalid)" $IN > $OUTNEW;
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
