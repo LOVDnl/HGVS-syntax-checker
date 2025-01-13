@@ -265,3 +265,29 @@ do
         rm $file;
     fi
 done
+
+
+
+# Create the test file.
+IN="$PREFIX.E.DNA-only.txt";
+OUT="$PREFIX.G.DNA-and-reference-sequences-only.input.txt";
+if [ ! -f $OUT ];
+then
+    cat $IN | cut -f 1 | grep -E "(:|^NM)" | grep -vE "^(g\.|rs)" > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    cat $IN | cut -f 1 | grep -E "(:|^NM)" | grep -vE "^(g\.|rs)" > $OUTNEW;
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
