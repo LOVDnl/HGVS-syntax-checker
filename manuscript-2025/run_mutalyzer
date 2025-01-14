@@ -51,6 +51,18 @@ function run_mutalyzer ($sVariant, $nCount = 0)
         return run_mutalyzer($sVariant, $nCount + 1);
     }
 
+    // When there is some internal error, all we have is a message.
+    if (count($aJSON) == 1 && isset($aJSON['message'])) {
+        $aReturn['status'] = 'Failure';
+        $aReturn['messages'][] = $aJSON['message'];
+        return $aReturn;
+    }
+
+    // When there are fatal issues, there is a "custom" field.
+    if (isset($aJSON['custom'])) {
+        $aJSON = $aJSON['custom'];
+    }
+
     return $aReturn;
 }
 
