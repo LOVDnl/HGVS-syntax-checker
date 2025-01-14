@@ -37,6 +37,20 @@ function run_mutalyzer ($sVariant, $nCount = 0)
         return run_mutalyzer($sVariant, $nCount + 1);
     }
 
+    $aJSON = json_decode($sJSON, true);
+    if (!$aJSON) {
+        if ($nCount >= $_SETT['repeat_after_failure']) {
+            // This is the last attempt. Never mind.
+            $aReturn['status'] = 'Failure';
+            $aReturn['messages']['EFAIL'] = "Mutalyzer failed; I can't decode its reply.";
+            $aReturn['messages']['EJSON'] = $sJSON;
+            return $aReturn;
+        }
+
+        // Try again.
+        return run_mutalyzer($sVariant, $nCount + 1);
+    }
+
     return $aReturn;
 }
 
