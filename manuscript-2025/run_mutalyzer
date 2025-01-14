@@ -62,6 +62,23 @@ function run_mutalyzer ($sVariant, $nCount = 0)
     if (isset($aJSON['custom'])) {
         $aJSON = $aJSON['custom'];
     }
+    // Better not take the corrected description, that can be invalid still
+    //  (not checked on the sequence level). Take the normalized description.
+    if (isset($aJSON['normalized_description'])) {
+        $aReturn['result'] = $aJSON['normalized_description'];
+    }
+
+    foreach (['errors', 'infos'] as $sCode) {
+        if (isset($aJSON[$sCode]) && is_array($aJSON[$sCode])) {
+            foreach ($aJSON[$sCode] as $aMessage) {
+                if (isset($aMessage['code'])) {
+                    $aReturn['messages'][$aMessage['code']] = ($aMessage['details'] ?? '');
+                } else {
+                    $aReturn['messages'][] = ($aMessage['details'] ?? '');
+                }
+            }
+        }
+    }
 
     return $aReturn;
 }
