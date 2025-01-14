@@ -8,6 +8,38 @@ $_SETT = [
     'repeat_after_failure' => 1, // Repeat just once after a failure.
 ];
 
+function run_mutalyzer ($sVariant, $nCount = 0)
+{
+    // Call Mutalyzer and return the results.
+    global $_SETT;
+
+    $aReturn = [
+        'status' => '',
+        'messages' => [],
+        'result' => '',
+    ];
+
+    // Always wait to not burden the server too much.
+    usleep(500000);
+    $sURL = str_replace('{{variant}}', rawurlencode($sVariant), $_SETT['mutalyzer_URL']);
+    // Mutalyzer randomly (?) fails when I use PHP.
+    // Instead of trying to debug that, just did this.
+    $sJSON = `GET "{$sURL}"`;
+    if (!$sJSON) {
+        if ($nCount >= $_SETT['repeat_after_failure']) {
+            // This is the last attempt. Never mind.
+            $aReturn['status'] = 'Failure';
+            $aReturn['messages']['EFAIL'] = "Mutalyzer failed; it seems to return false.";
+            return $aReturn;
+        }
+
+        // Try again.
+        return run_mutalyzer($sVariant, $nCount + 1);
+    }
+
+    return $aReturn;
+}
+
 
 
 
@@ -45,4 +77,15 @@ $aOutput[] = 'status';
 $aOutput[] = 'messages';
 $aOutput[] = 'fixed_variant';
 print(implode("\t", $aOutput) . "\n");
+
+// Loop through the data and assess the variants.
+foreach ($aInput as $aLine) {
+    $aOutput = $aLine;
+    $sVariant = $aLine[0];
+    $aMutalyzer = run_mutalyzer($sVariant);
+    $aOutput[] = $aMutalyzer['status'];
+    $aOutput[] = json_encode($aMutalyzer['messages']);
+    $aOutput[] = $aMutalyzer['result'];
+    print(implode("\t", $aOutput) . "\n");
+}
 ?>
