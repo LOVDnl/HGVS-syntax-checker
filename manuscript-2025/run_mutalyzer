@@ -80,6 +80,18 @@ function run_mutalyzer ($sVariant, $nCount = 0)
         }
     }
 
+    // If there are errors, we consider it invalid.
+    if (!empty(array_filter(array_keys($aReturn['messages']), function ($sKey) { return $sKey[0] == 'E'; }))) {
+        $aReturn['status'] = 'Invalid';
+    } elseif (!$aReturn['result']) {
+        $aReturn['status'] = 'Failed';
+    } else {
+        // Since Mutalyzer doesn't always throw errors or warnings, but silently corrects stuff,
+        //  we need to make assumptions on whether they consider the input valid.
+        // If they changed something, it's probably invalid. (ins to dup, roll forward, etc., all end up here)
+        $aReturn['status'] = ($sVariant == $aReturn['result']? 'Valid' : 'Corrected');
+    }
+
     return $aReturn;
 }
 
