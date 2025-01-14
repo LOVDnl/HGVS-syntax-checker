@@ -1,0 +1,48 @@
+#!/bin/php
+<?php
+// Created  2025-01-10
+// Modified 2025-01-14
+
+$_SETT = [
+    'mutalyzer_URL' => 'https://mutalyzer.nl/api/normalize/{{variant}}?only_variants=false',
+    'repeat_after_failure' => 1, // Repeat just once after a failure.
+];
+
+
+
+
+
+// Check our input.
+if (empty($_SERVER['argc']) || $_SERVER['argc'] != 2) {
+    if (empty($_SERVER['argv'])) {
+        $_SERVER['argv'] = array(
+            basename(__FILE__),
+        );
+    }
+    die('Usage: ' . $_SERVER['argv'][0] . " <file_containing_variant_descriptions>\n\n");
+}
+
+// Check the file to make sure it's readable.
+$sFile = $_SERVER['argv'][1];
+if (!is_file($sFile) || !is_readable($sFile)) {
+    die("Could not read this file.\n\n");
+}
+
+$aInput = preg_split('/\s*\n\s*/', trim(file_get_contents($sFile)));
+$aInput = array_map(
+    function ($sLine)
+    {
+        return explode("\t", $sLine);
+    }, $aInput);
+$aOutput = ['input'];
+
+// Check the header.
+if (count($aInput[0]) > 1) {
+    $aOutput = array_merge($aOutput, array_fill(0, (count($aInput[0]) - 1), 'unknown_field'));
+}
+// What fields will we be adding?
+$aOutput[] = 'status';
+$aOutput[] = 'messages';
+$aOutput[] = 'fixed_variant';
+print(implode("\t", $aOutput) . "\n");
+?>
