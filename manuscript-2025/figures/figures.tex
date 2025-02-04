@@ -21,6 +21,8 @@
     BoldItalicFont = myriadpro-regular-semibolditalic.otf]
 
 \definecolor{LOVD}{HTML}{224488}
+\definecolor{Mutalyzer}{HTML}{1976d2}
+\definecolor{VV}{HTML}{9b287b}
 
 
 
@@ -135,5 +137,77 @@ coordinates
 {(90.00,-1) (56.32,-2) (76.84,-3)};
 \end{axis}
 \end{tikzpicture}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Figure 3: Comparison of performance using the HGVS nomenclature validation set.}
+\raggedleft
+\begin{tikzpicture}
+\begin{axis}[xbar,
+  width=11cm,
+  height=4.75cm,
+  xmin=0,    % Don't let pgfplots scale the bars.
+  xmax=80,   % Don't let pgfplots scale the bars.
+  ymin=-4.6, % Don't let pgfplots scale the bars.
+  ymax=-0.4, % Don't let pgfplots scale the bars.
+  bar width={14pt},
+  % Show measurements with the bars, and format.
+  nodes near coords={\footnotesize\color{black}{\pgfmathprintnumber[fixed zerofill, precision=2]{\pgfplotspointmeta}\%}},
+  %nodes near coords align=left, % Measurements *in* the bar. {horizontal, left}
+  % xlabel=\textbf{Title},
+  xtick style={draw=none}, % Please don't draw the ticks.
+  xticklabel style={font=\scriptsize},
+  xmajorgrids=true,
+  ytick={-1,...,-8}, % Easier to work with negatives, so the sorting of the graph works top to bottom.
+  ytick style={draw=none}, % Please don't draw the ticks.
+  yticklabels={Tools perform equally (A), LOVD performs better (B),
+    Unable to assess (A/B), Mutalyzer performs better (C)},
+  yticklabel style={font=\small},
+]
+\addplot
+[draw=black,fill=Mutalyzer]
+coordinates
+{(42.11,-1) (29.74,-2) (20.79,-3) (7.37,-4)};
+%Tools perform equally: 42.11%
+%HGVS outperforms Mutalyzer: 29.74%
+%Unable to assess: 20.79%
+%Mutalyzer outperforms HGVS: 7.37%
+\end{axis}
+\end{tikzpicture}\hspace{5em}
+
+\begin{tikzpicture}
+\begin{axis}[xbar,
+  width=11cm,
+  height=4cm,
+  xmin=0,    % Don't let pgfplots scale the bars.
+  xmax=80,   % Don't let pgfplots scale the bars.
+  ymin=-3.6, % Don't let pgfplots scale the bars.
+  ymax=-0.4, % Don't let pgfplots scale the bars.
+  bar width={14pt},
+  % Show measurements with the bars, and format.
+  nodes near coords={\footnotesize\color{black}{\pgfmathprintnumber[fixed zerofill, precision=2]{\pgfplotspointmeta}\%}},
+  %nodes near coords align=left, % Measurements *in* the bar. {horizontal, left}
+  % xlabel=\textbf{Title},
+  xtick style={draw=none}, % Please don't draw the ticks.
+  xticklabel style={font=\scriptsize},
+  xmajorgrids=true,
+  ytick={-1,...,-8}, % Easier to work with negatives, so the sorting of the graph works top to bottom.
+  ytick style={draw=none}, % Please don't draw the ticks.
+  yticklabels={Tools perform equally (A), LOVD performs better (B), VariantValidator performs better (C)},
+  yticklabel style={font=\small},
+]
+\addplot
+[draw=black,fill=VV]
+coordinates
+{(63.95,-1) (27.63,-2) (8.42,-3)};
+%Tools perform equally: 63.95%
+%HGVS outperforms VV: 27.63%
+%VV outperforms HGVS: 8.42%
+\end{axis}
+\end{tikzpicture}\hspace{5em}
+
 \end{frame}
 \end{document}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
