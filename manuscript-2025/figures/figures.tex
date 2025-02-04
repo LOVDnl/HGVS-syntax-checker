@@ -25,4 +25,79 @@
 
 
 \begin{document}
+\begin{frame}[plain]{Figure 1: Overview of used classes for parsing NM\_004006.2:c.419\_420ins[T;401\_419].}
+\begin{tikzpicture}[every edge/.append style={>=stealth',->,semithick}]
+    \node at (0,0) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (refseq) {\bfseries NM\_004006.2};
+    \node at (refseq.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm,yshift=1]
+      (colon) {\bfseries :};
+    \node at (colon.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (prefix) {\bfseries c};
+    \node at (prefix.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (dot) {\bfseries .};
+    \node at (dot.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (position1) {\bfseries 419};
+    \node at (position1.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (under1) {\bfseries \_};
+    \node at (under1.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (position2) {\bfseries 420};
+    \node at (position2.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (ins) {\bfseries ins};
+    \node at (ins.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (bracket1) {\bfseries [};
+    \node at (bracket1.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (T) {\bfseries T};
+    \node at (T.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (semicolon) {\bfseries ;};
+    \node at (semicolon.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (position3) {\bfseries 401};
+    \node at (position3.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (under2) {\bfseries \_};
+    \node at (under2.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (position4) {\bfseries 419};
+    \node at (position4.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
+      (bracket2) {\bfseries ]};
+
+    %\draw ([yshift=-36]refseq.south west) -- ([yshift=-40]refseq.south west)
+    %   -- ([yshift=-39]bracket2.south east) -- ([yshift=-35]bracket2.south east);
+    %  \node at (position2) [yshift=-60] {HGVS};
+
+    \draw ([yshift=-5] refseq.south west) -- ([yshift=-9] refseq.south west)
+      -- ([yshift=-9] refseq.south east) -- ([yshift=-5] refseq.south east);
+      \node at ([xshift=-10,yshift=-30] refseq.south) {ReferenceSequence}
+        edge[bend right=10] ([xshift=10,yshift=-9] refseq.south);
+
+    %\draw ([yshift=2.5]prefix.south west) -- ([yshift=-1.5]prefix.south west)
+    %  -- ([yshift=1]bracket2.south east) -- ([yshift=5]bracket2.south east);
+    %  \node at (ins) [xshift=-10,yshift=-32] {Variant} edge[bend right=10] (bracket1.south);
+
+    \draw ([yshift=-4] prefix.north west) -- (prefix.north west)
+      -- (prefix.north east) -- ([yshift=-4] prefix.north east);
+      \node at ([yshift=20]refseq.north) {DNAPrefix} edge[bend left=15] ([xshift=-3] prefix.north);
+
+    \draw ([yshift=-6] dot.south west) -- ([yshift=-10] dot.south west)
+      -- ([yshift=-10] dot.south east) -- ([yshift=-6] dot.south east);
+      \node at ([xshift=-10,yshift=-30] dot.south) {Dot} edge[bend right=10] ([yshift=-10] dot.south);
+
+    \draw ([yshift=-4] position1.north west) -- (position1.north west)
+      -- (position2.north east) -- ([yshift=-4] position2.north east);
+      \node at ([yshift=20]position1.north) {DNAPositions} edge[bend left=10] (under1.north);
+
+    \draw ([yshift=-6] ins.south west) -- ([yshift=-10] ins.south west)
+      -- ([yshift=-10] ins.south east) -- ([yshift=-6] ins.south east);
+      \node at ([xshift=-20,yshift=-30] ins.south) {DNAIns} edge[bend right=10] ([yshift=-10] ins.south);
+
+    \draw ([yshift=-4] bracket1.north west) -- (bracket1.north west)
+      -- (bracket2.north east) -- ([yshift=-4] bracket2.north east);
+      \node at ([yshift=20]position3.north) {DNAInsSuffix} edge[bend left=10] (under2.north);
+
+    \draw ([yshift=-6] T.south west) -- ([yshift=-10] T.south west)
+      -- ([yshift=-10] T.south east) -- ([yshift=-6] T.south east);
+      \node at ([yshift=-30] T.south) {DNAAlts} edge[bend right=10] ([yshift=-10] T.south);
+
+    \draw ([yshift=-6] position3.south west) -- ([yshift=-10] position3.south west)
+      -- ([yshift=-10] position4.south east) -- ([yshift=-6] position4.south east);
+      \node at ([yshift=-30] position4.south) {DNAPositions} edge[bend left=10] ([yshift=-10] under2.south);
+\end{tikzpicture}
+\end{frame}
 \end{document}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
