@@ -20,6 +20,8 @@
     ItalicFont = myriadpro-light-italic.otf,
     BoldItalicFont = myriadpro-regular-semibolditalic.otf]
 
+\definecolor{LOVD}{HTML}{224488}
+
 
 
 
@@ -98,6 +100,40 @@
     \draw ([yshift=-6] position3.south west) -- ([yshift=-10] position3.south west)
       -- ([yshift=-10] position4.south east) -- ([yshift=-6] position4.south east);
       \node at ([yshift=-30] position4.south) {DNAPositions} edge[bend left=10] ([yshift=-10] under2.south);
+\end{tikzpicture}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Figure 2: Agreement with the HGVS nomenclature validation set.}
+\begin{tikzpicture}
+\begin{axis}[xbar,
+  width=11cm,
+  height=4cm,
+  xmin=0,    % Don't let pgfplots scale the bars.
+  xmax=100,  % Don't let pgfplots scale the bars.
+  ymin=-3.6, % Don't let pgfplots scale the bars.
+  ymax=-0.4, % Don't let pgfplots scale the bars.
+  bar width={14pt},
+  % Show measurements with the bars, and format.
+  nodes near coords={\footnotesize\color{white}{\pgfmathprintnumber[fixed zerofill, precision=2]{\pgfplotspointmeta}\%}},
+  nodes near coords align=left, % Measurements *in* the bar. {horizontal, left}
+  % xlabel=\textbf{Title},
+  xtick style={draw=none}, % Please don't draw the ticks.
+  xticklabel style={font=\scriptsize},
+  xmajorgrids=true,
+  ytick={-1,...,-8}, % Easier to work with negatives, so the sorting of the graph works top to bottom.
+  ytick style={draw=none}, % Please don't draw the ticks.
+  yticklabels={LOVD HGVS, Mutalyzer, VariantValidator},
+  yticklabel style={font=\small},
+]
+\addplot
+[draw=black,fill=LOVD]
+coordinates
+{(90.00,-1) (56.32,-2) (76.84,-3)};
+\end{axis}
 \end{tikzpicture}
 \end{frame}
 \end{document}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
