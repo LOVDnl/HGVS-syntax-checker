@@ -44,7 +44,6 @@ class HGVS
     ];
     public array $corrected_values = [];
     public array $data = [];
-    public array $info = [];
     public array $memory = [];
     public array $messages = [];
     public array $properties = [];
@@ -341,8 +340,6 @@ class HGVS
         if (isset($this->messages['EREFSEQMISSING'])) {
             $this->messages['IREFSEQMISSING'] = $this->messages['EREFSEQMISSING'];
             unset($this->messages['EREFSEQMISSING']);
-            // Rebuild the info just in case.
-            $this->buildInfo();
 
         } else {
             // In case there is a reference sequence, and we complain about it, remove that complaint.
@@ -494,8 +491,6 @@ class HGVS
         $this->input = substr($this->input, 0, -strlen($this->suffix));
         $this->suffix = '';
         unset($this->messages['WINPUTLEFT']);
-        // Also reset the info variable, so that we'll have to rebuild it.
-        $this->info = [];
 
         return true;
     }
@@ -572,7 +567,7 @@ class HGVS
 
     public function getInfo ()
     {
-        return ($this->info ?: $this->buildInfo());
+        return $this->buildInfo();
     }
 
 
@@ -823,14 +818,11 @@ class HGVS
         // Class should have matched. If so, build the info if needed, and check whether errors or warnings were given.
         if (!$this->hasMatched()) {
             return false;
-
-        } elseif (empty($this->info)) {
-            $this->buildInfo();
         }
 
         return (
-            empty(array_diff_key($this->info['errors'], array_flip(['ENOTSUPPORTED'])))
-            && empty(array_diff_key($this->info['warnings'], array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
+            empty(array_diff_key($this->getInfo()['errors'], array_flip(['ENOTSUPPORTED'])))
+            && empty(array_diff_key($this->getInfo()['warnings'], array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
     }
 
 
@@ -852,8 +844,6 @@ class HGVS
             // Unset the error in case we had it.
             unset($this->messages['EREFSEQMISSING'], $this->messages['IREFSEQMISSING']);
         }
-        // Rebuild the info just in case.
-        $this->buildInfo();
 
         return $this;
     }
@@ -870,8 +860,6 @@ class HGVS
             $sType = $this->isAFormatted();
             $this->messages['EVARIANTREQUIRED'] = 'This input requires a variant description' . (!$sType? '.' : '; ' . $sType . ' given.');
         }
-        // Rebuild the info just in case.
-        $this->buildInfo();
 
         return $this;
     }
@@ -998,7 +986,7 @@ class HGVS_DNAAllele extends HGVS
 
         } elseif ($this->matched_pattern == 'multiple_cis') {
             // We don't allow everything in cis. A "null" value (c.0) is not something that can go in cis.
-            if ($this->DNAVariantBody->getInfo()['type'] == '0' || $this->DNAAllele->getInfo()['type'] == '0') {
+            if ($this->DNAVariantBody->getData()['type'] == '0' || $this->DNAAllele->getData()['type'] == '0') {
                 $this->messages['EALLELEINVALIDCIS'] = 'This is not a possible combination of variants in cis. Did you mean to report them in trans?';
             }
         }
@@ -3485,7 +3473,7 @@ class HGVS_DNAVariantBody extends HGVS
 
             } else {
                 // If the second part is wild-type, it should have gone first.
-                if ($PartA->getInfo()['type'] != '=' && $PartB->getInfo()['type'] == '=') {
+                if ($PartA->getData()['type'] != '=' && $PartB->getData()['type'] == '=') {
                     // Swap out the two parts.
                     // I could simply set the corrected values, but it's better to actually swap the objects themselves.
                     $ThisPattern = &$this->patterns[$this->matched_pattern];
@@ -3496,7 +3484,7 @@ class HGVS_DNAVariantBody extends HGVS
                     $this->messages['WSOMATICFORMAT'] = 'Somatic variants should first describe the normal sequence and then the changed sequence.';
                 }
 
-                $this->data['type'] = $this->DNASomaticVariant->DNASomatic->getInfo()['type'];
+                $this->data['type'] = $this->DNASomaticVariant->DNASomatic->getData()['type'];
             }
         }
 
@@ -3538,7 +3526,7 @@ class HGVS_DNAVariantBody extends HGVS
                 $this->corrected_values = $this->VCF->getCorrectedValues();
 
                 // The VCF object stores the new variant type, so we can easily see if it's changed.
-                $sNewType = $this->VCF->getInfo()['type'];
+                $sNewType = $this->VCF->getData()['type'];
                 $this->data['type'] = $sNewType;
                 if ($sNewType == '=') {
                     $this->messages['WINVALID'] = 'This is not a valid HGVS description. Did you mean to indicate that the sequence at this position did not change?';
@@ -3629,7 +3617,7 @@ class HGVS_DNAVariantBody extends HGVS
             $this->DNAAllele = new HGVS_DNAVariantBody(substr($this->suffix, 1), $this, $this->debugging);
             if ($this->DNAAllele->hasMatched()) {
                 // When what we matched is also an allele, then abort, because we don't know how to handle that.
-                if ($this->DNAAllele->getInfo()['type'] == ';') {
+                if ($this->DNAAllele->getData()['type'] == ';') {
                     // Abort.
                     return;
                 }
@@ -3855,7 +3843,7 @@ class HGVS_DNAVariantType extends HGVS
             // The VCF object stores the new variant type, so we can easily see if it's changed.
             // If we still have a delins, we may not have changed anything at all, or we still could have made a shift.
             // E.g., c.100_101delAAinsATT is still a delins, but should still throw an additional warning.
-            $sNewType = $this->VCF->getInfo()['type'];
+            $sNewType = $this->VCF->getData()['type'];
             if ($sNewType == 'delins') {
                 // Still a delins. Did it get updated to a different description?
                 if ($this->VCF->REF != $this->DNADelSuffix->getSequence()
@@ -4819,7 +4807,7 @@ class HGVS_VCF extends HGVS
         // We also need to store the data fields. Yes, this is duplicated work.
         // However, it's much simpler to do it here; everything the VCFBody does is string-based.
         $HGVSVariant = new HGVS_Variant('g.' . $this->VCFBody->getCorrectedValue(), null, $this->debugging);
-        $this->data = $HGVSVariant->getInfo();
+        $this->data = $HGVSVariant->getData();
 
         // We could have triggered a whitespace warning, but that's normal for us.
         unset($this->messages['WWHITESPACE']);
