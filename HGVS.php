@@ -731,6 +731,21 @@ class HGVS
 
 
 
+    public function isAFormatted ()
+    {
+        // Return some kind of description of what we are, based on matched patterns, formatted for humans.
+        // Example outputs: "reference sequence", "full variant", "variant (DNA, predicted)", etc.
+        $sReturn = $this->getMatchedPatternFormatted();
+        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+            $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
+        }
+        return $sReturn;
+    }
+
+
+
+
+
     public function isTheCaseOK ()
     {
         return $this->caseOK;
