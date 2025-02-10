@@ -849,6 +849,24 @@ class HGVS
 
 
 
+    public function requireVariant ()
+    {
+        // Requires that the input is a variant. Otherwise, the input is regarded as not valid.
+
+        if (!$this->isAVariant()) {
+            $sType = $this->isAFormatted();
+            $this->messages['EVARIANTREQUIRED'] = 'This input requires a variant description' . (!$sType? '.' : '; ' . $sType . ' given.');
+        }
+        // Rebuild the info just in case.
+        $this->buildInfo();
+
+        return true;
+    }
+
+
+
+
+
     public function setCorrectedValue ($sValue, $nConfidence = 1)
     {
         // Conveniently sets the corrected value for us.
