@@ -337,7 +337,7 @@ class HGVS
         // Remove any error message about not having a reference sequence.
         // Apparently, in this context, we're OK not having one.
 
-        if (isset($this->messages['EREFSEQMISSING'])) {
+        if ($this->hasMessage('EREFSEQMISSING')) {
             $this->messages['IREFSEQMISSING'] = $this->messages['EREFSEQMISSING'];
             unset($this->messages['EREFSEQMISSING']);
 
@@ -448,7 +448,7 @@ class HGVS
                 'errors' => [],
             ]
         );
-        foreach ($this->messages as $sCode => $sMessage) {
+        foreach ($this->getMessages() as $sCode => $sMessage) {
             switch (substr($sCode, 0, 1)) {
                 case 'E':
                     $this->info['errors'][$sCode] = $sMessage;
@@ -516,7 +516,7 @@ class HGVS
             return $this->corrected_values;
         }
 
-        if (isset($this->getMessages()['EFAIL'])) {
+        if ($this->hasMessage('EFAIL')) {
             return [];
         }
 
@@ -528,7 +528,7 @@ class HGVS
         // However, in the presence of errors, lower the confidence.
         // We check for the parent to make sure the confidence isn't lowered too much by stacking.
         if (empty($this->parent)
-            && array_filter(array_keys($this->messages), function ($sKey) { return ($sKey[0] == 'E' && $sKey != 'EREFSEQMISSING'); })) {
+            && array_filter(array_keys($this->getMessages()), function ($sKey) { return ($sKey[0] == 'E' && $sKey != 'EREFSEQMISSING'); })) {
             $aCorrectedValues = ['' => 0.10];
         }
 
@@ -717,6 +717,15 @@ class HGVS
 
 
 
+    public function hasMessage ($sCode)
+    {
+        return ($this->messages && isset($this->messages[$sCode]));
+    }
+
+
+
+
+
     public function hasProperty ($sClassName)
     {
         // This function checks if this class has a property called $sClassName.
@@ -889,7 +898,7 @@ class HGVS
 
             if (get_class($this) == 'HGVS') {
                 // Something we can only do here; handle a missing reference sequence followed by a colon. E.g., ":c.10del".
-                if (isset($this->messages['EREFERENCEFORMAT']) && $this->ReferenceSequence->getCorrectedValue() == '') {
+                if ($this->hasMessage('EREFERENCEFORMAT') && $this->ReferenceSequence->getCorrectedValue() == '') {
                     $this->messages['WREFERENCEFORMAT'] = 'A colon was given, but no reference sequence was found.';
                     unset($this->messages['EREFERENCEFORMAT']);
                     // A simple, yet effective solution. Simply remove the refseq and the colon from the pattern.
@@ -1270,7 +1279,7 @@ class HGVS_DNACon extends HGVS
         $Positions = $this->getParentProperty('DNAPositions');
         $aContraIndications = [
             (int) ($Positions && !$Positions->range),
-            (int) ($this->parent && isset($this->parent->getMessages()['WWHITESPACE'])),
+            (int) ($this->parent && $this->parent->hasMessage('WWHITESPACE')),
             (int) ($this->suffix && preg_match('/^[A-Z]+\b/i', $this->suffix)) // matches "conflict" but not "NC_...".
         ];
         // When 2 out of 3 contraindications are true, bail out.
@@ -1334,7 +1343,7 @@ class HGVS_DNADelSuffix extends HGVS
         $aMessages = $Positions->getMessages();
 
         // Remove any complaints that HGVS_Lengths may have had, when we already threw a WSUFFIXFORMAT.
-        if (isset($this->messages['WSUFFIXFORMAT'])) {
+        if ($this->hasMessage('WSUFFIXFORMAT')) {
             unset($this->messages['WLENGTHFORMAT'], $this->messages['WLENGTHORDER'], $this->messages['WSAMELENGTHS'], $this->messages['WTOOMANYPARENS']);
         }
 
@@ -1374,7 +1383,7 @@ class HGVS_DNADelSuffix extends HGVS
                     " This is a conflict; when the deleted sequence is certain, make the variant's positions certain by removing the parentheses and remove the deleted sequence from the variant description.";
                 $Positions->makeCertain();
 
-            } elseif (!$bSuffixLengthIsUnknown && !isset($this->messages['EINVALIDNUCLEOTIDES'])) {
+            } elseif (!$bSuffixLengthIsUnknown && !$this->hasMessage('EINVALIDNUCLEOTIDES')) {
                 // Universal length checks. These messages are kept universal and slightly simplified.
                 // E.g., an ESUFFIXTOOLONG may mean that the deleted sequence CAN BE too long, but isn't always.
                 // (e.g., g.(100_200)del(100_300).
@@ -1403,12 +1412,12 @@ class HGVS_DNADelSuffix extends HGVS
         }
 
         // In case of any error, remove WSUFFIXFORMAT.
-        if (isset($this->messages['ELENGTHFORMAT'])) {
+        if ($this->hasMessage('ELENGTHFORMAT')) {
             unset($this->messages['WSUFFIXFORMAT']);
         }
 
         // Store the corrected value.
-        if (isset($this->messages['WSUFFIXGIVEN']) || isset($this->messages['WPOSITIONSUNCERTAIN'])) {
+        if ($this->hasMessage('WSUFFIXGIVEN') || $this->hasMessage('WPOSITIONSUNCERTAIN')) {
             // The suffix should be removed.
             // NOTE: This is not true for delAinsG, but we don't know that here yet.
             $this->setCorrectedValue('');
@@ -1449,7 +1458,7 @@ class HGVS_DNADupSuffix extends HGVS_DNADelSuffix
         // It's much more efficient to handle deletion suffixes and duplication suffixes in just one class.
         // Therefore, we extend the HGVS_DNADelSuffix class, and inherit all patterns, checks, and validations.
         // However, all warnings and errors are now talking about deletions. Fix this by simply replacing the words.
-        foreach ($this->messages as $sCode => $sMessage) {
+        foreach ($this->getMessages() as $sCode => $sMessage) {
             $this->messages[$sCode] = str_replace(
                 [
                     '"del"',
@@ -1589,7 +1598,7 @@ class HGVS_DNAInsSuffix extends HGVS
         // NOTE: This class is inherited by DNAInsSuffixComplexComponent.
 
         // Remove any complaints that HGVS_Lengths may have had, when we already threw a WSUFFIXFORMAT.
-        if (isset($this->messages['WSUFFIXFORMAT'])) {
+        if ($this->hasMessage('WSUFFIXFORMAT')) {
             unset($this->messages['WLENGTHFORMAT'], $this->messages['WLENGTHORDER'], $this->messages['WSAMELENGTHS'], $this->messages['WTOOMANYPARENS']);
         }
 
@@ -1701,7 +1710,7 @@ class HGVS_DNAInsSuffix extends HGVS
         }
 
         // In case of any error, remove WSUFFIXFORMAT.
-        if (array_filter(array_keys($this->messages), function ($sKey) { return ($sKey[0] == 'E'); })) {
+        if (array_filter(array_keys($this->getMessages()), function ($sKey) { return ($sKey[0] == 'E'); })) {
             unset($this->messages['WSUFFIXFORMAT']);
         }
     }
@@ -1884,7 +1893,7 @@ class HGVS_DNAInvSuffix extends HGVS_DNADelSuffix
         // It's much more efficient to handle deletion suffixes and inversion suffixes in just one class.
         // Therefore, we extend the HGVS_DNADelSuffix class, and inherit all patterns, checks, and validations.
         // However, all warnings and errors are now talking about deletions. Fix this by simply replacing the words.
-        foreach ($this->messages as $sCode => $sMessage) {
+        foreach ($this->getMessages() as $sCode => $sMessage) {
             $this->messages[$sCode] = str_replace(
                 [
                     '"del"',
@@ -2056,7 +2065,7 @@ class HGVS_DNAPosition extends HGVS
             $this->position_limits[3] = 0;
 
         } elseif (in_array($this->matched_pattern, ['pter', 'qter'])) {
-            if (isset($VariantPrefix->getMessages()['EPREFIXMISSING']) || isset($VariantPrefix->getMessages()['WPREFIXMISSING'])) {
+            if ($VariantPrefix->hasMessage('EPREFIXMISSING') || $VariantPrefix->hasMessage('WPREFIXMISSING')) {
                 // Actually the prefix is missing completely. In that case, set its value to g. and just leave it.
                 $VariantPrefix->setCorrectedValue('g');
             } elseif ($sVariantPrefix != 'g') {
@@ -2800,7 +2809,7 @@ class HGVS_DNAPositions extends HGVS
 
             // Since we know we're the positions of this variant (although we could still be just part of an allele),
             //  add some additional checks related to positions and prefixes or reference sequences.
-            if (isset($this->messages['EFALSEUTR'])) {
+            if ($this->hasMessage('EFALSEUTR')) {
                 // This warning has been triggered by the variant's prefix. Now, check the reference sequence, too.
                 // If we use a genomic reference sequence, there isn't much to do; the error must be in the position.
                 // But when there isn't a reference sequence, have a closer look at the given positions; if they are
@@ -2810,7 +2819,7 @@ class HGVS_DNAPositions extends HGVS
                 $this->data['position_end'] = 0;
                 $RefSeq = $this->getParentProperty('ReferenceSequence');
                 if (($RefSeq && in_array($RefSeq->molecule_type, ['genome_transcript', 'transcript']))
-                    || !array_diff_key($this->messages, array_flip(['EFALSEUTR', 'EFALSEINTRONIC']))) {
+                    || !array_diff_key($this->getMessages(), array_flip(['EFALSEUTR', 'EFALSEINTRONIC']))) {
                     // Option 1: Both the reference sequence and the positions indicate this is a transcript.
                     //           The prefix already threw an EWRONGREFERENCE, but that didn't suggest a fix.
                     // Option 2: We only have EFALSEUTR, the rest looks good.
@@ -2835,7 +2844,7 @@ class HGVS_DNAPositions extends HGVS
 
             // However, if "pter" or "qter" are involved and stuff has been moved around,
             //  also suggest the possibility of a typo.
-            if (isset($this->messages['WPOSITIONORDER']) && !$this->DNAPositionStart->range && !$this->DNAPositionEnd->range) {
+            if ($this->hasMessage('WPOSITIONORDER') && !$this->DNAPositionStart->range && !$this->DNAPositionEnd->range) {
                 if ($this->DNAPositionStart->getCorrectedValue() == 'pter'
                     && $this->DNAPositionEnd->getCorrectedValue() != 'qter') {
                     // First, lower the current confidence.
@@ -2867,7 +2876,7 @@ class HGVS_DNAPositions extends HGVS
         }
 
         // Do a final check, if perhaps a hyphen should have been an underscore.
-        if (isset($this->messages['EFALSEINTRONIC']) && strpos($this->getValue(), '-') !== false) {
+        if ($this->hasMessage('EFALSEINTRONIC') && strpos($this->getValue(), '-') !== false) {
             // Sometimes users use a hyphen where they mean an underscore. Do a simple check for this.
             // I don't think we can have multiple corrected values here, but just in case.
             $aCorrections = $this->getCorrectedValues();
@@ -3107,7 +3116,7 @@ class HGVS_DNARepeat extends HGVS
                     }
                 }
 
-                if (empty($this->messages['EINVALIDREPEATLENGTH']) && $Positions && $Positions->range) {
+                if (!$this->hasMessage('EINVALIDREPEATLENGTH') && $Positions && $Positions->range) {
                     // Do a rudimentary length check. Take all given bases, and compare it to the positions.
                     // We don't know the number of repeats that the reference has, but at least the bases should fit.
                     $nPositionsLength = $Positions->getLengths()[0];
@@ -3319,7 +3328,7 @@ class HGVS_DNASup extends HGVS
         // We require genomic positions and chromosomal reference sequences.
         $VariantPrefix = $this->getParentProperty('DNAPrefix');
         if ($VariantPrefix && !in_array($VariantPrefix->getCorrectedValue(), ['g', 'm'])) {
-            if (isset($VariantPrefix->getMessages()['EPREFIXMISSING']) || isset($VariantPrefix->getMessages()['WPREFIXMISSING'])) {
+            if ($VariantPrefix->hasMessage('EPREFIXMISSING') || $VariantPrefix->hasMessage('WPREFIXMISSING')) {
                 // Actually the prefix is missing completely. In that case, remove all suggestions that aren't g.
                 //  and m. and just leave it.
                 $nValues = count($VariantPrefix->getCorrectedValues());
@@ -3416,7 +3425,7 @@ class HGVS_DNAVariantBody extends HGVS
             // This syntax should have more than one child.
             if (count($this->DNAAllele->getComponents()) == 1) {
                 // This could be an error (c.[100A>G]), but it can also happen with (;) used within square brackets.
-                if (!isset($this->DNAAllele->getMessages()['WALLELEUNKNOWNPHASING'])) {
+                if (!$this->DNAAllele->hasMessage('WALLELEUNKNOWNPHASING')) {
                     $this->messages['WWRONGTYPE'] = 'The allele syntax with square brackets is meant for multiple variants.';
                     $this->corrected_values = $this->DNAAllele->getCorrectedValues();
                 } else {
@@ -3542,7 +3551,7 @@ class HGVS_DNAVariantBody extends HGVS
         }
 
         // Another check: for variants like c.(100)A>G, we're not sure whether we mean c.100A>G or perhaps c.(100A>G).
-        if ($this->hasProperty('DNAPositions') && isset($this->DNAPositions->messages['WTOOMANYPARENS'])
+        if ($this->hasProperty('DNAPositions') && $this->DNAPositions->hasMessage('WTOOMANYPARENS')
             && !$this->DNAPositions->range
             && (!$this->getParent('Variant') || $this->getParent('Variant')->current_pattern != 'DNA_predicted')) {
             // Reduce the current prediction(s) with 50%.
@@ -3706,7 +3715,7 @@ class HGVS_DNAVariantType extends HGVS
             //  bit strict here. We don't want to have false positives when scanning text, which will happen if we match
             //  text like "30 patients with". Simply refuse to match with EINVALIDNUCLEOTIDES.
             if (($this->DNASub->getValue() != '>'
-                    && (isset($this->messages['EINVALIDNUCLEOTIDES']) || $this->matched_pattern == 'substitution_VCF'))
+                    && ($this->hasMessage('EINVALIDNUCLEOTIDES') || $this->matched_pattern == 'substitution_VCF'))
                 || ($this->matched_pattern == 'substitution_VCF' && !$this->VCFAlts->getInput())) {
                 // This is more likely something else. Bail out.
                 return 0; // Break out of this pattern only.
@@ -3715,7 +3724,8 @@ class HGVS_DNAVariantType extends HGVS
             // Have "2 A C" sent to the VCF code, instead of having it handled here.
             // We'll have WWHITESPACE and WSUBSTFORMAT, while I rather have a WVCF.
             // Therefore, bail out when the variant body already has a WWHITESPACE and when DNASub is a whitespace.
-            if (!$this->DNASub->getValue() && $this->getParent('DNAVariantBody') && isset($this->getParent('DNAVariantBody')->getMessages()['WWHITESPACE'])) {
+            if (!$this->DNASub->getValue() && $this->getParent('DNAVariantBody')
+                && $this->getParent('DNAVariantBody')->hasMessage('WWHITESPACE')) {
                 // Let the VCF handle this.
                 return false; // Break out of the entire object.
             }
@@ -3753,7 +3763,7 @@ class HGVS_DNAVariantType extends HGVS
             //  but uncertain ranges are also possible. Certain ranges are normally not allowed, but we'll throw a
             //  warning only when the REF length matches the positions length.
             // Don't check anything about the REF length when there are problems with the positions.
-            if (isset($this->messages['EPOSITIONFORMAT'])) {
+            if ($this->hasMessage('EPOSITIONFORMAT')) {
                 $this->messages['ISUBNOTVALIDATED'] = "Due to the invalid variant position, the substitution syntax couldn't be fully validated.";
 
             } elseif ($Positions->range) {
@@ -3791,9 +3801,9 @@ class HGVS_DNAVariantType extends HGVS
             // Calculate the corrected value, based on a VCF parser.
             // Based on the REF and ALT info, we may need to shift the variant or change it to a different type.
             if (!$Positions->unknown && !$Positions->uncertain
-                && (isset($this->messages['WWRONGTYPE']) || isset($this->messages['WTOOMANYPOSITIONS']) || isset($Positions->messages['WTOOMANYPARENS']))
+                && ($this->hasMessage('WWRONGTYPE') || $this->hasMessage('WTOOMANYPOSITIONS') || $Positions->hasMessage('WTOOMANYPARENS'))
                 && !array_filter(
-                    array_keys($this->messages),
+                    array_keys($this->getMessages()),
                     function ($sKey)
                     {
                         return ($sKey[0] == 'E');
@@ -3823,9 +3833,9 @@ class HGVS_DNAVariantType extends HGVS
             && !$Positions->unknown && !$Positions->uncertain
             && count(array_unique($this->DNADelSuffix->getLengths())) == 1
             && count(array_unique($this->DNAInsSuffix->getLengths())) == 1
-            && ((!$Positions->range && array_keys($this->messages) == ['ESUFFIXTOOLONG'])
+            && ((!$Positions->range && array_keys($this->getMessages()) == ['ESUFFIXTOOLONG'])
                 || !array_filter(
-                    array_keys($this->messages),
+                    array_keys($this->getMessages()),
                     function ($sKey)
                     {
                         return ($sKey[0] == 'E');
@@ -3873,7 +3883,7 @@ class HGVS_DNAVariantType extends HGVS
         } elseif ($this->matched_pattern == 'del_with_suffix'
             && !$Positions->unknown && !$Positions->uncertain
             && count(array_unique($this->DNADelSuffix->getLengths())) == 1
-            && !$Positions->range && array_keys($this->messages) == ['ESUFFIXTOOLONG']) {
+            && !$Positions->range && array_keys($this->getMessages()) == ['ESUFFIXTOOLONG']) {
             // E.g., c.100delAA. We'll turn it into c.100_101delAA.
             // It's, by far, easiest to just dump it into the VCF parser.
             $this->VCF = new HGVS_VCFBody(
@@ -4248,7 +4258,7 @@ class HGVS_ReferenceSequence extends HGVS
                     $this->messages['EREFERENCEFORMAT'] =
                         'The reference sequence ID is missing the required version number.' .
                         ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif (!isset($this->messages['WREFERENCEFORMAT']) && $this->caseOK
+                } elseif (!$this->hasMessage('WREFERENCEFORMAT') && $this->caseOK
                     && $this->value != $this->getCorrectedValue()) {
                     // Something else was wrong.
                     $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
@@ -4718,7 +4728,7 @@ class HGVS_Variant extends HGVS
             || in_array($this->data['type'] ?? '', ['0', '?', ';', 'met', 'repeat', 'sup'])
             || $this->DNAVariantBody->getCorrectedValue() == '=') {
             if ($this->caseOK
-                && !array_filter(array_keys($this->messages), function ($sKey) { return in_array($sKey[0], ['E','W']); })) {
+                && !array_filter(array_keys($this->getMessages()), function ($sKey) { return in_array($sKey[0], ['E','W']); })) {
                 $this->messages['WNOTSUPPORTED'] = 'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
             } else {
                 $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
@@ -4919,7 +4929,7 @@ class HGVS_VCFBody extends HGVS
         // Since the VCF format is very loose already (any number followed by two words will match), we have to be a bit
         //  strict here. We don't want to have false positives when scanning text, which will happen if we match text
         //  like "30 patients with". Simply refuse to match with EINVALIDNUCLEOTIDES.
-        if (isset($this->messages['EINVALIDNUCLEOTIDES'])) {
+        if ($this->hasMessage('EINVALIDNUCLEOTIDES')) {
             // This is more likely something else. Bail out.
             return false; // Break out of the entire object.
         }
@@ -5094,7 +5104,7 @@ trait HGVS_CheckBasesGiven
                 $this->messages['WBASESGIVEN'] = 'The given sequence is redundant and should be removed.';
                 $Refs->setCorrectedValue('');
 
-            } elseif (!isset($Refs->messages['EINVALIDNUCLEOTIDES'])) {
+            } elseif (!$Refs->hasMessage('EINVALIDNUCLEOTIDES')) {
                 // Universal length checks. These messages are kept universal and slightly simplified.
                 if ($nSuffixLength < $nVariantLength) {
                     $this->messages['EBASESTOOSHORT'] =
