@@ -343,6 +343,10 @@ class HGVS
             unset($this->messages['EREFSEQMISSING']);
             // Rebuild the info just in case.
             $this->buildInfo();
+
+        } else {
+            // In case there is a reference sequence, and we complain about it, remove that complaint.
+            unset($this->messages['WREFSEQGIVEN']);
         }
 
         return true;
@@ -833,7 +837,7 @@ class HGVS
 
         } else {
             // Unset the error in case we had it.
-            unset($this->messages['EREFSEQMISSING']);
+            unset($this->messages['EREFSEQMISSING'], $this->messages['IREFSEQMISSING']);
         }
         // Rebuild the info just in case.
         $this->buildInfo();
