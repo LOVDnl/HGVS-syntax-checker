@@ -437,39 +437,6 @@ class HGVS
 
 
 
-    public function buildInfo ()
-    {
-        // Builds the info array.
-        $this->info = array_merge(
-            $this->data,
-            [
-                'messages' => [],
-                'warnings' => [],
-                'errors' => [],
-            ]
-        );
-        foreach ($this->getMessages() as $sCode => $sMessage) {
-            switch (substr($sCode, 0, 1)) {
-                case 'E':
-                    $this->info['errors'][$sCode] = $sMessage;
-                    break;
-                case 'W':
-                    $this->info['warnings'][$sCode] = $sMessage;
-                    break;
-                case 'I':
-                default:
-                    $this->info['messages'][$sCode] = $sMessage;
-                    break;
-            }
-        }
-
-        return $this->info;
-    }
-
-
-
-
-
     public static function create ($sInput)
     {
         // Creates a new instance of this class.
@@ -567,7 +534,10 @@ class HGVS
 
     public function getInfo ()
     {
-        return $this->buildInfo();
+        return array_merge(
+            $this->data,
+            $this->getMessagesByGroup()
+        );
     }
 
 
@@ -604,6 +574,37 @@ class HGVS
     public function getMessages ()
     {
         return ($this->messages ?? []);
+    }
+
+
+
+
+
+    public function getMessagesByGroup ()
+    {
+        // Get the messages, grouped by type.
+        $aMessages = [
+            'messages' => [],
+            'warnings' => [],
+            'errors' => [],
+        ];
+
+        foreach ($this->getMessages() as $sCode => $sMessage) {
+            switch (substr($sCode, 0, 1)) {
+                case 'E':
+                    $aMessages['errors'][$sCode] = $sMessage;
+                    break;
+                case 'W':
+                    $aMessages['warnings'][$sCode] = $sMessage;
+                    break;
+                case 'I':
+                default:
+                    $aMessages['messages'][$sCode] = $sMessage;
+                    break;
+            }
+        }
+
+        return $aMessages;
     }
 
 
@@ -830,8 +831,8 @@ class HGVS
         }
 
         return (
-            empty(array_diff_key($this->getInfo()['errors'], array_flip(['ENOTSUPPORTED'])))
-            && empty(array_diff_key($this->getInfo()['warnings'], array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
+            empty(array_diff_key($this->getMessagesByGroup()['errors'], array_flip(['ENOTSUPPORTED'])))
+            && empty(array_diff_key($this->getMessagesByGroup()['warnings'], array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
     }
 
 
