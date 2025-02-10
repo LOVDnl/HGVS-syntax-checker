@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-01-31   // When modified, also change the library_version.
+ * Modified    : 2025-02-10   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
@@ -681,7 +681,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-01-31',
+            'library_version' => '2025-02-10',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -710,6 +710,21 @@ class HGVS
         // This function checks if this class has a property called $sClassName.
         // A property is a matched object, stored in the $this->properties array.
         return ($this->properties && is_array($this->properties) && in_array($sClassName, $this->properties));
+    }
+
+
+
+
+
+    public function isA ()
+    {
+        // Return some kind of description of what we are, based on matched patterns.
+        // Example outputs: "reference_sequence", "full_variant", "variant_DNA_predicted", etc.
+        $sReturn = $this->getMatchedPattern();
+        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+            $sReturn .= '_' . $this->Variant->getMatchedPattern();
+        }
+        return $sReturn;
     }
 
 
