@@ -495,7 +495,7 @@ class HGVS
         // However, in the presence of errors, lower the confidence.
         // We check for the parent to make sure the confidence isn't lowered too much by stacking.
         if (empty($this->parent)
-            && array_filter(array_keys($this->getMessages()), function ($sKey) { return ($sKey[0] == 'E' && $sKey != 'EREFSEQMISSING'); })) {
+            && array_diff(array_keys($this->getMessagesByGroup('errors')), ['EREFSEQMISSING'])) {
             $aCorrectedValues = ['' => 0.10];
         }
 
@@ -580,7 +580,7 @@ class HGVS
 
 
 
-    public function getMessagesByGroup ()
+    public function getMessagesByGroup ($sGroup = false)
     {
         // Get the messages, grouped by type.
         $aMessages = [
@@ -602,6 +602,10 @@ class HGVS
                     $aMessages['messages'][$sCode] = $sMessage;
                     break;
             }
+        }
+
+        if ($sGroup) {
+            return ($aMessages[$sGroup] ?? []);
         }
 
         return $aMessages;
@@ -831,8 +835,8 @@ class HGVS
         }
 
         return (
-            empty(array_diff_key($this->getMessagesByGroup()['errors'], array_flip(['ENOTSUPPORTED'])))
-            && empty(array_diff_key($this->getMessagesByGroup()['warnings'], array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
+            empty(array_diff_key($this->getMessagesByGroup('errors'), array_flip(['ENOTSUPPORTED'])))
+            && empty(array_diff_key($this->getMessagesByGroup('warnings'), array_flip(['WNOTSUPPORTED', 'WREFERENCENOTSUPPORTED']))));
     }
 
 
@@ -1711,7 +1715,7 @@ class HGVS_DNAInsSuffix extends HGVS
         }
 
         // In case of any error, remove WSUFFIXFORMAT.
-        if (array_filter(array_keys($this->getMessages()), function ($sKey) { return ($sKey[0] == 'E'); })) {
+        if ($this->getMessagesByGroup('errors')) {
             unset($this->messages['WSUFFIXFORMAT']);
         }
     }
@@ -3803,12 +3807,7 @@ class HGVS_DNAVariantType extends HGVS
             // Based on the REF and ALT info, we may need to shift the variant or change it to a different type.
             if (!$Positions->unknown && !$Positions->uncertain
                 && ($this->hasMessage('WWRONGTYPE') || $this->hasMessage('WTOOMANYPOSITIONS') || $Positions->hasMessage('WTOOMANYPARENS'))
-                && !array_filter(
-                    array_keys($this->getMessages()),
-                    function ($sKey)
-                    {
-                        return ($sKey[0] == 'E');
-                    })) {
+                && !$this->getMessagesByGroup('errors')) {
                 // Calculate the corrected value. Toss it all in a VCF parser.
                 $this->VCF = new HGVS_VCFBody(
                     ($Positions->DNAPosition ?? $Positions->DNAPositionStart)->getCorrectedValue() .
@@ -4728,8 +4727,7 @@ class HGVS_Variant extends HGVS
                 && ($this->DNAVariantBody->DNAPositions->uncertain || $this->DNAVariantBody->DNAPositions->unknown || $this->DNAVariantBody->DNAPositions->ISCN))
             || in_array($this->data['type'] ?? '', ['0', '?', ';', 'met', 'repeat', 'sup'])
             || $this->DNAVariantBody->getCorrectedValue() == '=') {
-            if ($this->caseOK
-                && !array_filter(array_keys($this->getMessages()), function ($sKey) { return in_array($sKey[0], ['E','W']); })) {
+            if ($this->caseOK && !$this->getMessagesByGroup('errors') && !$this->getMessagesByGroup('warnings')) {
                 $this->messages['WNOTSUPPORTED'] = 'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
             } else {
                 $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
