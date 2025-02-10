@@ -746,6 +746,22 @@ class HGVS
 
 
 
+    public function isAVariant ()
+    {
+        // Returns true if we have some kind of variant here, false otherwise.
+        return (
+            $this->hasMatched()
+            && (
+                (get_class($this) == 'HGVS' && in_array($this->getMatchedPattern(), ['full_variant', 'variant']))
+                || (get_class($this) == 'HGVS_Variant' && $this->hasMatched())
+            )
+        );
+    }
+
+
+
+
+
     public function isTheCaseOK ()
     {
         return $this->caseOK;
