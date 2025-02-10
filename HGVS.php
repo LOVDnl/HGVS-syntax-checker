@@ -349,7 +349,7 @@ class HGVS
             unset($this->messages['WREFSEQGIVEN']);
         }
 
-        return true;
+        return $this;
     }
 
 
@@ -467,6 +467,19 @@ class HGVS
         }
 
         return $this->info;
+    }
+
+
+
+
+
+    public static function create ($sInput)
+    {
+        // Creates a new instance of this class.
+        // The advantage of using this over "new HGVS(...)" is that we can combine instructions, like:
+        // $HGVS = HGVS::create($sVariant)->requireVariant()->allowMissingReferenceSequence().
+
+        return new static($sInput);
     }
 
 
@@ -842,7 +855,7 @@ class HGVS
         // Rebuild the info just in case.
         $this->buildInfo();
 
-        return true;
+        return $this;
     }
 
 
@@ -860,7 +873,7 @@ class HGVS
         // Rebuild the info just in case.
         $this->buildInfo();
 
-        return true;
+        return $this;
     }
 
 
