@@ -437,11 +437,11 @@ class HGVS
 
 
 
-    public static function create ($sInput)
+    public static function check ($sInput)
     {
-        // Creates a new instance of this class.
+        // Creates a new instance of this class, checking the input.
         // The advantage of using this over "new HGVS(...)" is that we can combine instructions, like:
-        // $HGVS = HGVS::create($sVariant)->requireVariant()->allowMissingReferenceSequence().
+        // $HGVS = HGVS::check($sVariant)->requireVariant()->allowMissingReferenceSequence().
 
         return new static($sInput);
     }
