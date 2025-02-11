@@ -532,13 +532,43 @@ class HGVS
 
 
 
+    public function getIdentifiedAs ()
+    {
+        // Return some kind of description of what we are, based on matched patterns.
+        // Example outputs: "reference_sequence", "full_variant", "variant_DNA_predicted", etc.
+        $sReturn = $this->getMatchedPattern();
+        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+            $sReturn .= '_' . $this->Variant->getMatchedPattern();
+        }
+        return $sReturn;
+    }
+
+
+
+
+
+    public function getIdentifiedAsFormatted ()
+    {
+        // Return some kind of description of what we are, based on matched patterns, formatted for humans.
+        // Example outputs: "reference sequence", "full variant", "variant (DNA, predicted)", etc.
+        $sReturn = $this->getMatchedPatternFormatted();
+        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+            $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
+        }
+        return $sReturn;
+    }
+
+
+
+
+
     public function getInfo ()
     {
         return array_merge(
             [
                 'input' => $this->getInput(),
-                'identified_as' => $this->isA(),
-                'identified_as_formatted' => $this->isAFormatted(),
+                'identified_as' => $this->getIdentifiedAs(),
+                'identified_as_formatted' => $this->getIdentifiedAsFormatted(),
                 'valid' => $this->isValid(),
             ],
             $this->getMessagesByGroup(),
@@ -751,36 +781,6 @@ class HGVS
 
 
 
-    public function isA ()
-    {
-        // Return some kind of description of what we are, based on matched patterns.
-        // Example outputs: "reference_sequence", "full_variant", "variant_DNA_predicted", etc.
-        $sReturn = $this->getMatchedPattern();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
-            $sReturn .= '_' . $this->Variant->getMatchedPattern();
-        }
-        return $sReturn;
-    }
-
-
-
-
-
-    public function isAFormatted ()
-    {
-        // Return some kind of description of what we are, based on matched patterns, formatted for humans.
-        // Example outputs: "reference sequence", "full variant", "variant (DNA, predicted)", etc.
-        $sReturn = $this->getMatchedPatternFormatted();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
-            $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
-        }
-        return $sReturn;
-    }
-
-
-
-
-
     public function isAVariant ()
     {
         // Returns true if we have some kind of variant here, false otherwise.
@@ -880,7 +880,7 @@ class HGVS
         // Requires that the input is a variant. Otherwise, the input is regarded as not valid.
 
         if (!$this->isAVariant()) {
-            $sType = $this->isAFormatted();
+            $sType = $this->getIdentifiedAsFormatted();
             $this->messages['EVARIANTREQUIRED'] = 'This input requires a variant description' . (!$sType? '.' : '; ' . $sType . ' given.');
         }
 
