@@ -72,3 +72,51 @@ No registration is needed, but to keep the service available to all,
 
 The API only considers variant descriptions as valid and allows reference sequences to be missing.
 For pro users, this means that `requireVariant()` and `allowMissingReferenceSequence()` are activated.
+
+
+
+### The LOVD HGVS library
+#### As a standalone tool run directly on the system (e.g., from Bash or Python).
+If you have PHP-cli installed, you can run the library directly from the command-line:
+
+```bash
+php -f HGVS.php "NM_004006.3:c.157C>T"
+```
+
+The output is basically the same as the API's output, minus the API wrapper:
+
+```json
+[
+  {
+    "input": "NM_004006.3:c.157C>T",
+    "identified_as": "full_variant_DNA",
+    "identified_as_formatted": "full variant (DNA)",
+    "valid": true,
+    "messages": [],
+    "warnings": [],
+    "errors": [],
+    "data": {
+      "position_start": 157,
+      "position_end": 157,
+      "position_start_intron": 0,
+      "position_end_intron": 0,
+      "range": false,
+      "type": ">"
+    },
+    "corrected_values": {
+      "NM_004006.3:c.157C>T": 1
+    }
+  }
+]
+```
+
+Multiple input values can be passed:
+
+```bash
+php -f HGVS.php "NM_004006.3:c.157C>T" "NC_000015.9:g.40699840C>T"
+```
+
+Note that, unlike the API, the defaults apply.
+The HGVS class will also successfully validate reference sequences,
+ VCF descriptions, genome builds, and variant identifiers.
+If you only wish to consider variants as valid input, check the `identified_as` field, or use a PHP wrapper (see below).
