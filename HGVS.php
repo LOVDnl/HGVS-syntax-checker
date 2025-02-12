@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-11   // When modified, also change the library_version.
+ * Modified    : 2025-02-12   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
@@ -737,7 +737,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-11',
+            'library_version' => '2025-02-12',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -786,9 +786,8 @@ class HGVS
         // Returns true if we have some kind of variant here, false otherwise.
         return (
             $this->hasMatched()
-            && (
-                (get_class($this) == 'HGVS' && in_array($this->getMatchedPattern(), ['full_variant', 'variant']))
-                || (get_class($this) == 'HGVS_Variant' && $this->hasMatched())
+            && (get_class($this) == 'HGVS_Variant'
+                || (get_class($this) == 'HGVS' && in_array($this->getMatchedPattern(), ['full_variant', 'variant']))
             )
         );
     }
