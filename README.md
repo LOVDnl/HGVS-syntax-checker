@@ -46,3 +46,29 @@ It powers the [LOVD HGVS Variant Description Syntax Checker](https://LOVD.nl/HGV
    extracted from databases or publications.
 - Diagnostic & Clinical Genetics laboratories that need automated HGVS validation
    as part of variant interpretation workflows.
+
+
+
+
+
+## Getting Started
+### The online LOVD HGVS Variant Description Syntax Checker
+For low-volume requests and no requirement for downloads or programming,
+ feel free to use the online [LOVD HGVS Variant Description Syntax Checker](https://LOVD.nl/HGVS).
+The interface should be self-explanatory.
+Use the "Check a list of variants" button to check a list of variants.
+The interface allows you to create a download of your results, too;
+ use the "Download this result" for a tab-delimited file.
+
+The online interface only considers variant descriptions as valid and allows reference sequences to be missing.
+For pro users, this means that `requireVariant()` and `allowMissingReferenceSequence()` are activated.
+
+
+
+### The API
+For direct programmatic access to the basic features, use the [free API](https://api.lovd.nl/).
+No registration is needed, but to keep the service available to all,
+ please keep the number of requests at a maximum of five variants per second, or one batch request per second.
+
+The API only considers variant descriptions as valid and allows reference sequences to be missing.
+For pro users, this means that `requireVariant()` and `allowMissingReferenceSequence()` are activated.
