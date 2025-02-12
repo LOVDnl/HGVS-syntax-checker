@@ -5221,3 +5221,22 @@ trait HGVS_DNASequence
         return $this->sequences;
     }
 }
+
+
+
+
+
+// Detect if we're called directly.
+if (!empty($_SERVER['argc']) && __FILE__ == realpath(getcwd() . '/' . $_SERVER['argv'][0])) {
+    // We're called directly.
+    array_shift($_SERVER['argv']);
+    $_SERVER['argc'] --;
+    if ($_SERVER['argc'] > 0) {
+        $aData = [];
+        foreach ($_SERVER['argv'] as $sVariant) {
+            $aData[] = HGVS::check($sVariant)->getInfo();
+        }
+        echo json_encode($aData, JSON_PRETTY_PRINT);
+        exit;
+    }
+}
