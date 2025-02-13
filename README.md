@@ -191,3 +191,18 @@ var_dump(HGVS::checkVariant('NM_004006.3')->isValid()); // False.
 var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isValid()); // True.
 var_dump(HGVS_Genome::check('GRCh38')->isValid()); // True. We recognize hg18, hg19, hg38, GRCh36, GRCh37, and GRCh38.
 var_dump(HGVS_VariantIdentifier::check('rs123456')->isValid()); // True. Note that, also this, is just a syntax check.
+
+
+
+// Now, try a variant description without a reference sequence.
+$HGVS = HGVS::checkVariant('c.157C>T');
+
+// Returns True if the library matched something (still, not necessarily a variant).
+var_dump($HGVS->hasMatched()); // True.
+
+// Returns True if the library matched a variant and considers the input as valid.
+var_dump($HGVS->isValid()); // False, because a reference sequence is required according to the HGVS nomenclature.
+
+// No longer consider not having a reference sequence as invalid.
+$HGVS->allowMissingReferenceSequence();
+var_dump($HGVS->isValid()); // Now, it returns True.
