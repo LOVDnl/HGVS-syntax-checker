@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-12   // When modified, also change the library_version.
+ * Modified    : 2025-02-13   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
@@ -737,7 +737,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-12',
+            'library_version' => '2025-02-13',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -5234,7 +5234,14 @@ if (!empty($_SERVER['argc']) && __FILE__ == realpath(getcwd() . '/' . $_SERVER['
     if ($_SERVER['argc'] > 0) {
         $aData = [];
         foreach ($_SERVER['argv'] as $sVariant) {
-            $aData[] = HGVS::check($sVariant)->getInfo();
+            if (in_array(strtolower($sVariant), ['version', 'versions', 'getversions'])) {
+                // It's annoying that we can't do "php -f HGVS.php -v" because PHP will take the "-v".
+                // Same with anything with two hyphens, like "--versions".
+                // "php -f HGVS.php -- --versions" could work, but maybe that's a bit much.
+                $aData[] = HGVS::getVersions();
+            } else {
+                $aData[] = HGVS::check($sVariant)->getInfo();
+            }
         }
         echo json_encode($aData, JSON_PRETTY_PRINT);
         exit;

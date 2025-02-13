@@ -116,6 +116,30 @@ Multiple input values can be passed:
 php -f HGVS.php "NM_004006.3:c.157C>T" "NC_000015.9:g.40699840C>T"
 ```
 
+To retrieve information about the library, pass `versions` or `getVersions`, like:
+
+```bash
+php -f HGVS.php versions
+php -f HGVS.php getVersions
+```
+
+This returns:
+
+```json
+[
+    {
+        "library_version": "2025-02-12",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
+]
+```
+
 Note that, unlike the API, the defaults apply.
 The HGVS class will also successfully validate reference sequences,
  VCF descriptions, genome builds, and variant identifiers.
