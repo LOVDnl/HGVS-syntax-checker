@@ -206,3 +206,46 @@ var_dump($HGVS->isValid()); // False, because a reference sequence is required a
 // No longer consider not having a reference sequence as invalid.
 $HGVS->allowMissingReferenceSequence();
 var_dump($HGVS->isValid()); // Now, it returns True.
+
+// Return all information from the library about the given input.
+var_dump($HGVS->getInfo());
+// [
+//     "input" => "c.157C>T",
+//     "identified_as" => "variant_DNA",
+//     "identified_as_formatted" => "variant (DNA)",
+//     "valid" => true,
+//     "messages" => [
+//         "IREFSEQMISSING" => "This variant is missing a reference sequence."
+//     ],
+//     "warnings" => [],
+//     "errors" => [],
+//     "data" => [
+//         "position_start" => 157,
+//         "position_end" => 157,
+//         "position_start_intron" => 0,
+//         "position_end_intron" => 0,
+//         "range" => false,
+//         "type" => ">"
+//     ],
+//     "corrected_values" => [
+//         "c.157C>T" => 1
+//     ]
+// ]
+
+// If you want to have a subset of the above, the method getInfo() is internally defined as:
+// return array_merge(
+//     [
+//         'input' => $this->getInput(),
+//         'identified_as' => $this->getIdentifiedAs(),
+//         'identified_as_formatted' => $this->getIdentifiedAsFormatted(),
+//         'valid' => $this->isValid(),
+//     ],
+//     $this->getMessagesByGroup(),
+//     [
+//         'data' => $this->getData(),
+//         'corrected_values' => $this->getCorrectedValues(),
+//     ]
+// );
+
+// The above can again be combined like so:
+var_dump(HGVS::checkVariant('c.157C>T')->allowMissingReferenceSequence()->getInfo());
