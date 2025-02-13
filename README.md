@@ -249,3 +249,13 @@ var_dump($HGVS->getInfo());
 
 // The above can again be combined like so:
 var_dump(HGVS::checkVariant('c.157C>T')->allowMissingReferenceSequence()->getInfo());
+
+
+
+// Meant for databases, where sometimes filling in a reference sequence is not allowed.
+$HGVS->requireMissingReferenceSequence();
+
+// Can be combined like so:
+var_dump(HGVS::checkVariant('c.157C>T')->requireMissingReferenceSequence()->isValid()); // True.
+var_dump(HGVS::checkVariant('NM_004006.3:c.157C>T')->isValid()); // True.
+var_dump(HGVS::checkVariant('NM_004006.3:c.157C>T')->requireMissingReferenceSequence()->isValid()); // False.
