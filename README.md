@@ -184,3 +184,5 @@ var_dump($HGVS->isValid()); // Now, it returns False.
 
 // This can be combined like:
 var_dump(HGVS::check('NM_004006.3')->requireVariant()->isValid()); // False.
+// Or, shorter:
+var_dump(HGVS::checkVariant('NM_004006.3')->isValid()); // False.

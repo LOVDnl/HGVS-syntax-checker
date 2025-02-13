@@ -450,6 +450,15 @@ class HGVS
 
 
 
+    public static function checkVariant ($sInput)
+    {
+        return static::check($sInput)->requireVariant();
+    }
+
+
+
+
+
     public function discardSuffix ()
     {
         // This function discards the suffix. This is used in text parsing, when
