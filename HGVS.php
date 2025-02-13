@@ -548,6 +548,8 @@ class HGVS
         $sReturn = $this->getMatchedPattern();
         if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= '_' . $this->Variant->getMatchedPattern();
+        } elseif ($sReturn == 'variant_identifier' && $this->hasProperty('VariantIdentifier')) {
+            $sReturn .= '_' . $this->VariantIdentifier->getMatchedPattern();
         }
         return $sReturn;
     }
@@ -563,6 +565,8 @@ class HGVS
         $sReturn = $this->getMatchedPatternFormatted();
         if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
+        } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
+            $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
         }
         return $sReturn;
     }
@@ -4772,22 +4776,12 @@ class HGVS_VariantIdentifier extends HGVS
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
-        $this->data = [
-            'position_start' => 0,
-            'position_end'   => 0,
-            'range'          => false,
-            'type'           => 'identifier',
-        ];
-        // Increase the confidence when we have no suffix, to counteract the EINVALID.
-        $nConfidence = ($this->suffix === ''? 10 : 1);
         if (substr($this->matched_pattern, 0, 7) == 'ClinVar') {
-            $this->setCorrectedValue(strtoupper($this->value), $nConfidence);
+            $this->setCorrectedValue(strtoupper($this->value));
         } else {
-            $this->setCorrectedValue(strtolower($this->value), $nConfidence);
+            $this->setCorrectedValue(strtolower($this->value));
         }
         $this->caseOK = ($this->value == $this->getCorrectedValue());
-        $this->messages['EINVALID'] = 'This is not a valid HGVS description; it looks like a ' .
-            str_replace('_', ' ', $this->matched_pattern) . ' identifier. Please provide a variant description following the HGVS nomenclature.';
     }
 }
 

@@ -190,3 +190,4 @@ var_dump(HGVS::checkVariant('NM_004006.3')->isValid()); // False.
 // If you're not interested in variants, you can also directly use other classes, like so:
 var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isValid()); // True.
 var_dump(HGVS_Genome::check('GRCh38')->isValid()); // True. We recognize hg18, hg19, hg38, GRCh36, GRCh37, and GRCh38.
+var_dump(HGVS_VariantIdentifier::check('rs123456')->isValid()); // True. Note that, also this, is just a syntax check.
