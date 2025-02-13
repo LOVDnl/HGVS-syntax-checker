@@ -144,3 +144,43 @@ Note that, unlike the API, the defaults apply.
 The HGVS class will also successfully validate reference sequences,
  VCF descriptions, genome builds, and variant identifiers.
 If you only wish to consider variants as valid input, check the `identified_as` field, or use a PHP wrapper (see below).
+
+#### From within a PHP application
+When already coding in PHP, it's easy to just include the `HGVS.php` library file and start using it.
+Using this method, you'll have full access to all features the library can offer.
+
+```php
+<?php
+// Include the HGVS.php file.
+require 'path/to/HGVS.php';
+
+// Check all version info.
+$aVersions = HGVS::getVersions();
+// [
+//     "library_version" => "2025-02-13",
+//     "HGVS_nomenclature_versions" => [
+//         "input" => [
+//             "minimum" => "15.11",
+//             "maximum" => "21.1.1"
+//         ],
+//         "output" => "21.1.1"
+//     ]
+// ]
+
+// Check some input. Note that, by default, the LOVD HGVS library searches for variants
+//  (with or without reference sequences), reference sequences, VCF strings, genome builds, and variant identifiers.
+// Use the default HGVS class for all options. 
+$HGVS = HGVS::check('NM_004006.3'); // Returns an object.
+
+// Returns True if the library matched something (not necessarily a variant).
+var_dump($HGVS->hasMatched()); // True.
+
+// Returns True if the library matched something and considers the input as valid.
+var_dump($HGVS->isValid()); // True, because this is a valid reference sequence.
+
+// Make sure that we only consider variant input as valid.
+$HGVS->requireVariant();
+var_dump($HGVS->isValid()); // Now, it returns False.
+
+// This can be combined like:
+var_dump(HGVS::check('NM_004006.3')->requireVariant()->isValid()); // False.
