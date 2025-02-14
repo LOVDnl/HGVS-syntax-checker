@@ -262,3 +262,25 @@ $HGVS->requireMissingReferenceSequence();
 var_dump(HGVS::checkVariant('c.157C>T')->requireMissingReferenceSequence()->isValid()); // True.
 var_dump(HGVS::checkVariant('NM_004006.3:c.157C>T')->isValid()); // True.
 var_dump(HGVS::checkVariant('NM_004006.3:c.157C>T')->requireMissingReferenceSequence()->isValid()); // False.
+```
+
+The LOVD HGVS library offers much, much more.
+Check the source code for a full list of all useful methods and variables within classes.
+A few more have been highlighted below.
+
+```php
+// Get properties of this object, to get more information about how a variant was parsed.
+$HGVS = HGVS::checkVariant('c.157C>T');
+var_dump($HGVS->getProperties());
+// [
+//     "Variant"
+// ]
+
+// Using the property names, you can dive deeply into the parsed variant.
+var_dump($HGVS->Variant->getProperties());
+// [
+//     "DNAPrefix",
+//     "Dot",
+//     "DNAVariantBody"
+// ]
+```
