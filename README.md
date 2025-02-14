@@ -293,4 +293,13 @@ var_dump($HGVS->Variant->DNAVariantBody->DNAPositions->intronic); // False.
 // 2) Get an array of HGVS_DNAInsSuffixComplexComponent objects for a complex insertion:
 $aComponents = HGVS::check("c.419_420ins[T;450_470;AGGG]")->Variant->DNAVariantBody
                ->DNAVariantType->DNAInsSuffix->DNAInsSuffixComplex->getComponents();
+
+
+
+// Useful for parsing text; could the given input be incomplete?
+// 1) False, because this reference sequence is complete.
+var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isPossiblyIncomplete());
+// 2) True, because now, we're not just checking for a reference sequence,
+//     and this could be just the start of a variant description.
+var_dump(HGVS::check('NM_004006.3')->isPossiblyIncomplete());
 ```
