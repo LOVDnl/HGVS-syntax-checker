@@ -178,7 +178,10 @@ var_dump($HGVS->hasMatched()); // True.
 // Returns True if the library matched something and considers the input as valid.
 var_dump($HGVS->isValid()); // True, because this is a valid reference sequence.
 
-// Make sure that we only consider variant input as valid.
+// To quickly check if something is a variant description (not necessarily a valid description), use:
+var_dump($HGVS->isAVariant()); // False.
+
+// As an alternative, make sure that we only consider variant input as valid:
 $HGVS->requireVariant();
 var_dump($HGVS->isValid()); // Now, it returns False.
 
