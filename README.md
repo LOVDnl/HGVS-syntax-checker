@@ -302,4 +302,11 @@ var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isPossiblyIncomplete());
 // 2) True, because now, we're not just checking for a reference sequence,
 //     and this could be just the start of a variant description.
 var_dump(HGVS::check('NM_004006.3')->isPossiblyIncomplete());
+
+
+
+// With debugging mode, the class will output a large amount of text with
+//  which you can follow the logic used to match your input.
+// Turn on output buffering if you wish to collect this output into a variable.
+$HGVS = HGVS::debug('c.157C>T');
 ```

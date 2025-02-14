@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-13   // When modified, also change the library_version.
+ * Modified    : 2025-02-14   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
@@ -459,6 +459,16 @@ class HGVS
 
 
 
+    public static function debug ($sInput)
+    {
+        // Creates a new instance of this class, checking the input, and turning on debugging.
+        return new static($sInput, null, true);
+    }
+
+
+
+
+
     public function discardSuffix ()
     {
         // This function discards the suffix. This is used in text parsing, when
@@ -750,7 +760,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-13',
+            'library_version' => '2025-02-14',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
