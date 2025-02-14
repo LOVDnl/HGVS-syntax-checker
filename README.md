@@ -283,4 +283,14 @@ var_dump($HGVS->Variant->getProperties());
 //     "Dot",
 //     "DNAVariantBody"
 // ]
+
+
+
+// We haven't documented each class in detail, so feel free to use var_dump()
+//  to explore an object's structure. Two examples of the possibilities:
+// 1) Is a variant intronic?
+var_dump($HGVS->Variant->DNAVariantBody->DNAPositions->intronic); // False.
+// 2) Get an array of HGVS_DNAInsSuffixComplexComponent objects for a complex insertion:
+$aComponents = HGVS::check("c.419_420ins[T;450_470;AGGG]")->Variant->DNAVariantBody
+               ->DNAVariantType->DNAInsSuffix->DNAInsSuffixComplex->getComponents();
 ```
