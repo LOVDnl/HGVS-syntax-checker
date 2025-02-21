@@ -67,6 +67,12 @@ For pro users, this means that `requireVariant()` and `allowMissingReferenceSequ
 
 ### The API
 For direct programmatic access to the basic features, use the [free API](https://api.lovd.nl/).
+The LOVD API includes the LOVD HGVS library starting from version 2.
+To access the LOVD HGVS library, use the "checkHGVS" API endpoint.
+When using the API web interface, make sure "v2 (2025-02-19)" is selected in the top bar of the page.
+When calling the API directly, use "v2" in the URL.
+See our full [API documentation](https://github.com/LOVDnl/api.lovd.nl/) for how to use the API.
+
 No registration is needed, but to keep the service available to all,
  please keep the number of requests at a maximum of five variants per second, or one batch request per second.
 
