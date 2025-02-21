@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-12   // When modified, also change the library_version.
+ * Modified    : 2025-02-14   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
@@ -450,6 +450,25 @@ class HGVS
 
 
 
+    public static function checkVariant ($sInput)
+    {
+        return static::check($sInput)->requireVariant();
+    }
+
+
+
+
+
+    public static function debug ($sInput)
+    {
+        // Creates a new instance of this class, checking the input, and turning on debugging.
+        return new static($sInput, null, true);
+    }
+
+
+
+
+
     public function discardSuffix ()
     {
         // This function discards the suffix. This is used in text parsing, when
@@ -539,6 +558,8 @@ class HGVS
         $sReturn = $this->getMatchedPattern();
         if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= '_' . $this->Variant->getMatchedPattern();
+        } elseif ($sReturn == 'variant_identifier' && $this->hasProperty('VariantIdentifier')) {
+            $sReturn .= '_' . $this->VariantIdentifier->getMatchedPattern();
         }
         return $sReturn;
     }
@@ -554,6 +575,8 @@ class HGVS
         $sReturn = $this->getMatchedPatternFormatted();
         if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
+        } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
+            $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
         }
         return $sReturn;
     }
@@ -737,7 +760,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-12',
+            'library_version' => '2025-02-14',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -4763,22 +4786,12 @@ class HGVS_VariantIdentifier extends HGVS
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
-        $this->data = [
-            'position_start' => 0,
-            'position_end'   => 0,
-            'range'          => false,
-            'type'           => 'identifier',
-        ];
-        // Increase the confidence when we have no suffix, to counteract the EINVALID.
-        $nConfidence = ($this->suffix === ''? 10 : 1);
         if (substr($this->matched_pattern, 0, 7) == 'ClinVar') {
-            $this->setCorrectedValue(strtoupper($this->value), $nConfidence);
+            $this->setCorrectedValue(strtoupper($this->value));
         } else {
-            $this->setCorrectedValue(strtolower($this->value), $nConfidence);
+            $this->setCorrectedValue(strtolower($this->value));
         }
         $this->caseOK = ($this->value == $this->getCorrectedValue());
-        $this->messages['EINVALID'] = 'This is not a valid HGVS description; it looks like a ' .
-            str_replace('_', ' ', $this->matched_pattern) . ' identifier. Please provide a variant description following the HGVS nomenclature.';
     }
 }
 
@@ -5219,5 +5232,31 @@ trait HGVS_DNASequence
             implode($aSequencesMax),
         ];
         return $this->sequences;
+    }
+}
+
+
+
+
+
+// Detect if we're called directly.
+if (!empty($_SERVER['argc']) && __FILE__ == realpath(getcwd() . '/' . $_SERVER['argv'][0])) {
+    // We're called directly.
+    array_shift($_SERVER['argv']);
+    $_SERVER['argc'] --;
+    if ($_SERVER['argc'] > 0) {
+        $aData = [];
+        foreach ($_SERVER['argv'] as $sVariant) {
+            if (in_array(strtolower($sVariant), ['version', 'versions', 'getversions'])) {
+                // It's annoying that we can't do "php -f HGVS.php -v" because PHP will take the "-v".
+                // Same with anything with two hyphens, like "--versions".
+                // "php -f HGVS.php -- --versions" could work, but maybe that's a bit much.
+                $aData[] = HGVS::getVersions();
+            } else {
+                $aData[] = HGVS::check($sVariant)->getInfo();
+            }
+        }
+        echo json_encode($aData, JSON_PRETTY_PRINT);
+        exit;
     }
 }
