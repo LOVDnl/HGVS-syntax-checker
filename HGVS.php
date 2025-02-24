@@ -3989,6 +3989,14 @@ class HGVS_DNAVariantType extends HGVS
                 // Uncertain positions? Nah, reject the match.
                 return 0; // Break out of this pattern only.
             }
+
+            // If we get here, we accepted this variant description.
+            // However, we must stress that this may be also an incomplete variant description.
+            // "c.100A" may have been "c.100A > G" in text from a PDF, for instance.
+            // As such, if there is no more input left, mark us as possibly incomplete.
+            if (!trim($this->getSuffix())) {
+                $this->possibly_incomplete = true;
+            }
         }
     }
 }
