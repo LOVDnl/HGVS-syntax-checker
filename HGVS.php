@@ -3537,6 +3537,13 @@ class HGVS_DNAVariantBody extends HGVS
 
                 $this->data['type'] = $this->DNASomaticVariant->DNASomatic->getData()['type'];
             }
+
+        } elseif ($this->matched_pattern == 'other') {
+            // If we ran out of input when running the somatic pattern, we're marked as possibly incomplete.
+            // That can cause problems with downstream processing (mostly, text mining).
+            // Reset whether we're incomplete or not.
+            $this->possibly_incomplete = ($this->DNAPositions->isPossiblyIncomplete()
+                || $this->DNAVariantType->isPossiblyIncomplete());
         }
 
         // Handle protein-like substitutions.
