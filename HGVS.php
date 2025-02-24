@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-21   // When modified, also change the library_version.
+ * Modified    : 2025-02-24   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
@@ -125,6 +125,8 @@ class HGVS
                         $sInputToParse = $aPattern[$i]->getSuffix();
                         // Merge their data and messages with ours.
                         $this->patterns_matched += $aPattern[$i]->getPatternsMatched();
+                        // An object may have indicated they were possibly incomplete (e.g., "c.100A" throws this).
+                        $this->possibly_incomplete = ($this->possibly_incomplete || $aPattern[$i]->isPossiblyIncomplete());
                         $this->data = array_merge(
                             $this->data,
                             $aPattern[$i]->getData()
@@ -760,7 +762,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-21',
+            'library_version' => '2025-02-24',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
