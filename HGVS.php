@@ -1847,6 +1847,8 @@ class HGVS_DNAInsSuffixComplex extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         // This triggers additional validations, so run it here.
         $this->corrected_values = $this->getCorrectedValues();
+        // Just because we do allow for multiple matches, doesn't mean we need them.
+        $this->possibly_incomplete = false;
     }
 }
 
@@ -3130,6 +3132,8 @@ class HGVS_DNARepeat extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->data['type'] = 'repeat';
         $this->corrected_values = $this->getCorrectedValues();
+        // Just because we do allow for multiple matches, doesn't mean we need them.
+        $this->possibly_incomplete = false;
 
         // Run a full validation, but only when we're the "main" repeat class.
         if ($this->parent && get_class($this->parent) == 'HGVS_DNAVariantType') {
