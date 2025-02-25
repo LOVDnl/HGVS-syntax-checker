@@ -4514,7 +4514,7 @@ class HGVS_ReferenceSequence extends HGVS
                 $this->allowed_prefixes = [];
 
                 // Some black listing is needed, though.
-                if (in_array(strtolower($this->value), ['http', 'https'])) {
+                if (in_array(strtolower($this->value), ['doi', 'http', 'https'])) {
                     return 0; // Break out of this pattern only.
                 } else {
                     // We also want to be absolutely certain that we are not matching a variant description that has a
