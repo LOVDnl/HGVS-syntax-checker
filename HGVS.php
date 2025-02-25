@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-24   // When modified, also change the library_version.
+ * Modified    : 2025-02-25   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
@@ -762,7 +762,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-24',
+            'library_version' => '2025-02-25',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -2070,7 +2070,7 @@ class HGVS_DNAPosition extends HGVS
     public array $patterns = [
         'unknown'          => ['?', []],
         'unknown_intronic' => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]\?)/u', []],
-        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*bp)/u', []],
+        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*\s*bp)/u', []],
         'pter'             => ['/pter/', []],
         'qter'             => ['/qter/', []],
     ];
@@ -4082,7 +4082,7 @@ class HGVS_Length extends HGVS
 {
     public array $patterns = [
         'unknown'  => ['?', []],
-        'known_bp' => ['/([0-9]+)bp/', []],
+        'known_bp' => ['/([0-9]+)\s*bp/', []],
         'known'    => ['/([0-9]+)/', []],
     ];
 
