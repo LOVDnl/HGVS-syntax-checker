@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-25   // When modified, also change the library_version.
+ * Modified    : 2025-03-05   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
@@ -762,7 +762,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-25',
+            'library_version' => '2025-03-05',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -936,7 +936,8 @@ class HGVS
 
             if (get_class($this) == 'HGVS') {
                 // Something we can only do here; handle a missing reference sequence followed by a colon. E.g., ":c.10del".
-                if ($this->hasMessage('EREFERENCEFORMAT') && $this->ReferenceSequence->getCorrectedValue() == '') {
+                if ($this->hasMessage('EREFERENCEFORMAT')
+                    && $this->hasProperty('ReferenceSequence') && $this->ReferenceSequence->getCorrectedValue() == '') {
                     $this->messages['WREFERENCEFORMAT'] = 'A colon was given, but no reference sequence was found.';
                     unset($this->messages['EREFERENCEFORMAT']);
                     // A simple, yet effective solution. Simply remove the refseq and the colon from the pattern.
