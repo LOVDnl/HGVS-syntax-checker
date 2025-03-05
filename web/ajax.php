@@ -75,15 +75,8 @@ foreach ($aVariants as $sVariant) {
             'need a reference sequence to be fully informative and HGVS-compliant.';
     }
 
-    // The variant's status color.
-    // Green if it's valid and there's no improvement from VV. (bootstrap: success)
-    // Orange if it's ENOTSUPPORTED, or if we have a fix that's valid. (bootstrap: warning)
-    // Red, otherwise. We don't get the variant at all, or we couldn't find an HGVS-compliant fix. (bootstrap: danger)
-    $aVariant['color'] =
-        ($aVariant['valid']? 'green' :
-            ($aVariant['valid'] === null || array_sum($aVariant['corrected_values']) > 0.5? 'orange' :
-                'red'));
-
+    // Add the total confidence which is easy for us to calculate. JS will use this to determine the colors.
+    $aVariant['corrected_values_confidence'] = array_sum($aVariant['corrected_values']);
     $aResponse[] = $aVariant;
 }
 

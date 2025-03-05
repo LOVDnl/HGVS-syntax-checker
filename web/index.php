@@ -200,9 +200,13 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     function (i, aVariant)
                     {
                         var sVariant = aVariant.input;
-                        // Style used, icon used?
-                        var sStyle = (aVariant.color == 'green'? 'success' : (aVariant.color == 'orange'? 'warning' : 'danger'));
-                        var sIcon = (aVariant.valid == null? 'question' : (aVariant.color == 'orange'? 'exclamation' : (aVariant.valid? 'check' : 'x'))) + '-circle-fill';
+                        // What colors and what icon will we use for this variant header?
+                        aVariant.bootstrap_class = (aVariant.valid? 'success' :
+                            (aVariant.valid == null || aVariant.corrected_values_confidence > 0.5? 'warning' :
+                                'danger'));
+                        aVariant.icon = (aVariant.valid == null? 'question' :
+                            (aVariant.bootstrap_class == 'warning'? 'exclamation' :
+                                (aVariant.valid? 'check' : 'x'))) + '-circle-fill';
                     }
                 );
 
