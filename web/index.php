@@ -156,6 +156,54 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
             return false; // Don't submit the form.
         }
     );
+
+
+
+    function showResponse (sMethod)
+    {
+        // This function sends the data over to the ajax script, formats, and displays the response.
+        var oCard = null;
+
+        if (typeof sMethod == 'string' && sMethod.length > 0 && $("#" + sMethod).length == 1) {
+            // We received a string linking to the input form.
+            var sInput = $("#" + sMethod).val();
+            var bCallVV = $("#" + sMethod + "UseVV").is(":checked");
+
+        } else {
+            // We received nothing, a faulty object, or a string that doesn't lead us to the input field.
+            alert("showResponse() called with an incorrect method.");
+            return false;
+        }
+
+        $.getJSON(
+            "ajax.php?var=" + encodeURIComponent(sInput) + "&callVV=" + bCallVV,
+            function (data)
+            {
+                // If we get here, the JSON was already parsed, and we know it was successful.
+                // We should have received an array with variants.
+
+                // Loop through the results.
+                $.each(
+                    data,
+                    function (i, aVariant)
+                    {
+                        var sVariant = aVariant.input;
+                        // Style used, icon used?
+                        var sStyle = (aVariant.color == 'green'? 'success' : (aVariant.color == 'orange'? 'warning' : 'danger'));
+                        var sIcon = (aVariant.valid == null? 'question' : (aVariant.color == 'orange'? 'exclamation' : (aVariant.valid? 'check' : 'x'))) + '-circle-fill';
+                    }
+                );
+
+                return false;
+            }
+        ).fail(
+            function()
+            {
+                alert("Error checking variant, please try again later. If the problem persists, please contact us at Ivo@LOVD.nl and send us the input you used.");
+            }
+        );
+        return false;
+    }
 </SCRIPT>
 
 </body>
