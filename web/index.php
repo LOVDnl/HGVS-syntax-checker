@@ -118,5 +118,45 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
+<SCRIPT type="text/javascript">
+    // Disable buttons when there is nothing to submit.
+    $("#hgvsTabsContent").find(
+        "input[type=text], textarea"
+    ).keyup(
+        function ()
+        {
+            if ($(this).val() == '') {
+                $(this).parents('form').find('button').prop('disabled', true);
+            } else {
+                $(this).parents('form').find('button').prop('disabled', false);
+            }
+        }
+    ).keyup();
+
+    // Set handlers for buttons. Do this once, because every definition of .click() will just add up, not overwrite.
+    // Disable buttons when clicked, indicate the process is loading.
+    $("#hgvsTabsContent").find("button[type='submit']").click(
+        function ()
+        {
+            // Disable the button and show it's busy.
+            $(this).prop('disabled', true).append('\n&nbsp;\n<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            // Empty previous result.
+            $("#" + this.id.replace('Button', '') + "Response").html("");
+            // Remove download button, in case it's shown.
+            $("#" + this.id.replace('Button', '') + "DownloadButton").addClass("d-none");
+            $(this).parents("form").submit();
+            return false;
+        }
+    );
+    $("#hgvsTabsContent").find("button[id$='DownloadButton']").click(
+        function ()
+        {
+            $(this).prop('disabled', true).append('\n&nbsp;\n<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            downloadResponse(this.id.replace('DownloadButton', ''));
+            return false; // Don't submit the form.
+        }
+    );
+</SCRIPT>
+
 </body>
 </html>
