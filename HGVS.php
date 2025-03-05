@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-02-21   // When modified, also change the library_version.
+ * Modified    : 2025-03-05   // When modified, also change the library_version.
  * For LOVD    : 3.0-31
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
@@ -125,6 +125,8 @@ class HGVS
                         $sInputToParse = $aPattern[$i]->getSuffix();
                         // Merge their data and messages with ours.
                         $this->patterns_matched += $aPattern[$i]->getPatternsMatched();
+                        // An object may have indicated they were possibly incomplete (e.g., "c.100A" throws this).
+                        $this->possibly_incomplete = ($this->possibly_incomplete || $aPattern[$i]->isPossiblyIncomplete());
                         $this->data = array_merge(
                             $this->data,
                             $aPattern[$i]->getData()
@@ -760,7 +762,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-02-21',
+            'library_version' => '2025-03-05',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -934,7 +936,8 @@ class HGVS
 
             if (get_class($this) == 'HGVS') {
                 // Something we can only do here; handle a missing reference sequence followed by a colon. E.g., ":c.10del".
-                if ($this->hasMessage('EREFERENCEFORMAT') && $this->ReferenceSequence->getCorrectedValue() == '') {
+                if ($this->hasMessage('EREFERENCEFORMAT')
+                    && $this->hasProperty('ReferenceSequence') && $this->ReferenceSequence->getCorrectedValue() == '') {
                     $this->messages['WREFERENCEFORMAT'] = 'A colon was given, but no reference sequence was found.';
                     unset($this->messages['EREFERENCEFORMAT']);
                     // A simple, yet effective solution. Simply remove the refseq and the colon from the pattern.
@@ -1845,6 +1848,8 @@ class HGVS_DNAInsSuffixComplex extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         // This triggers additional validations, so run it here.
         $this->corrected_values = $this->getCorrectedValues();
+        // Just because we do allow for multiple matches, doesn't mean we need them.
+        $this->possibly_incomplete = false;
     }
 }
 
@@ -2066,7 +2071,7 @@ class HGVS_DNAPosition extends HGVS
     public array $patterns = [
         'unknown'          => ['?', []],
         'unknown_intronic' => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]\?)/u', []],
-        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*bp)/u', []],
+        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*\s*bp)/u', []],
         'pter'             => ['/pter/', []],
         'qter'             => ['/qter/', []],
     ];
@@ -3128,6 +3133,8 @@ class HGVS_DNARepeat extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->data['type'] = 'repeat';
         $this->corrected_values = $this->getCorrectedValues();
+        // Just because we do allow for multiple matches, doesn't mean we need them.
+        $this->possibly_incomplete = false;
 
         // Run a full validation, but only when we're the "main" repeat class.
         if ($this->parent && get_class($this->parent) == 'HGVS_DNAVariantType') {
@@ -3531,6 +3538,13 @@ class HGVS_DNAVariantBody extends HGVS
 
                 $this->data['type'] = $this->DNASomaticVariant->DNASomatic->getData()['type'];
             }
+
+        } elseif ($this->matched_pattern == 'other') {
+            // If we ran out of input when running the somatic pattern, we're marked as possibly incomplete.
+            // That can cause problems with downstream processing (mostly, text mining).
+            // Reset whether we're incomplete or not.
+            $this->possibly_incomplete = ($this->DNAPositions->isPossiblyIncomplete()
+                || $this->DNAVariantType->isPossiblyIncomplete());
         }
 
         // Handle protein-like substitutions.
@@ -3976,6 +3990,14 @@ class HGVS_DNAVariantType extends HGVS
                 // Uncertain positions? Nah, reject the match.
                 return 0; // Break out of this pattern only.
             }
+
+            // If we get here, we accepted this variant description.
+            // However, we must stress that this may be also an incomplete variant description.
+            // "c.100A" may have been "c.100A > G" in text from a PDF, for instance.
+            // As such, if there is no more input left, mark us as possibly incomplete.
+            if (!trim($this->getSuffix())) {
+                $this->possibly_incomplete = true;
+            }
         }
     }
 }
@@ -4061,7 +4083,7 @@ class HGVS_Length extends HGVS
 {
     public array $patterns = [
         'unknown'  => ['?', []],
-        'known_bp' => ['/([0-9]+)bp/', []],
+        'known_bp' => ['/([0-9]+)\s*bp/', []],
         'known'    => ['/([0-9]+)/', []],
     ];
 
@@ -4493,7 +4515,7 @@ class HGVS_ReferenceSequence extends HGVS
                 $this->allowed_prefixes = [];
 
                 // Some black listing is needed, though.
-                if (in_array(strtolower($this->value), ['http', 'https'])) {
+                if (in_array(strtolower($this->value), ['doi', 'http', 'https'])) {
                     return 0; // Break out of this pattern only.
                 } else {
                     // We also want to be absolutely certain that we are not matching a variant description that has a
