@@ -28,6 +28,18 @@ if (function_exists('mb_internal_encoding')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <!-- Bootstrap Font Icon CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style type="text/css">
+        .bg-warning {
+            background-color: var(--bs-orange) !important;
+        }
+        .border-warning {
+            border-color: var(--bs-orange) !important;
+        }
+        .list-group-item-warning {
+            color:#83410b;
+            background-color:#fdd2af;
+        }
+    </style>
 
     <title>LOVD HGVS variant description syntax checker</title>
 </head>
