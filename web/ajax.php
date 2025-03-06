@@ -47,7 +47,7 @@ if (function_exists('mb_internal_encoding')) {
 // This removes duplication, or perhaps worse, differences in implementation.
 // Put the variants in an array. Previously, we used the variant descriptions as keys, but we won't do that anymore.
 // This is not a normal form; JS combines the values without adding a \r.
-$aVariants = preg_split('/\s*\n\s*/', $_REQUEST['var']);
+$aVariants = preg_split('/\s*\n\s*/', trim($_REQUEST['var']));
 $aResponse = [];
 foreach ($aVariants as $sVariant) {
     $sVariant = trim($sVariant);
