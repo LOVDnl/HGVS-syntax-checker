@@ -201,11 +201,10 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     {
                         var sVariant = aVariant.input;
                         // What colors and what icon will we use for this variant header?
-                        aVariant.bootstrap_class = (aVariant.valid == null || aVariant.corrected_values_confidence > 0.5? 'warning' :
+                        aVariant.bootstrap_class = (aVariant.corrected_values_confidence > 0.5? 'warning' :
                                 'danger');
-                        aVariant.icon = (aVariant.valid == null? 'question' :
-                            (aVariant.bootstrap_class == 'warning'? 'exclamation' :
-                                'x')) + '-circle-fill';
+                        aVariant.icon = (aVariant.bootstrap_class == 'warning'? 'exclamation' :
+                                'x') + '-circle-fill';
 
                         // Start building up the body (a list of messages).
                         var aMessages = [];
@@ -227,6 +226,12 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                                             ' For sequence-level validation, please select the VariantValidator option.'});
                                 }
                             }
+
+                        } else if (aVariant.valid == null) {
+                            aVariant.bootstrap_class = 'warning';
+                            aVariant.icon = 'question-circle-fill';
+                            aMessages.push({'style': 'secondary', 'icon': 'exclamation-circle-fill', 'data': 'Note', 'body':
+                                aVariant.messages.INOTSUPPORTED});
                         }
                     }
                 );
