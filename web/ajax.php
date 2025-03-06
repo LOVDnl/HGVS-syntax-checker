@@ -51,7 +51,8 @@ $aVariants = preg_split('/\s*\n\s*/', $_REQUEST['var']);
 $aResponse = [];
 foreach ($aVariants as $sVariant) {
     $sVariant = trim($sVariant);
-    $aVariant = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
+    $HGVS = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence();
+    $aVariant = $HGVS->getInfo();
 
     if (isset($aVariant['errors']['ENOTSUPPORTED'])) {
         // Catch and convert ENOTSUPPORTED.
@@ -78,6 +79,11 @@ foreach ($aVariants as $sVariant) {
     // Don't double-complain about not having a variant when we already complain in a similar way.
     if (isset($aVariant['errors']['EFAIL']) || isset($aVariant['warnings']['WVCF'])) {
         unset($aVariant['errors']['EVARIANTREQUIRED']);
+    }
+
+    // Do not suggest anything for other reference sequences.
+    if ($aVariant['identified_as'] == 'reference_sequence' && $HGVS->ReferenceSequence->getIdentifiedAs() == 'other') {
+        $aVariant['corrected_values'] = [];
     }
 
     // Add the total confidence which is easy for us to calculate. JS will use this to determine the colors.
