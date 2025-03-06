@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-05
+ * Modified    : 2025-03-06
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -201,12 +201,33 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     {
                         var sVariant = aVariant.input;
                         // What colors and what icon will we use for this variant header?
-                        aVariant.bootstrap_class = (aVariant.valid? 'success' :
-                            (aVariant.valid == null || aVariant.corrected_values_confidence > 0.5? 'warning' :
-                                'danger'));
+                        aVariant.bootstrap_class = (aVariant.valid == null || aVariant.corrected_values_confidence > 0.5? 'warning' :
+                                'danger');
                         aVariant.icon = (aVariant.valid == null? 'question' :
                             (aVariant.bootstrap_class == 'warning'? 'exclamation' :
-                                (aVariant.valid? 'check' : 'x'))) + '-circle-fill';
+                                'x')) + '-circle-fill';
+
+                        // Start building up the body (a list of messages).
+                        var aMessages = [];
+
+                        if (aVariant.valid) {
+                            aVariant.bootstrap_class = 'success';
+                            aVariant.icon = 'check-circle-fill';
+                            aMessages.push({'style': aVariant.bootstrap_class, 'icon': aVariant.icon, 'data': 'OK', 'body':
+                                    'This variant description\'s syntax is valid.'});
+                            if (!bCallVV) {
+                                if ('WNOTSUPPORTED' in aVariant.warnings) {
+                                    aMessages.push({'style': aVariant.bootstrap_class, 'icon': 'info-circle-fill', 'data': 'Note', 'body':
+                                            'This variant has not been validated on the sequence level.' +
+                                            ' However, this variant description is not currently supported for sequence-level validation.'});
+                                    delete aVariant.warnings['WNOTSUPPORTED'];
+                                } else {
+                                    aMessages.push({'style': 'secondary', 'icon': 'exclamation-circle-fill', 'data': 'Note', 'body':
+                                            'This variant has not been validated on the sequence level.' +
+                                            ' For sequence-level validation, please select the VariantValidator option.'});
+                                }
+                            }
+                        }
                     }
                 );
 
