@@ -200,9 +200,6 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     function (i, aVariant)
                     {
                         var sVariant = aVariant.input;
-                        // What colors and what icon will we use for this variant header?
-                        aVariant.bootstrap_class = 'danger';
-                        aVariant.icon = 'x-circle-fill';
 
                         // Start building up the body (a list of messages).
                         var aMessages = [];
@@ -237,6 +234,11 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             aMessages.push({'style': aVariant.bootstrap_class, 'icon': aVariant.icon, 'data': 'Error', 'body':
                                 'This variant description is invalid, but can be corrected with a high confidence (' +
                                     Math.round(aVariant.corrected_values_confidence * 100) + '%).'});
+
+                        } else {
+                            // Errors end up here, and warnings with very low confidence.
+                            aVariant.bootstrap_class = 'danger';
+                            aVariant.icon = 'x-circle-fill';
                         }
                     }
                 );
