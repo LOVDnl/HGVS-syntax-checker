@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2011-09-06
- * Modified    : 2025-03-05
+ * Modified    : 2025-03-06
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -73,6 +73,11 @@ foreach ($aVariants as $sVariant) {
         $aVariant['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
             'Although this is not necessary for our syntax check, a variant description does ' .
             'need a reference sequence to be fully informative and HGVS-compliant.';
+    }
+
+    // Don't double-complain about not having a variant when we already complain in a similar way.
+    if (isset($aVariant['errors']['EFAIL']) || isset($aVariant['warnings']['WVCF'])) {
+        unset($aVariant['errors']['EVARIANTREQUIRED']);
     }
 
     // Add the total confidence which is easy for us to calculate. JS will use this to determine the colors.
