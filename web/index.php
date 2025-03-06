@@ -201,10 +201,8 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     {
                         var sVariant = aVariant.input;
                         // What colors and what icon will we use for this variant header?
-                        aVariant.bootstrap_class = (aVariant.corrected_values_confidence > 0.5? 'warning' :
-                                'danger');
-                        aVariant.icon = (aVariant.bootstrap_class == 'warning'? 'exclamation' :
-                                'x') + '-circle-fill';
+                        aVariant.bootstrap_class = 'danger';
+                        aVariant.icon = 'x-circle-fill';
 
                         // Start building up the body (a list of messages).
                         var aMessages = [];
@@ -232,6 +230,13 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             aVariant.icon = 'question-circle-fill';
                             aMessages.push({'style': 'secondary', 'icon': 'exclamation-circle-fill', 'data': 'Note', 'body':
                                 aVariant.messages.INOTSUPPORTED});
+
+                        } else if (aVariant.corrected_values_confidence > 0.75) {
+                            aVariant.bootstrap_class = 'warning';
+                            aVariant.icon = 'exclamation-circle-fill';
+                            aMessages.push({'style': aVariant.bootstrap_class, 'icon': aVariant.icon, 'data': 'Error', 'body':
+                                'This variant description is invalid, but can be corrected with a high confidence (' +
+                                    Math.round(aVariant.corrected_values_confidence * 100) + '%).'});
                         }
                     }
                 );
