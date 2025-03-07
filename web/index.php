@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-06
+ * Modified    : 2025-03-07
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -239,6 +239,38 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             // Errors end up here, and warnings with very low confidence.
                             aVariant.bootstrap_class = 'danger';
                             aVariant.icon = 'x-circle-fill';
+                        }
+
+                        // Add errors. As errors can be both an array or an object, let's use jQuery.
+                        $.each(
+                            aVariant.errors,
+                            function (sCode, sError)
+                            {
+                                var sClassName = 'danger';
+                                var sIcon = 'x-circle-fill';
+                                var sData = 'Error';
+                                aMessages.push({'style': sClassName, 'icon': sIcon, 'data': sData, 'body': sError});
+                            }
+                        );
+
+                        // Add warnings. As warnings can be both an array or an object, let's use jQuery.
+                        $.each(
+                            aVariant.warnings,
+                            function (sCode, sWarning)
+                            {
+                                var sClassName = 'warning';
+                                var sIcon = 'exclamation-circle-fill';
+                                if (sCode == 'WNOTSUPPORTED') {
+                                    sClassName = 'secondary';
+                                    // return; // FIXME: I think I want to show these, no?
+                                }
+                                aMessages.push({'style': sClassName, 'icon': sIcon, 'data': 'Warning', 'body': sWarning});
+                            }
+                        );
+
+                        // Add the IREFSEQMISSING last.
+                        if ("IREFSEQMISSING" in aVariant.messages && !("EFAIL" in aVariant.errors)) {
+                            aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': aVariant.messages.IREFSEQMISSING});
                         }
                     }
                 );
