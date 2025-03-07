@@ -268,6 +268,45 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             }
                         );
 
+                        // If not VV, but we fixed the variant, mention this.
+                        if (!aVariant.valid && !("WCORRECTED" in aVariant.VV) && Object.keys(aVariant.corrected_values).length) {
+                            // Not valid but not corrected by VV (VV not run or VV doesn't know).
+                            var sMessage = '';
+                            if (Object.keys(aVariant.corrected_values).length > 1) {
+                                // Multiple corrections are possible.
+                                if (aVariant.corrected_values_confidence > 0.5) {
+                                    sMessage = 'There are multiple possible corrections.';
+                                    for (sCorrection of Object.keys(aVariant.corrected_values)) {
+                                        nConfidence = Math.round(aVariant.corrected_values[sCorrection] * 100);
+                                        sMessage += ' We are ' + nConfidence +
+                                            '% confident that the correct description is <b>' + sCorrection + '</b>.';
+                                    }
+                                } else {
+                                    sMessage = 'There are multiple possible corrections: <b>';
+                                    aCorrections = Object.keys(aVariant.corrected_values);
+                                    sLastCorrection = aCorrections.pop();
+                                    sMessage += aCorrections.join('</b>, <b>') + '</b> or <b>' + sLastCorrection + '</b>.';
+                                }
+
+                            } else if (Object.keys(aVariant.corrected_values)[0] != sVariant) {
+                                // There is a single correction, and this one is different from the input.
+                                sCorrection = Object.keys(aVariant.corrected_values)[0];
+                                nConfidence = Math.round(aVariant.corrected_values[sCorrection] * 100);
+                                if (nConfidence == 100) {
+                                    sMessage = 'The correct variant description is <b>' + sCorrection + '</b>.';
+                                } else if (nConfidence > 10) {
+                                    sMessage = 'We are ' + nConfidence +
+                                        '% confident that the correct description is <b>' + sCorrection + '</b>.';
+                                } else {
+                                    sMessage = 'It is possible that an improved description is <b>' + sCorrection + '</b>.';
+                                }
+                            }
+
+                            if (sMessage) {
+                                aMessages.push({'style': 'warning', 'icon': 'arrow-right-circle-fill', 'data': 'Correction', 'body': sMessage});
+                            }
+                        }
+
                         // Add the IREFSEQMISSING last.
                         if ("IREFSEQMISSING" in aVariant.messages && !("EFAIL" in aVariant.errors)) {
                             aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': aVariant.messages.IREFSEQMISSING});
