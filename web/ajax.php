@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2011-09-06
- * Modified    : 2025-03-06
+ * Modified    : 2025-03-07
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -77,8 +77,16 @@ foreach ($aVariants as $sVariant) {
     }
 
     // Don't double-complain about not having a variant when we already complain in a similar way.
-    if (isset($aVariant['errors']['EFAIL']) || isset($aVariant['warnings']['WVCF'])) {
+    if (isset($aVariant['errors']['EFAIL'])) {
         unset($aVariant['errors']['EVARIANTREQUIRED']);
+    } elseif (isset($aVariant['errors']['EVARIANTREQUIRED']) && isset($aVariant['warnings']['WVCF'])) {
+        unset($aVariant['errors']['EVARIANTREQUIRED']);
+        // If there are no more errors left, fix the corrected values.
+        if (!count($aVariant['errors'])) {
+            foreach ($aVariant['corrected_values'] as $sCorrection => $nConfidence) {
+                $aVariant['corrected_values'][$sCorrection] = ($nConfidence * 10);
+            }
+        }
     }
 
     // Do not suggest anything for other reference sequences.
