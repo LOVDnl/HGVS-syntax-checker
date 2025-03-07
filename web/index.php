@@ -339,6 +339,23 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     }
                 );
 
+                // Allow cards to close/open, but only if they don't have a handler already.
+                // (OK, there's no real way of finding out with a simple selector, so we cheat using data attributes)
+                $("#" + sMethod + "Response div.card-header").not("[data-onclick-set]").click(
+                    function ()
+                    {
+                        if ($(this).find("i[class*='bi-caret']").hasClass("bi-caret-down-fill")) {
+                            // Hide.
+                            $(this).parents("div.card").children("ul").hide();
+                            $(this).find("i[class*='bi-caret']").removeClass("bi-caret-down-fill").addClass("bi-caret-left-fill");
+                        } else {
+                            // Show.
+                            $(this).parents("div.card").children("ul").show();
+                            $(this).find("i[class*='bi-caret']").removeClass("bi-caret-left-fill").addClass("bi-caret-down-fill");
+                        }
+                    }
+                ).attr("data-onclick-set", true);
+
                 return false;
             }
         ).fail(
