@@ -205,6 +205,7 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                         var aMessages = [];
 
                         if (aVariant.valid) {
+                            aVariant.data_status = 'success';
                             aVariant.bootstrap_class = 'success';
                             aVariant.icon = 'check-circle-fill';
                             aMessages.push({'style': aVariant.bootstrap_class, 'icon': aVariant.icon, 'data': 'OK', 'body':
@@ -223,12 +224,14 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             }
 
                         } else if (aVariant.valid == null) {
+                            aVariant.data_status = 'unsupported';
                             aVariant.bootstrap_class = 'warning';
                             aVariant.icon = 'question-circle-fill';
                             aMessages.push({'style': 'secondary', 'icon': 'exclamation-circle-fill', 'data': 'Note', 'body':
                                 aVariant.messages.INOTSUPPORTED});
 
                         } else if (aVariant.corrected_values_confidence > 0.75) {
+                            aVariant.data_status = 'warning';
                             aVariant.bootstrap_class = 'warning';
                             aVariant.icon = 'exclamation-circle-fill';
                             aMessages.push({'style': aVariant.bootstrap_class, 'icon': aVariant.icon, 'data': 'Error', 'body':
@@ -237,6 +240,7 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
 
                         } else {
                             // Errors end up here, and warnings with very low confidence.
+                            aVariant.data_status = 'error';
                             aVariant.bootstrap_class = 'danger';
                             aVariant.icon = 'x-circle-fill';
                         }
@@ -327,7 +331,7 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
 
                         // Add the card to the response field, or replace a card if that is requested.
                         var sCard =
-                            '<div class="card w-100 mb-3 border-' + aVariant.bootstrap_class + ' bg-' + aVariant.bootstrap_class + '">\n' +
+                            '<div class="card w-100 mb-3 border-' + aVariant.bootstrap_class + ' bg-' + aVariant.bootstrap_class + '" data-status="' + aVariant.data_status + '">\n' +
                               '<div class="card-header text-white d-flex justify-content-between">\n' +
                                 '<div><h5 class="card-title mb-0"><i class="bi bi-' + aVariant.icon + ' me-1"></i> <b>' + sVariant + '</b></h5></div>\n' +
                                 '<div><i class="bi bi-caret-down-fill ps-5"></i></div>\n' +
@@ -338,6 +342,34 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                         $("#" + sMethod + "Response").append('\n' + sCard);
                     }
                 );
+
+                // Collect and show the stats.
+                aCards = $("#" + sMethod + "Response div.card");
+                var nVariants = aCards.length;
+                var nVariantsSuccess = $(aCards).filter("[data-status='success']").length;
+                var nVariantsNotSupported = $(aCards).filter("[data-status='unsupported']").length;
+                var nVariantsWarning = $(aCards).filter("[data-status='warning']").length;
+                var nVariantsError = $(aCards).filter("[data-status='error']").length;
+                var sAlert =
+                    '<div class="alert alert-primary" role="alert">\n' +
+                    (sMethod == 'singleVariant' && nVariants == 1? '' :
+                        '<div><i class="bi bi-clipboard2-check me-1"></i>' + nVariants + ' variant' + (nVariants == 1? '' : 's') + ' received.</div>\n') +
+                    (!nVariantsSuccess? '' :
+                        '<div><i class="bi bi-check-circle-fill me-1"></i>' + nVariantsSuccess + ' variant' + (nVariantsSuccess == 1? '' : 's') + ' validated successfully.</div>\n') +
+                    (!nVariantsNotSupported? '' :
+                        '<div><i class="bi bi-question-circle-fill me-1"></i>' + nVariantsNotSupported + ' variant' + (nVariantsNotSupported == 1? ' is' : 's are') + ' not supported.</div>\n') +
+                    (!nVariantsWarning? '' :
+                        '<div><i class="bi bi-dash-circle-fill me-1"></i>' + nVariantsWarning + ' variant' + (nVariantsWarning == 1? '' : 's') + ' can be fixed.</div>\n') +
+                    (!nVariantsError? '' :
+                        '<div><i class="bi bi-exclamation-circle-fill me-1"></i>' + nVariantsError + ' variant' + (nVariantsError == 1? '' : 's') + ' failed to validate.</div>\n') +
+                    '</div>';
+
+                // If alert is already present, replace it. Otherwise, add it.
+                if ($("#" + sMethod + "Response div.alert").length) {
+                    $("#" + sMethod + "Response div.alert").replaceWith(sAlert);
+                } else {
+                    $("#" + sMethod + "Response").prepend('\n' + sAlert);
+                }
 
                 // Allow cards to close/open, but only if they don't have a handler already.
                 // (OK, there's no real way of finding out with a simple selector, so we cheat using data attributes)
