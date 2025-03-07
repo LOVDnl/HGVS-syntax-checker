@@ -311,6 +311,31 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                         if ("IREFSEQMISSING" in aVariant.messages && !("EFAIL" in aVariant.errors)) {
                             aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': aVariant.messages.IREFSEQMISSING});
                         }
+
+                        var sBody = '<ul class="list-group list-group-flush">';
+                        aMessages.forEach(
+                            function (aMessage)
+                            {
+                                sBody +=
+                                    '<li class="list-group-item list-group-item-' + aMessage.style + ' d-flex" data-type="' + aMessage.data + '">' +
+                                    '<i class="bi bi-' + aMessage.icon + ' me-2"></i><div>' +
+                                    aMessage.body +
+                                    '</div></li>\n';
+                            }
+                        );
+                        sBody += '</ul>';
+
+                        // Add the card to the response field, or replace a card if that is requested.
+                        var sCard =
+                            '<div class="card w-100 mb-3 border-' + aVariant.bootstrap_class + ' bg-' + aVariant.bootstrap_class + '">\n' +
+                              '<div class="card-header text-white d-flex justify-content-between">\n' +
+                                '<div><h5 class="card-title mb-0"><i class="bi bi-' + aVariant.icon + ' me-1"></i> <b>' + sVariant + '</b></h5></div>\n' +
+                                '<div><i class="bi bi-caret-down-fill ps-5"></i></div>\n' +
+                              '</div>\n'
+                              + sBody + '\n' +
+                            '</div>';
+
+                        $("#" + sMethod + "Response").append('\n' + sCard);
                     }
                 );
 
