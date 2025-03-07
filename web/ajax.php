@@ -20,6 +20,19 @@ if (ini_get('error_reporting') == E_ALL) {
     error_reporting(E_ALL ^ E_NOTICE);
 }
 
+function lovd_php_htmlspecialchars ($Var)
+{
+    // Recursively run htmlspecialchars(), even with unknown depth.
+
+    if (is_array($Var)) {
+        return array_map('lovd_php_htmlspecialchars', $Var);
+    } elseif (!is_string($Var)) {
+        return $Var;
+    } else {
+        return htmlspecialchars($Var ?: '');
+    }
+}
+
 if (empty($_REQUEST['var'])) {
     die(0);
 }
@@ -96,7 +109,13 @@ foreach ($aVariants as $sVariant) {
 
     // Add the total confidence which is easy for us to calculate. JS will use this to determine the colors.
     $aVariant['corrected_values_confidence'] = array_sum($aVariant['corrected_values']);
-    $aResponse[] = $aVariant;
+
+    // Finally, escape everything because that is hard to do in Javascript.
+    $aVariant['corrected_values'] = array_combine(
+        lovd_php_htmlspecialchars(array_keys($aVariant['corrected_values'])),
+        array_values($aVariant['corrected_values'])
+    );
+    $aResponse[] = lovd_php_htmlspecialchars($aVariant);
 }
 
 echo json_encode($aResponse);
