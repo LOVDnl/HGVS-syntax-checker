@@ -1058,7 +1058,7 @@ class HGVS_Chromosome extends HGVS
         '#[Genome]'    => ['HGVS_ChromosomeNumber', '[', 'HGVS_Genome', ']', []],
         '#'            => ['HGVS_ChromosomeNumber', []],
     ];
-    public array $refseqs = [
+    public static array $refseqs = [
         'hg18' => [
             '1'  => 'NC_000001.9',
             '2'  => 'NC_000002.10',
@@ -1142,6 +1142,25 @@ class HGVS_Chromosome extends HGVS
         ],
     ];
 
+    public static function getInfoByNC ($sNC)
+    {
+        // Find out what build and chromosome belongs to a certain NC.
+        foreach (self::$refseqs as $sBuild => $aBuild) {
+            $sChr = (string) array_search($sNC, $aBuild);
+            if ($sChr) {
+                return [
+                    'build' => $sBuild,
+                    'chr' => $sChr,
+                ];
+            }
+        }
+        return false;
+    }
+
+
+
+
+
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
@@ -1158,23 +1177,23 @@ class HGVS_Chromosome extends HGVS
             if ($this->getParentProperty('Genome')
                 && $this->getParentProperty('Genome')->getCorrectedValue() != $this->Genome->getCorrectedValue()) {
                 $this->messages['EREFERENCEFORMAT'] = 'Found multiple genome build indicators that conflict.';
-                $this->setCorrectedValue($this->refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr], 0.5);
-                $this->addCorrectedValue($this->refseqs[$this->Genome->getCorrectedValue()][$sChr], 0.5);
+                $this->setCorrectedValue(self::$refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr], 0.5);
+                $this->addCorrectedValue(self::$refseqs[$this->Genome->getCorrectedValue()][$sChr], 0.5);
             } else {
-                $this->setCorrectedValue($this->refseqs[$this->Genome->getCorrectedValue()][$sChr]);
+                $this->setCorrectedValue(self::$refseqs[$this->Genome->getCorrectedValue()][$sChr]);
             }
 
         } elseif ($this->getParentProperty('Genome')) {
             // We received a genome build, choose the right NC.
-            $this->setCorrectedValue($this->refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr]);
+            $this->setCorrectedValue(self::$refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr]);
 
         } else {
             // We didn't receive a genome build. We'll suggest them all.
             // Note that we don't have very reliable information about how much data each genome build has.
             // The given confidence values are estimations.
-            $this->setCorrectedValue($this->refseqs['hg38'][$sChr], 0.5);
-            $this->addCorrectedValue($this->refseqs['hg19'][$sChr], 0.45);
-            $this->addCorrectedValue($this->refseqs['hg18'][$sChr], 0.05);
+            $this->setCorrectedValue(self::$refseqs['hg38'][$sChr], 0.5);
+            $this->addCorrectedValue(self::$refseqs['hg19'][$sChr], 0.45);
+            $this->addCorrectedValue(self::$refseqs['hg18'][$sChr], 0.05);
         }
     }
 }
