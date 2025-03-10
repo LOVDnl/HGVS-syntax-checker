@@ -42,6 +42,70 @@ class LOVD_VV
 
 
 
+    private function callVV ($sMethod, $aArgs = array())
+    {
+        // Wrapper function to call VV's JSON webservice.
+        // Because we have a wrapper, we can implement CURL, which is much faster on repeated calls.
+        global $_CONF;
+
+        // Build URL, regardless of how we'll connect to it.
+        $sURL = $this->sURL . $sMethod . '/' . implode('/', array_map('rawurlencode', $aArgs)) . '?content-type=application%2Fjson';
+        $sJSONResponse = '';
+
+        if (function_exists('curl_init')) {
+            // Initialize curl connection.
+            static $hCurl;
+
+            if (!$hCurl) {
+                $hCurl = curl_init();
+                curl_setopt($hCurl, CURLOPT_RETURNTRANSFER, true); // Return the result as a string.
+                curl_setopt($hCurl, CURLOPT_FOLLOWLOCATION, true); // Make sure we follow redirects.
+                // Set a version so that VV can recognize us.
+                curl_setopt($hCurl, CURLOPT_USERAGENT, 'LOVD/VV:' . HGVS::getVersions()['library_version']);
+
+                // Set proxy, if we are used from within LOVD and LOVD requires a proxy.
+                if (!empty($_CONF['proxy_host'])) {
+                    curl_setopt($hCurl, CURLOPT_PROXY, $_CONF['proxy_host'] . ':' . $_CONF['proxy_port']);
+                    if (!empty($_CONF['proxy_username']) || !empty($_CONF['proxy_password'])) {
+                        curl_setopt($hCurl, CURLOPT_PROXYUSERPWD, $_CONF['proxy_username'] . ':' . $_CONF['proxy_password']);
+                    }
+                }
+            }
+
+            curl_setopt($hCurl, CURLOPT_URL, $sURL);
+            $sJSONResponse = curl_exec($hCurl);
+
+        } elseif (function_exists('lovd_php_file')) {
+            // Backup method, no curl installed. We'll try LOVD's file() implementation, which also handles proxies.
+            $aJSONResponse = lovd_php_file($sURL);
+            if ($aJSONResponse !== false) {
+                $sJSONResponse = implode("\n", $aJSONResponse);
+            }
+
+        } else {
+            // Last fallback. Requires fopen wrappers.
+            $aJSONResponse = file($sURL);
+            if ($aJSONResponse !== false) {
+                $sJSONResponse = implode("\n", $aJSONResponse);
+            }
+        }
+
+
+
+        if ($sJSONResponse) {
+            $aJSONResponse = @json_decode($sJSONResponse, true);
+            if ($aJSONResponse !== false) {
+                return $aJSONResponse;
+            }
+        }
+        // Something went wrong...
+        return false;
+    }
+
+
+
+
+
     public function test ()
     {
         // Tests the VV endpoint.
