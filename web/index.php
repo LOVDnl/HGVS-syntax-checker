@@ -176,7 +176,14 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
         // This function sends the data over to the ajax script, formats, and displays the response.
         var oCard = null;
 
-        if (typeof sMethod == 'string' && sMethod.length > 0 && $("#" + sMethod).length == 1) {
+        if (typeof sMethod == 'object' && 'object' in sMethod && 'variant' in sMethod) {
+            // An object has been passed to us. This happens when we need to replace a card.
+            oCard = sMethod.object;
+            var sInput = sMethod.variant;
+            sMethod = $(oCard).parent().attr("id").replace("Response", "");
+            var bCallVV = $("#" + sMethod + "UseVV").is(":checked");
+
+        } else if (typeof sMethod == 'string' && sMethod.length > 0 && $("#" + sMethod).length == 1) {
             // We received a string linking to the input form.
             var sInput = $("#" + sMethod).val();
             var bCallVV = $("#" + sMethod + "UseVV").is(":checked");
@@ -307,6 +314,7 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             }
 
                             if (sMessage) {
+                                // This message will be edited later.
                                 aMessages.push({'style': 'warning', 'icon': 'arrow-right-circle-fill', 'data': 'Correction', 'body': sMessage});
                             }
                         }
@@ -339,7 +347,11 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                               + sBody + '\n' +
                             '</div>';
 
-                        $("#" + sMethod + "Response").append('\n' + sCard);
+                        if (oCard) {
+                            $(oCard).replaceWith(sCard);
+                        } else {
+                            $("#" + sMethod + "Response").append('\n' + sCard);
+                        }
                     }
                 );
 
@@ -370,6 +382,44 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                 } else {
                     $("#" + sMethod + "Response").prepend('\n' + sAlert);
                 }
+
+                // Add links to suggested corrections, but only if they don't have links already.
+                $.each(
+                    $(aCards).filter("[data-status='warning'],[data-status='error']").not(':has("a")'),
+                    function (index, aCard)
+                    {
+                        // Add links for entries that can be corrected.
+                        var sOriVariant = $(aCard).find("h5").text().trim();
+                        $(aCard).find("ul i.bi-arrow-right-circle-fill + div").find("b").each(
+                            function (i, oB)
+                            {
+                                var sNewVariant = $(oB).text().trim();
+                                $(oB).html('<a href="#" class="link-dark">' + sNewVariant + '<i class="bi bi-pencil-square ms-1"></i></a>');
+                                $(oB).find("a").click(
+                                    function ()
+                                    {
+                                        // Replace the variant in the input.
+                                        $("#" + sMethod).val(
+                                            $("#" + sMethod).val().replace(
+                                                // Note that the variant should be escaped before use within a regex.
+                                                // JS doesn't have a standard function for it. Borrowing something from:
+                                                //  https://stackoverflow.com/a/3561711.
+                                                new RegExp('(^|\n)' + sOriVariant.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '($|\n)'),
+                                                '$1' + sNewVariant + '$2')
+                                        );
+                                        // Reset this card only. Call showResponse() with an object,
+                                        //  so it understands it's just one card that needs to be replaced.
+                                        showResponse({
+                                            object: aCard,
+                                            variant: sNewVariant
+                                        });
+                                        return false;
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
 
                 // Allow cards to close/open, but only if they don't have a handler already.
                 // (OK, there's no real way of finding out with a simple selector, so we cheat using data attributes)
