@@ -106,6 +106,139 @@ class LOVD_VV
 
 
 
+    public function getTranscriptsByID ($sSymbol)
+    {
+        // Returns the available transcripts for the given gene or transcript.
+        // When a transcript has been passed, it returns only that transcript (any version).
+
+        $bTranscript = preg_match('/^[NX][MR]_[0-9.]+$/', $sSymbol);
+        // For now, let's remove the version to just match anything.
+        // VV's output does not depend on this, but our checks further down do.
+        if ($bTranscript) {
+            $sSymbol = strstr($sSymbol . '.', '.', true);
+        }
+
+        // FIXME: We're not ready to use the v2 of the endpoint. Issues:
+        //        - Genome builds have to be sent has NCBI IDs (GRCh37, not hg19).
+        //        - When filtering for a certain transcript, the endpoint is not significantly faster and you can't filter for, e.g., "NM_002225".
+        //          That will return nothing, you NEED to specify a version.
+        //          That makes that addition quite useless for us, so the only thing left is that you can pass on a build.
+        //          That is not very relevant at the moment when I'm rebuilding this class, so I'm leaving it.
+        $aJSON = $this->callVV('VariantValidator/tools/gene2transcripts', array(
+            'id' => $sSymbol,
+        ));
+        if ($aJSON && is_array($aJSON) && count($aJSON) == 1 && isset($aJSON[0])) {
+            // Handle https://github.com/openvar/variantValidator/issues/579.
+            // The output was suddenly a list instead of the expected object.
+            $aJSON = current($aJSON);
+        }
+        if (!$aJSON || empty($aJSON['transcripts'])) {
+            // Failure.
+            // OK, but... what if we were working on chrM? And VV doesn't support these yet?
+            if ($aJSON && isset($aJSON['current_symbol']) && substr($aJSON['current_symbol'], 0, 3) == 'MT-') {
+                // Collect all NCs and builds for chrM.
+                $aNCs = [];
+                foreach (HGVS_Genome::getBuilds() as $sBuild) {
+                    $sNC = HGVS_ReferenceSequence::check($sBuild . ':chrM')->getCorrectedValue();
+                    if (isset($aNCs[$sNC])) {
+                        $aNCs[$sNC][] = $sBuild;
+                    } else {
+                        $aNCs[$sNC] = [$sBuild];
+                    }
+                }
+                $aData = [];
+                foreach ($aNCs as $sNC => $aBuilds) {
+                    $aData[$sNC . '(' . $aJSON['current_symbol'] . ')'] = [
+                        'name' => 'transcript variant 1',
+                        'id_ncbi_protein' => '',
+                        'genomic_positions' => array_combine(
+                            $aBuilds,
+                            array_map(
+                                function ($sBuild)
+                                {
+                                    return [
+                                        'M' => [
+                                            'start' => null,
+                                            'end' => null,
+                                        ]
+                                    ];
+                                }, $aBuilds)),
+                        'transcript_positions' => [
+                            'cds_start' => null,
+                            'cds_length' => null,
+                            'length' => null,
+                        ],
+                        'select' => false,
+                    ];
+                }
+
+                return array_merge(
+                    $this->aResponse,
+                    [
+                        'data' => $aData,
+                    ]
+                );
+            }
+            return array_merge($this->aResponse, ['errors' => 'No transcripts found.']);
+        }
+
+        $aData = $this->aResponse;
+        foreach ($aJSON['transcripts'] as $aTranscript) {
+            // If we requested a single transcript, show only those.
+            if ($bTranscript && strpos($aTranscript['reference'], $sSymbol . '.') === false) {
+                continue;
+            }
+
+            // Clean name.
+            $sName = preg_replace(
+                array(
+                    '/^Homo sapiens\s+/', // Remove species name.
+                    '/^' . preg_quote($aJSON['current_name'], '/') . '\s+/', // The current gene name.
+                    '/.*\(' . preg_quote($aJSON['current_symbol'], '/') . '\),\s+/', // The current symbol.
+                    '/, mRNA\b/', // mRNA suffix.
+                    '/, non-coding RNA$/', // non-coding RNA suffix, replaced to " (non-coding)".
+                    '/; nuclear gene for mitochondrial product$/', // suffix given to a certain class of genes.
+                ), array('', '', '', '', ' (non-coding)', ''), $aTranscript['description']);
+
+            // Figure out the genomic positions, which are given to us using the NCs.
+            $aGenomicPositions = array_fill_keys(HGVS_Genome::getBuilds(), []);
+            foreach ($aTranscript['genomic_spans'] as $sRefSeq => $aMapping) {
+                $aNCInfo = HGVS_Chromosome::getInfoByNC($sRefSeq);
+                if ($aNCInfo) {
+                    $sBuild = $aNCInfo['build'];
+                    $sChromosome = $aNCInfo['chr'];
+                    $aGenomicPositions[$sBuild][$sChromosome] = array(
+                        'start' => ($aMapping['orientation'] == 1?
+                            $aMapping['start_position'] : $aMapping['end_position']),
+                        'end' => ($aMapping['orientation'] == 1?
+                            $aMapping['end_position'] : $aMapping['start_position']),
+                    );
+                }
+            }
+
+            $aData['data'][$aTranscript['reference']] = array(
+                'gene_symbol' => $aJSON['current_symbol'],
+                'gene_hgnc' => substr(strstr($aJSON['hgnc'] ?? '', ':'), 1),
+                'name' => $sName,
+                'id_ncbi_protein' => $aTranscript['translation'],
+                'genomic_positions' => $aGenomicPositions,
+                'transcript_positions' => array(
+                    'cds_start' => $aTranscript['coding_start'],
+                    'cds_length' => (!$aTranscript['coding_end']? NULL : ($aTranscript['coding_end'] - $aTranscript['coding_start'] + 1)),
+                    'length' => $aTranscript['length'],
+                ),
+                'select' => ($aTranscript['annotations']['db_xref']['select'] ?? false),
+            );
+        }
+
+        ksort($aData['data'], SORT_NATURAL);
+        return $aData;
+    }
+
+
+
+
+
     public function test ()
     {
         // Tests the VV endpoint.
