@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-07
+ * Modified    : 2025-03-10
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -346,10 +346,10 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                 // Collect and show the stats.
                 aCards = $("#" + sMethod + "Response div.card");
                 var nVariants = aCards.length;
-                var nVariantsSuccess = $(aCards).filter("[data-status='success']").length;
-                var nVariantsNotSupported = $(aCards).filter("[data-status='unsupported']").length;
-                var nVariantsWarning = $(aCards).filter("[data-status='warning']").length;
-                var nVariantsError = $(aCards).filter("[data-status='error']").length;
+                var nVariantsSuccess = aCards.filter("[data-status='success']").length;
+                var nVariantsNotSupported = aCards.filter("[data-status='unsupported']").length;
+                var nVariantsWarning = aCards.filter("[data-status='warning']").length;
+                var nVariantsError = aCards.filter("[data-status='error']").length;
                 var sAlert =
                     '<div class="alert alert-primary" role="alert">\n' +
                     (sMethod == 'singleVariant' && nVariants == 1? '' :
