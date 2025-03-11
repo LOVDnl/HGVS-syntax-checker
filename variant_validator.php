@@ -710,5 +710,77 @@ class LOVD_VV
                     break;
             }
         }
+
+        // Discard the errors array and the flag value.
+        $aJSON = $aJSON[$sVariant];
+
+        // Copy the (corrected) DNA value.
+        $aData['data']['DNA'] = $aJSON['g_hgvs'];
+
+        // If description is given but different, then apparently there's been some kind of correction.
+        if ($aData['data']['DNA'] && $sVariant != $aData['data']['DNA']) {
+            // Check why the variant returned by VV and the input variant differ.
+            $this->detectDNAChangeType($aData, $sVariant, $HGVS);
+        }
+
+        // Any additional errors given?
+        if ($aJSON['genomic_variant_error']) {
+            // Not a previously seen error; those are handled through the flag value.
+            // We'll assume a warning.
+            $this->addFault($aData, $aJSON['genomic_variant_error'], $sVariant, $aVariantInfo);
+        }
+
+        // Did we get any mappings to transcripts?
+        $aData['data']['genomic_mappings'] = array();
+        $aData['data']['transcript_mappings'] = array();
+        foreach (($aJSON['hgvs_t_and_p'] ?? []) as $sTranscript => $aTranscript) {
+            if ($sTranscript != 'intergenic' && empty($aTranscript['transcript_variant_error'])) {
+                // We silently ignore transcripts here that gave us an error, but not for the liftover feature.
+                $aMapping = array(
+                    'DNA' => '',
+                    'RNA' => (!$aOptions['predict_protein']? '' : 'r.(?)'),
+                    'protein' => '',
+                );
+                if ($aTranscript['gap_statement'] || $aTranscript['gapped_alignment_warning']) {
+                    // This message might be repeated for multiple transcripts when there are gapped alignments,
+                    //  and perhaps repeated also for multiple genome builds (untested).
+                    // Currently, we just store one warning message.
+                    $aData['warnings']['WALIGNMENTGAPS'] = 'Given alignments may contain artefacts; there is a gapped alignment between transcript and genome build.';
+                }
+                if ($aTranscript['t_hgvs']) {
+                    // Collect the cDNA change and remove the reference sequence.
+                    $aMapping['DNA'] = substr(strstr($aTranscript['t_hgvs'], ':'), 1);
+                }
+                if ($aTranscript['p_hgvs_tlc']) {
+                    // Collect the protein change and remove the reference sequence.
+                    $aMapping['protein'] = substr(strstr($aTranscript['p_hgvs_tlc'], ':'), 1);
+                }
+
+                if ($aOptions['predict_protein']) {
+                    // Try to improve VV's predictions.
+                    $this->getRNAProteinPrediction($aMapping, $sTranscript);
+                }
+                $aData['data']['transcript_mappings'][$sTranscript] = $aMapping;
+            }
+
+            // Genomic mappings, when requested, are given per transcript (or otherwise as "intergenic").
+            foreach (($aTranscript['primary_assembly_loci'] ?? []) as $sBuild => $aMappings) {
+                // We support only the builds we have...
+                if (!isset(HGVS_Genome::getBuilds()[$sBuild])) {
+                    continue;
+                }
+
+                // There can be more than one mapping per build in theory, when transcripts map differently.
+                foreach ($aMappings as $sRefSeq => $aMapping) {
+                    $aData['data']['genomic_mappings'][$sBuild][] = $aMapping['hgvs_genomic_description'];
+                }
+            }
+        }
+
+        // Clean up duplicates from multiple transcripts.
+        foreach ($aData['data']['genomic_mappings'] as $sBuild => $aMappings) {
+            $aData['data']['genomic_mappings'][$sBuild] = array_unique($aMappings);
+        }
+        return $aData;
     }
 }
