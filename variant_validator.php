@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-03-10
+ * Modified    : 2025-03-11
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -138,7 +138,7 @@ class LOVD_VV
             if ($aJSON && isset($aJSON['current_symbol']) && substr($aJSON['current_symbol'], 0, 3) == 'MT-') {
                 // Collect all NCs and builds for chrM.
                 $aNCs = [];
-                foreach (HGVS_Genome::getBuilds() as $sBuild) {
+                foreach (array_keys(HGVS_Genome::getBuilds()) as $sBuild) {
                     $sNC = HGVS_ReferenceSequence::check($sBuild . ':chrM')->getCorrectedValue();
                     if (isset($aNCs[$sNC])) {
                         $aNCs[$sNC][] = $sBuild;
@@ -201,7 +201,7 @@ class LOVD_VV
                 ), array('', '', '', '', ' (non-coding)', ''), $aTranscript['description']);
 
             // Figure out the genomic positions, which are given to us using the NCs.
-            $aGenomicPositions = array_fill_keys(HGVS_Genome::getBuilds(), []);
+            $aGenomicPositions = array_fill_keys(array_keys(HGVS_Genome::getBuilds()), []);
             foreach ($aTranscript['genomic_spans'] as $sRefSeq => $aMapping) {
                 $aNCInfo = HGVS_Chromosome::getInfoByNC($sRefSeq);
                 if ($aNCInfo) {

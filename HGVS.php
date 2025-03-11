@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-10   // When modified, also change the library_version.
+ * Modified    : 2025-03-11   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -745,7 +745,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-03-10',
+            'library_version' => '2025-03-11',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -4057,9 +4057,9 @@ class HGVS_Dot extends HGVS
 class HGVS_Genome extends HGVS
 {
     public static array $builds = [
-        'GRCh36' => 'hg18',
-        'GRCh37' => 'hg19',
-        'GRCh38' => 'hg38',
+        'hg18' => 'GRCh36',
+        'hg19' => 'GRCh37',
+        'hg38' => 'GRCh38',
     ];
     public array $patterns = [
         'ucsc' => ['/hg(18|19|38)(?![0-9])/', []],
@@ -4082,11 +4082,13 @@ class HGVS_Genome extends HGVS
         if ($this->matched_pattern == 'ucsc') {
             $this->setCorrectedValue(strtolower($this->value));
         } else {
-            $sUCSC = array_combine(
+            $sUCSC = array_search(
+                strtolower($this->value),
                 array_map(
                     'strtolower',
-                    array_keys(self::$builds)
-                ), array_values(self::$builds))[strtolower($this->value)];
+                    self::$builds
+                )
+            );
             $this->setCorrectedValue($sUCSC);
         }
     }
