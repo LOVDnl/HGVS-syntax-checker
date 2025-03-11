@@ -450,5 +450,104 @@ class LOVD_VV
             || (!is_array($aOptions['select_transcripts']) && $aOptions['select_transcripts'] != 'all')) {
             $aOptions['select_transcripts'] = 'all';
         }
+
+        $aJSON = $this->callVV('LOVD/lovd', array(
+            'genome_build' => $sBuild,
+            'variant_description' => $sVariant,
+            'transcripts' => 'refseq', // 'all' includes Ensembl transcripts that currently (July 2022) are very slow.
+            'select_transcripts' => (!is_array($aOptions['select_transcripts'])?
+                $aOptions['select_transcripts'] :
+                implode('|', $aOptions['select_transcripts'])),
+            'check_only' => ($aOptions['predict_protein']?
+                'False' : ($aOptions['map_to_transcripts']? 'tx' : 'True')),
+            'lift_over' => ($aOptions['lift_over']? 'primary' : 'False'),
+        ));
+        if (!$aJSON || empty($aJSON[$sVariant])) {
+            // Failure. This happens when VV fails hard or if we can't find our input back in the output.
+            // We should have stopped unsupported variant descriptions because we already checked for WNOTSUPPORTED.
+            // So this should be an VV error.
+            return false;
+        }
+
+        $aData = $this->aResponse;
+
+        // Discard the meta data.
+        $aJSON = $aJSON[$sVariant];
+
+        // We'll copy the errors, but I've never seen them filled in, even with REF errors.
+        $aData['errors'] = $aJSON['errors'];
+
+        // Check the flag value.
+        if ($aJSON['flag']) {
+            switch ($aJSON['flag']) {
+                case 'genomic_variant_warning':
+                    if ($aJSON[$sVariant]['genomic_variant_error']) {
+                        // This should be an array, but VV puts everything in a string.
+                        // https://github.com/openvar/variantValidator/issues/667.
+                        // Try to split things.
+                        $aFaults = explode(
+                            "\n",
+                            preg_replace(
+                                "/\.?, ([A-Z][a-z]|NC)/",
+                                ".\n$1",
+                                $aJSON[$sVariant]['genomic_variant_error']
+                            )
+                        );
+                        foreach ($aFaults as $sFault) {
+                            $this->addFault($aData, $sFault, $sVariant, $HGVS);
+                        }
+                        // When we have errors, we don't need 'data' filled in. Just return what I have.
+                        if ($aData['errors']) {
+                            return $aData;
+                        } else {
+                            // Warnings were a false alarm (warnings or even less).
+                            $aJSON[$sVariant]['genomic_variant_error'] = '';
+                        }
+                    }
+                    break;
+
+                case 'processing_error':
+                    // This happens, for instance, when we ask to select a
+                    //  transcript that this variant actually doesn't map on.
+                    // Also, sometimes VV (well, UTA) gives us a transcript
+                    //  voluntarily, but VV can't map our variant with it.
+                    // E.g., NC_000017.10:g.41271863_41308933del.
+                    $aFailingTranscripts = array();
+                    foreach ($aJSON[$sVariant]['hgvs_t_and_p'] as $sTranscript => $aTranscript) {
+                        if (!empty($aTranscript['transcript_variant_error'])) {
+                            $aFailingTranscripts[] = $sTranscript;
+                        }
+                    }
+
+                    // If not all our transcripts failed, just remove the ones that did.
+                    if (count($aFailingTranscripts) < count($aJSON[$sVariant]['hgvs_t_and_p'])) {
+                        foreach ($aFailingTranscripts as $sTranscript) {
+                            unset($aJSON[$sVariant]['hgvs_t_and_p'][$sTranscript]);
+                        }
+                        // Continue.
+                        break;
+                    }
+
+                    // If we have selected transcripts, they all failed.
+                    // If that is the case, retry without selecting any.
+                    if (is_array($aOptions['select_transcripts'])
+                        && count($aOptions['select_transcripts'])) {
+                        unset($aOptions['select_transcripts']);
+                        return $this->verifyGenomic($sVariant, $aOptions);
+                    }
+                    // No break; if we don't catch the error above here,
+                    //  we want the error below.
+
+                default:
+                    // Unhandled flag. "processing_error" can still be
+                    //  thrown, if all transcripts fail.
+                    if ($aJSON['flag'] == 'processing_error') {
+                        $aData['warnings']['WFLAG'] = 'VV Flag not handled: ' . $aJSON['flag'] . '. This happens when UTA passes transcripts that VV cannot map to.';
+                    } else {
+                        $aData['errors']['EFLAG'] = 'VV Flag not recognized: ' . $aJSON['flag'] . '. This indicates a feature is missing in LOVD.';
+                    }
+                    break;
+            }
+        }
     }
 }
