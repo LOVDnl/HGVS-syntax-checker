@@ -370,4 +370,85 @@ class LOVD_VV
             return 0;
         }
     }
+
+
+
+
+
+    public function verifyGenomic ($sVariant, $aOptions = array())
+    {
+        // Verify a genomic variant, and optionally get mappings and a protein prediction.
+
+        if (empty($aOptions) || !is_array($aOptions)) {
+            $aOptions = array();
+        }
+
+        // Perform some extra checks. We assume here that this variant description is what we want to send to VV.
+        // We will not use fixes created by the HGVS object, because this wil stop us from sending whatever we want.
+        // We do, however, demand that we have a variant with a reference sequence.
+        $HGVS = HGVS::check($sVariant)->requireVariant();
+        if (strpos($HGVS->getIdentifiedAs(), 'full_variant') !== 0) {
+            if ($HGVS->hasMessage('EREFSEQMISSING')) {
+                $this->aResponse['errors']['EREFSEQMISSING'] = $HGVS->getMessages()['EREFSEQMISSING'];
+            } elseif ($HGVS->hasMessage('EVARIANTREQUIRED')) {
+                $this->aResponse['errors']['EVARIANTREQUIRED'] = $HGVS->getMessages()['EVARIANTREQUIRED'];
+            }
+            return $this->aResponse;
+        }
+
+        // VV doesn't support everything.
+        if ($HGVS->hasMessage('WNOTSUPPORTED')) {
+            $this->aResponse['errors']['ENOTSUPPORTED'] = 'VariantValidator does not currently support this type of variant description.';
+            return $this->aResponse;
+        }
+
+        // Don't send variants that are too big; VV can't currently handle them.
+        // These sizes are approximate and slightly on the safe side;
+        //  simple measurements have shown a maximum duplication size of
+        //  250KB, and a max deletion of 900KB, requiring a full minute.
+        // See: https://github.com/openvar/variantValidator/issues/151
+        $aVariantInfo = $HGVS->getInfo()['data'];
+        if ($aVariantInfo
+            && (($aVariantInfo['type'] == 'dup' && ($aVariantInfo['position_end'] - $aVariantInfo['position_start']) > 200000)
+                || (substr($aVariantInfo['type'], 0, 3) == 'del' && ($aVariantInfo['position_end'] - $aVariantInfo['position_start']) > 800000))) {
+            // Variant too big, return error.
+            $aReturn = $this->aResponse;
+            $aReturn['errors']['ESIZETOOLARGE'] = 'This variant is currently too big to process. It will likely time out after a minute of waiting, so we won\'t send it to VariantValidator.';
+            return $aReturn;
+        }
+
+        // Append defaults for any remaining options.
+        $aOptions = array_replace(
+            array(
+                'map_to_transcripts' => false, // Should we map the variant to transcripts?
+                'predict_protein' => false,    // Should we get protein predictions?
+                'lift_over' => false,          // Should we get other genomic mappings of this variant?
+                'select_transcripts' => 'all', // Should we limit our output to only a certain set of transcripts?
+            ),
+            $aOptions);
+
+        // Some options require others.
+        // We want to map to transcripts also if we're asking for a liftover, and if we want protein prediction.
+        $aOptions['map_to_transcripts'] = ($aOptions['map_to_transcripts'] || $aOptions['lift_over'] || $aOptions['predict_protein']);
+
+        // Deduce the build from the given NC. That works reliably for everything except chrM.
+        // For chrM, we just match GRCh37 because that's the first.
+        $sNC = strstr($sVariant, ':', true);
+        $aNCInfo = HGVS_Chromosome::getInfoByNC($sNC);
+        if ($aNCInfo) {
+            // We pick the NCBI name here, because for chrM we actually
+            //  use GRCh37's NC_012920.1 instead of hg19's NC_001807.4.
+            $sBuild = HGVS_Genome::getBuilds()[$aNCInfo['build']];
+
+        } else {
+            // If we didn't get the build (no NC or invalid NC), then the whole call will fail.
+            return false;
+        }
+
+        // Transcript list should be a list, or 'all'.
+        if (!$aOptions['select_transcripts']
+            || (!is_array($aOptions['select_transcripts']) && $aOptions['select_transcripts'] != 'all')) {
+            $aOptions['select_transcripts'] = 'all';
+        }
+    }
 }
