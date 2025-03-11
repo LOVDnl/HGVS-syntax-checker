@@ -219,6 +219,70 @@ class LOVD_VV
 
 
 
+    private function detectDNAChangeType (&$aData, $sVariant, $HGVS = false)
+    {
+        // This functions checks why the variant returned by VV and the input variant differ.
+        // It checks types of corrections; silent, WCORRECTED, WROLLFORWARD, or WSUFFIXGIVEN.
+
+        if (!$aData || !is_array($aData) || !isset($aData['warnings']) || !isset($aData['errors'])
+            || !isset($aData['data']['DNA']) || $aData['data']['DNA'] == $sVariant) {
+            return false;
+        }
+
+        if ($HGVS) {
+            // Parse the new description.
+            $HGVSCorrected = HGVS::check($aData['data']['DNA'])->requireVariant();
+
+            // Multiple problems can occur at the same time
+            //  (e.g., NC_000004.11:g.39350045delA => NC_000004.11:g.39350048del),
+            //  and VV keeps that WSUFFIXGIVEN silent. Check it first.
+            if ($HGVS->hasMessage('WSUFFIXGIVEN')) {
+                $aData['warnings']['WSUFFIXGIVEN'] = $HGVS->getMessages()['WSUFFIXGIVEN'];
+            }
+
+            $aVariantInfo = $HGVS->getData();
+            $aVariantInfoCorrected = $HGVSCorrected->getData();
+            if ($aVariantInfo == $aVariantInfoCorrected) {
+                // Positions and type are the same, small corrections like delG to del.
+                // We let these pass silently.
+
+            } elseif ($aVariantInfo['type'] != $aVariantInfoCorrected['type']) {
+                // An insertion actually being a duplication.
+                // A deletion-insertion which is actually something else.
+                // A 1_1del that should be 1del (although our HGVS library would have caught that, if it was used).
+                $aData['warnings']['WCORRECTED'] = 'The variant description has been corrected.';
+                if ($aVariantInfoCorrected['type'] == '=') {
+                    $aData['warnings']['WCORRECTED'] .= ' Did you mean to indicate that the sequence at this position did not change?';
+                } else {
+                    $aData['warnings']['WCORRECTED'] .= ' Based on the sequence, this should be described as ' .
+                        ($aVariantInfoCorrected['type'] == '>'? 'a substitution.' :
+                            ($aVariantInfoCorrected['type'] == 'del'? 'a deletion.' :
+                                ($aVariantInfoCorrected['type'] == 'delins'? 'a deletion-insertion.' :
+                                    ($aVariantInfoCorrected['type'] == 'dup'? 'a duplication.' :
+                                        ($aVariantInfoCorrected['type'] == 'ins'? 'an insertion.' : 'an inversion.')))));
+                }
+
+            } else {
+                // Positions are different, but type is the same.
+                // 3' forwarding of deletions, insertions, duplications
+                //  and deletion-insertion events or other corrections to the position.
+                $aData['warnings']['WROLLFORWARD'] = 'Variant position' .
+                    (!$aVariantInfo['range']? ' has' : 's have') .
+                    ' been corrected.';
+            }
+
+        } else {
+            // We didn't receive the HGVS object, just complain here.
+            $aData['warnings']['WCORRECTED'] = 'The variant description has been corrected.';
+        }
+
+        return true;
+    }
+
+
+
+
+
     public function getTranscriptsByID ($sSymbol)
     {
         // Returns the available transcripts for the given gene or transcript.
