@@ -283,6 +283,103 @@ class LOVD_VV
 
 
 
+    private function getRNAProteinPrediction (&$aMapping, $sTranscript = '')
+    {
+        // Function to predict the RNA change and to improve VV's protein prediction.
+        // $aMapping will be extended with 'RNA' and 'protein' if they don't already exist.
+        // $sTranscript is just used to check if this is a coding or non-coding transcript.
+
+        if (!is_array($aMapping) || !isset($aMapping['DNA'])) {
+            // Without DNA, we can do nothing.
+            return false;
+        }
+
+        if (!isset($aMapping['RNA'])) {
+            $aMapping['RNA'] = 'r.(?)';
+        }
+        if (!isset($aMapping['protein'])) {
+            $aMapping['protein'] = '';
+        }
+
+        // Check values, perhaps we can do better.
+        if (substr($aMapping['DNA'], -1) == '=') {
+            // DNA actually didn't change. Protein will indicate the same.
+            $aMapping['RNA'] = 'r.(=)';
+            // FIXME: VV returns p.(Ala86=) rather than p.(=); perhaps return r.(257=) instead of r.(=).
+            // For UTRs or p.Met1, a c.= returns a p.? (safe choice). I prefer a p.(=).
+            if ($aMapping['protein'] == 'p.?' || $aMapping['protein'] == 'p.(Met1?)') {
+                $aMapping['protein'] = 'p.(=)';
+            }
+
+        } elseif (in_array($aMapping['protein'], array('', 'p.?', 'p.(=)'))) {
+            // The HGVS library is generally fast, so we don't have to worry about slowdowns.
+            $HGVS = HGVS::check($aMapping['DNA'])->requireVariant();
+            if ($HGVS->isAVariant()) {
+                // We'd want to check this.
+                $aVariantInfo = $HGVS->getData();
+                // Splicing.
+                if (($aVariantInfo['position_start_intron'] && abs($aVariantInfo['position_start_intron']) <= 5)
+                    || ($aVariantInfo['position_end_intron'] && abs($aVariantInfo['position_end_intron']) <= 5)
+                    || ($aVariantInfo['position_start_intron'] && !$aVariantInfo['position_end_intron'])
+                    || (!$aVariantInfo['position_start_intron'] && $aVariantInfo['position_end_intron'])) {
+                    $aMapping['RNA'] = 'r.spl?';
+                    $aMapping['protein'] = 'p.?';
+
+                } elseif ($aVariantInfo['position_start_intron'] && $aVariantInfo['position_end_intron']
+                    && abs($aVariantInfo['position_start_intron']) > 5 && abs($aVariantInfo['position_end_intron']) > 5
+                    && ($aVariantInfo['position_start'] == $aVariantInfo['position_end']
+                        || ($aVariantInfo['position_start'] + 1) == $aVariantInfo['position_end'])) {
+                    // Deep intronic.
+                    $aMapping['RNA'] = 'r.(=)';
+                    $aMapping['protein'] = 'p.(=)';
+
+                } else {
+                    // No introns involved. Note, position fields are sorted.
+                    if ($aVariantInfo['position_end'] < 0) {
+                        // Variant is completely upstream of the CDS.
+                        $aMapping['RNA'] = 'r.(?)';
+                        $aMapping['protein'] = 'p.(=)';
+
+                    } elseif ($aVariantInfo['position_start'] < 0 && strpos($aMapping['DNA'], '*') !== false) {
+                        // Start is upstream, end is downstream.
+                        if ($aMapping['type'] == 'del') {
+                            $aMapping['RNA'] = 'r.0?';
+                            $aMapping['protein'] = 'p.0?';
+                        } else {
+                            $aMapping['RNA'] = 'r.?';
+                            $aMapping['protein'] = 'p.?';
+                        }
+
+                    } elseif (substr($aMapping['DNA'], 0, 3) == 'c.*') {
+                        // Variant is completely downstream of the CDS.
+                        $aMapping['RNA'] = 'r.(?)';
+                        $aMapping['protein'] = 'p.(=)';
+
+                    } elseif ($aVariantInfo['type'] != '>' && $aMapping['protein'] != 'p.(=)') {
+                        // Non-SNVs partially in the transcript, not predicted to do nothing.
+                        $aMapping['RNA'] = 'r.?';
+                        $aMapping['protein'] = 'p.?';
+
+                    } else {
+                        // Substitution on wobble base or so.
+                        $aMapping['RNA'] = 'r.(?)';
+                    }
+                }
+
+                // But wait, did we just fill in a protein field for a non-coding transcript?
+                if (substr($sTranscript, 1, 1) == 'R') {
+                    $aMapping['protein'] = '';
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+
+
+
     public function getTranscriptsByID ($sSymbol)
     {
         // Returns the available transcripts for the given gene or transcript.
