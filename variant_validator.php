@@ -814,4 +814,19 @@ class LOVD_VV
                 'select_transcripts' => $aTranscripts,
             ));
     }
+
+
+
+
+
+    public function verifyGenomicAndPredictProtein ($sVariant, $aTranscripts = array())
+    {
+        // Wrapper to verify a genomic variant, map it to transcripts, and get protein predictions as well.
+
+        return $this->verifyGenomic($sVariant,
+            array(
+                'predict_protein' => true,
+                'select_transcripts' => $aTranscripts,
+            ));
+    }
 }
