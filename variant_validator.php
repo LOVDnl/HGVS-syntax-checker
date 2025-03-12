@@ -798,4 +798,20 @@ class LOVD_VV
                 'select_transcripts' => $aTranscripts,
             ));
     }
+
+
+
+
+
+    public function verifyGenomicAndLiftOver ($sVariant, $aTranscripts = array())
+    {
+        // Wrapper to verify a genomic variant and lift it over to other genome builds
+        //  (through transcript mapping if possible).
+
+        return $this->verifyGenomic($sVariant,
+            array(
+                'lift_over' => true,
+                'select_transcripts' => $aTranscripts,
+            ));
+    }
 }
