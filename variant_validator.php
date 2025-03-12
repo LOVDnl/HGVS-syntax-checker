@@ -166,7 +166,12 @@ class LOVD_VV
                 $sFault, $aRegs) || strpos($sFault, 'TranscriptVersionWarning:') === 0) {
             // This is not that important, but we won't completely discard it, either.
             if ($aRegs) {
-                $aData['messages']['IREFSEQUPDATED'] = 'Reference sequence ' . $aRegs[1] . ' can be updated to ' . $aRegs[2] . '.';
+                // We matched a precise reference sequence. However, double-check if we actually provided it.
+                // Because when sending in an NG (e.g., NG_007400.1:g.8638G>T), we can get this message for a transcript
+                //  we didn't come up with (e.g., NM_000088.3). That would make no sense to the user.
+                if (strstr($sVariant, ':', true) == $aRegs[1]) {
+                    $aData['messages']['IREFSEQUPDATED'] = 'Reference sequence ' . $aRegs[1] . ' can be updated to ' . $aRegs[2] . '.';
+                }
             } else {
                 // The description changed again, but we found the warning code at least.
                 $aData['messages']['IREFSEQUPDATED'] = 'The reference sequence used can be updated.';
