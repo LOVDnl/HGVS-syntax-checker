@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-03-11
+ * Modified    : 2025-03-12
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -782,5 +782,20 @@ class LOVD_VV
             $aData['data']['genomic_mappings'][$sBuild] = array_unique($aMappings);
         }
         return $aData;
+    }
+
+
+
+
+
+    public function verifyGenomicAndMap ($sVariant, $aTranscripts = array())
+    {
+        // Wrapper to verify a genomic variant and map it to transcripts as well.
+
+        return $this->verifyGenomic($sVariant,
+            array(
+                'map_to_transcripts' => true,
+                'select_transcripts' => $aTranscripts,
+            ));
     }
 }
