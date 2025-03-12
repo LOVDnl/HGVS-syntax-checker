@@ -102,6 +102,12 @@ class LOVD_VV
             // E.g., NC_000017.10(NM_000088.3):c.5000del; c.5000 is in the UTR.
             return true;
 
+        } elseif (preg_match('/^None of the specified transcripts \(.+\) fully overlap the described variation in the genomic sequence\./', $sFault)) {
+            // When we send an NG or LRG and there are no transcripts overlapping. VV (from v3.0.0) does not allow
+            //  asking for "all" transcripts anymore, so now we get this when we default to "select".
+            // Currently, we decide to ignore it. We simply show that there are no transcripts overlapping.
+            return true;
+
         } elseif (strpos($sFault, 'Invalid genome build has been specified') !== false) {
             // EBUILD error. Only thrown by the VV endpoint when manually a bad build has been sent.
             $aData['errors']['EBUILD'] = $sFault;
