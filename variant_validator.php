@@ -81,7 +81,7 @@ class LOVD_VV
         // VV has declared their error messages are stable.
         // This means we can parse them and rely on them not to change.
         // Add error code if possible, so we won't have to parse the error message again somewhere.
-        if (strpos($sFault, ' automapped to ') !== false
+        if (strpos($sFault, ' automapped to ') !== false // LRG and LRGt descriptions being mapped to refseq sequences.
             || strpos($sFault, ' updated to ') !== false) {
             // E.g.: NC_000017.10:g.48275363delC && NM_000088.3:c.589delG.
             // Toss this error. These are several corrections, and we handle those elsewhere.
@@ -93,15 +93,35 @@ class LOVD_VV
             // E.g., NC_000017.10:g.1_2dup4.
             return true;
 
+        } elseif (strpos($sFault, ' is pending therefore changes may be made to the LRG reference sequence') !== false
+            || $sFault == 'RefSeqGene record not available'
+            || strpos($sFault, 'Query gene2transcripts with search term') === 0
+            || strpos($sFault, 'is missing from the Universal Transcript Archive') !== false) {
+            // All kinds of warnings that are not directly important, because they either are given
+            //  with other messages that are handled, or because they are irrelevant.
+            // E.g., NC_000017.10(NM_000088.3):c.5000del; c.5000 is in the UTR.
+            return true;
+
+        } elseif (strpos($sFault, 'Invalid genome build has been specified') !== false) {
+            // EBUILD error. Only thrown by the VV endpoint when manually a bad build has been sent.
+            $aData['errors']['EBUILD'] = $sFault;
+
         } elseif (strpos($sFault, 'is not associated with genome build') !== false
             || strpos($sFault, 'No transcript definition for') !== false
             || strpos($sFault, 'is not in our database. Please check the transcript') !== false) {
             // EREFSEQ error. This also happens if we send the wrong build over the LOVD endpoint.
             // E.g., NC_000017.10:g.48275363delC with GRCh38.
-            $aData['errors']['EREFSEQ'] = rtrim($sFault, '.') . '.';
+            // E.g., NM_000088.1:c.589G>T (transcript version too old).
+            $aData['errors']['EREFSEQ'] = $sFault;
 
-        } elseif (preg_match('/^Failed to fetch .+ out of range/', $sFault)) {
-            // ERANGE error. NC with a coordinate that is too large.
+        } elseif (preg_match('/^Failed to fetch .+ out of range/', $sFault) // NC with a coordinate that is too large.
+            || strpos($sFault, 'is outside the boundaries of reference sequence') !== false // LRG:g with a coordinate that is too large.
+            || strpos($sFault, 'The given coordinate is outside the bounds of the reference sequence') !== false // NC(NM) or LRGt with a c outside the NM.
+            || strpos($sFault, ' variant position that lies outside of the reference sequence') !== false // LRGt or NM with a c* outside the NM.
+            || $sFault == 'start or end or both are beyond the bounds of transcript record.' // NC(NM), LRGt, or NM with an invalid intronic position.
+            || strpos($sFault, 'Variant coordinate is out of the bound of CDS region') !== false) { // NC(NM), LRGt, or NM with a c that should be a c*.
+            // ERANGE error. VV throws a range of different messages, depending on using NC-notation or not,
+            //  sending variants 5' or 3' of the transcript, or sending a CDS position that should be in the 3' UTR.
             $aData['errors']['ERANGE'] = $sFault;
 
         } elseif (strpos($sFault, 'does not agree with reference sequence') !== false) {
@@ -114,6 +134,11 @@ class LOVD_VV
             // E.g., NC_000017.10:g.1_2delAAAA or NC_000017.10:g.1_2del4.
             // This only happens with duplications with a numeric length, e.g., NC_000017.10:g.1_2dup4.
             $aData['errors']['EINCONSISTENTLENGTH'] = $sFault;
+
+        } elseif (strpos($sFault, 'ExonBoundaryError:') !== false) {
+            // EINVALIDBOUNDARY error, the position is not an exon/intron boundary.
+            // E.g., NM_003006.4:c.100+1del.
+            $aData['errors']['EINVALIDBOUNDARY'] = $sFault;
 
         } elseif (substr($sFault, 0, 5) == 'char '
             || $sFault == 'insertion length must be 1'
@@ -130,12 +155,30 @@ class LOVD_VV
                 $aData['errors']['ESYNTAX'] = $sFault;
             }
 
+        } elseif (preg_match(
+                '/^(?:TranscriptVersionWarning: )?A more recent version of the selected reference sequence (.+) is available(?: for genome build .+)? \((.+)\)/',
+                $sFault, $aRegs) || strpos($sFault, 'TranscriptVersionWarning:') === 0) {
+            // This is not that important, but we won't completely discard it, either.
+            if ($aRegs) {
+                $aData['messages']['IREFSEQUPDATED'] = 'Reference sequence ' . $aRegs[1] . ' can be updated to ' . $aRegs[2] . '.';
+            } else {
+                // The description changed again, but we found the warning code at least.
+                $aData['messages']['IREFSEQUPDATED'] = 'The reference sequence used can be updated.';
+            }
+
+        } elseif (preg_match(
+            '/^The following versions of the requested transcript are available in our database: (.+)$/',
+            $sFault, $aRegs)) {
+            // This will help the user pick a transcript version that works.
+            $aData['messages']['IREFSEQUPDATED'] = 'Reference sequence can be updated to one of: ' . str_replace('|', ', ', $aRegs[1]);
+
         } elseif (strpos($sFault, 'Interval end position ') === 0) {
             // E.g., NC_000017.10:g.2000_1000del.
             $aData['warnings']['WPOSITIONFORMAT'] = 'The positions are not given in the correct order. Please verify your description and try again.';
 
         } elseif ($sFault == 'Removing redundant reference bases from variant description.') {
             // verifyGenomic() returns this only when combined with something else, like: NC_000017.10:g.100_200delAAAA.
+            // verifyVariant() also returns this for, e.g., NM_000088.3:c.589delG.
             // Use our own warning if we have that, since it's better.
             if ($HGVS && $HGVS->hasMessage('WSUFFIXGIVEN')) {
                 $aData['warnings']['WSUFFIXGIVEN'] = $HGVS->getMessages()['WSUFFIXGIVEN'];
