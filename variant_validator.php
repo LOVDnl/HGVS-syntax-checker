@@ -11,6 +11,10 @@
  *
  *************/
 
+if (!class_exists('HGVS')) {
+    require_once('HGVS.php');
+}
+
 class LOVD_VV
 {
     // This class defines the LOVD VV object, handling all Variant Validator calls.
@@ -657,6 +661,7 @@ class LOVD_VV
 
         } else {
             // If we didn't get the build (no NC or invalid NC), then the whole call will fail.
+            // Note that this endpoint doesn't support anything other than NC:g input.
             return false;
         }
 
