@@ -889,4 +889,94 @@ class LOVD_VV
                 'select_transcripts' => $aTranscripts,
             ));
     }
+
+
+
+
+
+    public function verifyVariant ($sVariant, $aOptions = array())
+    {
+        // Verify a variant, get mappings and protein predictions.
+        // Uses the VariantValidator API, in practice for both genomic and
+        //  transcript variants. For NC:g variants, we're much happier using
+        //  the LOVD endpoint (verifyGenomic()), so just use this method only
+        //  for NG, LRG, and transcript variants.
+        // For getting reference base verification, you'll need to pass the NC
+        //  as well, in the format NC_000001.10(NM_123456.1):c.100del.
+
+        if (empty($aOptions) || !is_array($aOptions)) {
+            $aOptions = array();
+        }
+
+        // Perform some extra checks. We assume here that this variant description is what we want to send to VV.
+        // We will not use fixes created by the HGVS object, because this wil stop us from sending whatever we want.
+        // We do, however, demand that we have a variant with a reference sequence.
+        $HGVS = HGVS::check($sVariant)->requireVariant();
+        if (strpos($HGVS->getIdentifiedAs(), 'full_variant') !== 0) {
+            if ($HGVS->hasMessage('EREFSEQMISSING')) {
+                $this->aResponse['errors']['EREFSEQMISSING'] = $HGVS->getMessages()['EREFSEQMISSING'];
+            } elseif ($HGVS->hasMessage('EVARIANTREQUIRED')) {
+                $this->aResponse['errors']['EVARIANTREQUIRED'] = $HGVS->getMessages()['EVARIANTREQUIRED'];
+            }
+            return $this->aResponse;
+        }
+
+        // Disallow NC variants. We should use verifyGenomic() for these.
+        // Supporting NCs using this function will just take a lot more code,
+        //  which wouldn't be useful. Fail hard, to teach users to not do this,
+        //  but don't fail on NC_000001.10(NM_123456.1):c. variants.
+        if ($HGVS->ReferenceSequence->molecule_type == 'chromosome') {
+            return false;
+        }
+
+        // VV doesn't support everything.
+        if ($HGVS->hasMessage('WNOTSUPPORTED')) {
+            $this->aResponse['errors']['ENOTSUPPORTED'] = 'VariantValidator does not currently support this type of variant description.';
+            return $this->aResponse;
+        }
+
+        // Append defaults for any remaining options.
+        // VV doesn't have as many options as the LOVD endpoint, and honestly,
+        //  selecting transcripts is only useful when we're using NCs as input.
+        $aOptions = array_replace(
+            array(
+                'select_transcripts' => 'select', // Should we limit our output to only a certain set of transcripts?
+            ),
+            $aOptions);
+
+        // We only need a genome build to resolve intronic variants. We default to the latest build.
+        $sBuild = array_key_last(HGVS_Genome::getBuilds());
+        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript') {
+            $sNC = strstr($HGVS->ReferenceSequence->getCorrectedValue(), '(', true);
+            $aNCInfo = HGVS_Chromosome::getInfoByNC($sNC);
+            if ($aNCInfo) {
+                $sBuild = $aNCInfo['build'];
+            }
+            // There is no else. We'll use our default and see what happens.
+        }
+
+        // We pick the NCBI name here, because for chrM we actually
+        //  use GRCh37's NC_012920.1 instead of hg19's NC_001807.4.
+        $sBuild = HGVS_Genome::getBuilds()[$sBuild];
+
+        // Strip the NC off of the variant unless this variant is intronic or outside the transcript's boundaries.
+        // See https://github.com/openvar/variantValidator/issues/218.
+        // When the sequence in the NC and the NM mismatch, we'll get an error,
+        //  so dump the NC unless necessary (variants outside the NM sequence).
+        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript'
+            && empty($HGVS->Variant->DNAVariantBody->DNAPositions->intronic)
+            && empty($HGVS->Variant->DNAVariantBody->DNAPositions->UTR)) {
+            // This is an NC(NM) or NG(NM), but the positions are not intronic, nor in the UTR.
+            // The genomic component is not needed, and cause problems. Discard it.
+            // (in reality, we'd need to check whether the positions in the UTR are outside the transcript boundaries)
+            $sVariant = substr(strstr($HGVS->ReferenceSequence->getCorrectedValue(), '('), 1, -1)
+                . strstr($sVariant, ':');
+        }
+
+        // Transcript list should be a list, or 'select'.
+        if (!$aOptions['select_transcripts']
+            || (!is_array($aOptions['select_transcripts']) && $aOptions['select_transcripts'] != 'select')) {
+            $aOptions['select_transcripts'] = 'select';
+        }
+    }
 }
