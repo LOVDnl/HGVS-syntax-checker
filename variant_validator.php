@@ -1149,6 +1149,41 @@ class LOVD_VV
                     $aData['data']['protein'] = $aMapping['protein'];
                 }
             }
+
+            // Any errors given?
+            if ($aTranscript['validation_warnings']) {
+                // Not a previously seen error; those are handled through the flag value.
+                // This can be a whole list, so loop through it.
+                foreach ($aTranscript['validation_warnings'] as $sWarning) {
+                    $this->addFault($aData, $sWarning, $sVariant, $HGVS);
+                }
+            }
+
+            // Genomic mappings, when present, are given per transcript.
+            foreach (($aTranscript['primary_assembly_loci'] ?? []) as $sBuild => $aMapping) {
+                // We support only the builds we have...
+                if (!isset(HGVS_Genome::getBuilds()[$sBuild])) {
+                    continue;
+                }
+
+                // This structure is different from the LOVD endpoint. Each genome build has only one mapping here.
+                // However, there can be more than one mapping per build in theory, when transcripts map differently.
+                $aData['data']['genomic_mappings'][$sBuild][] = $aMapping['hgvs_genomic_description'];
+            }
+
+            // PAR genes (e.g., SHOX) provide X mappings in primary_assembly_loci and Y mappings in alt_genomic_loci.
+            foreach (($aTranscript['alt_genomic_loci'] ?? []) as $aMappings) {
+                // This array has yet another data structure... sigh. There are three ways that VV provides mappings.
+                foreach ($aMappings as $sBuild => $aMapping) {
+                    // We support only the builds we have...
+                    if (!isset(HGVS_Genome::getBuilds()[$sBuild])) {
+                        continue;
+                    }
+
+                    // There can be more than one mapping per build in theory, when transcripts map differently.
+                    $aData['data']['genomic_mappings'][$sBuild][] = $aMapping['hgvs_genomic_description'];
+                }
+            }
         }
 
         // Clean up duplicates from multiple transcripts.
