@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-03-12
+ * Modified    : 2025-03-13
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -665,16 +665,17 @@ class LOVD_VV
             return false;
         }
 
-        // Transcript list should be a list, or 'all'.
+        // Transcript list should be a list, 'all', 'select', 'mane', or 'mane_select'.
         if (!$aOptions['select_transcripts']
-            || (!is_array($aOptions['select_transcripts']) && $aOptions['select_transcripts'] != 'all')) {
+            || (!is_array($aOptions['select_transcripts'])
+                && !in_array(strtolower($aOptions['select_transcripts']), array('all', 'select', 'mane', 'mane_select')))) {
             $aOptions['select_transcripts'] = 'all';
         }
 
         $aJSON = $this->callVV('LOVD/lovd', array(
             'genome_build' => $sBuild,
             'variant_description' => $sVariant,
-            'transcripts' => 'refseq', // 'all' includes Ensembl transcripts that currently (July 2022) are very slow.
+            'transcripts' => 'refseq', // 'all' includes Ensembl transcripts that are very slow (still so @ March 2025).
             'select_transcripts' => (!is_array($aOptions['select_transcripts'])?
                 $aOptions['select_transcripts'] :
                 implode('|', $aOptions['select_transcripts'])),
