@@ -1069,6 +1069,92 @@ class LOVD_VV
             }
             return $aData;
         }
+
+        // Add a warning in case we submitted an intronic variant while not using an NC reference sequence.
+        // VV doesn't complain about this, as they accept the genome build as a separate argument.
+        if ($HGVS->ReferenceSequence->molecule_type == 'transcript'
+            && !empty($HGVS->Variant->DNAVariantBody->DNAPositions->intronic)) {
+            $aData['warnings']['WINTRONICWITHOUTNC'] = 'Without using a genomic reference sequence, intronic bases can not be verified.' .
+                (empty($aJSON['genome_context_intronic_sequence']) || empty($aJSON['submitted_variant'])? ''
+                    : ' Please consider passing the variant as ' .
+                    strstr($aJSON['genome_context_intronic_sequence'], ':', true) . strstr($aJSON['submitted_variant'], ':') . '.');
+        }
+
+        // Different input types find their validated output in different fields.
+        $sDNAField = 'hgvs_transcript_variant';
+        $bGenomic = false;
+        if ($HGVS->ReferenceSequence->getIdentifiedAs() == 'refseq_genomic') {
+            // E.g., NG_007400.1:g.8638G>T.
+            $sDNAField = 'hgvs_refseqgene_variant';
+            $bGenomic = true;
+        } elseif ($HGVS->ReferenceSequence->getIdentifiedAs() == 'LRG_genomic') {
+            // E.g., LRG_1:g.8638G>T.
+            $sDNAField = 'hgvs_lrg_variant';
+            $bGenomic = true;
+        } elseif ($HGVS->ReferenceSequence->getIdentifiedAs() == 'LRG_transcript') {
+            // E.g., LRG_1t1:c.589G>T.
+            $sDNAField = 'hgvs_lrg_transcript_variant';
+        }
+
+        // Prepare the data array.
+        $aData['data']['DNA'] = '';
+        if ($bGenomic) {
+            $aData['data']['genomic_mappings'] = array();
+            $aData['data']['transcript_mappings'] = array();
+        } else {
+            $aData['data']['RNA'] = '';
+            $aData['data']['protein'] = '';
+            $aData['data']['genomic_mappings'] = array();
+        }
+
+        // If we have sent an NG or LRG:g, we end up with an array of possible NM mappings.
+        // When we send a transcript-based variant, we end up with only one NM here.
+        // To handle everything, make sure we loop through the data.
+        foreach ($aJSON as $sDNA => $aTranscript) {
+            // Skip transcripts/arrays without a DNA value. That happens when, e.g., an NG:g variant is submitted.
+            // The returned mappings are not all actual mappings to the NG, and they don't contain a validated variant.
+            if (empty($aTranscript[$sDNAField])) {
+                continue;
+            }
+
+            // Copy the validated DNA description over.
+            $aData['data']['DNA'] = $aTranscript[$sDNAField];
+
+            // If description is given but different, then apparently there's been some kind of correction.
+            if ($sVariant != $aData['data']['DNA']) {
+                // Check why the variant returned by VV and the input variant differ.
+                $this->detectDNAChangeType($aData, $sVariant, $HGVS);
+            }
+
+            if (strpos($sDNA, ':') !== false) {
+                $sTranscript = strstr($sDNA, ':', true);
+                $aMapping = array(
+                    'DNA' => substr(strstr($sDNA, ':'), 1), // Mappings don't have the transcript included.
+                    'RNA' => 'r.(?)',
+                    'protein' => '',
+                );
+                if ($aTranscript['hgvs_predicted_protein_consequence']['tlr']) {
+                    $aMapping['protein'] = substr(strstr($aTranscript['hgvs_predicted_protein_consequence']['tlr'], ':'), 1);
+                }
+
+                // Try to improve VV's predictions.
+                $this->getRNAProteinPrediction($aMapping, $sTranscript);
+
+                // If we sent a transcript, use this as the output. If we sent something genomic, add this as a mapping.
+                if ($bGenomic) {
+                    $aData['data']['transcript_mappings'][$sTranscript] = $aMapping;
+                } else {
+                    // We had already collected the DNA value with the reference sequence, so don't overwrite that.
+                    $aData['data']['RNA'] = $aMapping['RNA'];
+                    $aData['data']['protein'] = $aMapping['protein'];
+                }
+            }
+        }
+
+        // Clean up duplicates from multiple transcripts.
+        foreach ($aData['data']['genomic_mappings'] as $sBuild => $aMappings) {
+            $aData['data']['genomic_mappings'][$sBuild] = array_unique($aMappings);
+        }
         return $aData;
     }
 }
