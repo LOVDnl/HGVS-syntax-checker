@@ -1016,6 +1016,59 @@ class LOVD_VV
         // Discard the meta data.
         unset($aJSON['metadata']);
 
+        // Check the flag value. In contrast to the LOVD endpoint, the VV flag is always filled in.
+        switch ($aJSON['flag']) {
+            case 'error':
+                // VV failed completely. Nothing to do here...
+                return false;
+            case 'gene_variant':
+                // All good. We can still have validation errors, but at least it's not a big warning.
+                break;
+            case 'intergenic':
+                // This can only happen when passing NC:g or NG:g variants that don't overlap with any transcripts.
+                // NC(NM)-based variants that are outside the transcript's boundaries are returning a warning flag.
+                // Since we support NG variants in this endpoint, we have to handle this.
+                // Remove some unknown rogue entry in the JSON data.
+                unset($aJSON['']);
+                // Then, continue normally. There's still data to process.
+                break;
+            case 'warning':
+                // Something's wrong. Parse given warning and quit.
+                foreach (($aJSON['validation_warning_1']['validation_warnings'] ?? []) as $sError) {
+                    $this->addFault($aData, $sError, $sVariant, $HGVS);
+                }
+                // When we have errors, we don't need 'data' filled in. Just return what I have.
+                if ($aData['errors']) {
+                    return $aData;
+                } else {
+                    // Warnings were a false alarm (warnings or even less).
+                    unset($aJSON['validation_warning_1']);
+                }
+                break;
+            // Handled all possible flags, no default needed.
+        }
+        // Discard the flag value.
+        unset($aJSON['flag']);
+
+        // If we have nothing left here, the given validation warning didn't contain any useful output.
+        if (!$aJSON) {
+            // E.g., NM_000088.3:c.589G. While the interface has output ("char 19: end of input"), the API does not.
+            // In this case, let the user know what the HGVS library thought of this variant.
+            if ($HGVS->isValid()) {
+                // I guess it's our fault. We're missing a WNOTSUPPORTED.
+                $aData['warnings']['WNOTSUPPORTED'] =
+                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+            } else {
+                // We deliberately sent an invalid variant to VV.
+                $aData = array_merge_recursive(
+                    $aData,
+                    $HGVS->getMessagesByGroup()
+                );
+                // Also explain that VV failed.
+                $aData['errors']['EFAIL'] = 'VariantValidator failed to recognize a HGVS nomenclature-compliant variant description in your input.';
+            }
+            return $aData;
+        }
         return $aData;
     }
 }
