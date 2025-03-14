@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2011-09-06
- * Modified    : 2025-03-07
+ * Modified    : 2025-03-14
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -44,7 +44,7 @@ if (!empty($_REQUEST['callVV']) && $_REQUEST['callVV'] == 'true') {
 } else {
     $bVV = false;
 }
-require '../HGVS.php';
+require_once '../HGVS.php'; // May have already been included by VV.
 
 header('Content-type: application/json; charset=UTF-8');
 @ini_set('default_charset','UTF-8');
