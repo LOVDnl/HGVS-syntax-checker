@@ -112,6 +112,36 @@ foreach ($aVariants as $sVariant) {
         $aVariant['corrected_values'] = [];
     }
 
+    $aVariant['VV'] = array();
+    if ($bVV && empty($aVariant['messages']['INOTSUPPORTED']) && empty($aVariant['warnings']['WNOTSUPPORTED'])) {
+        $aVariant['corrected_values'] = [];
+
+        if (!empty($aVariant['warnings']['WREFERENCENOTSUPPORTED'])) {
+            $aVariant['VV']['WNOTSUPPORTED'] = 'This reference sequence type is not currently supported by VariantValidator.';
+
+        } elseif (!$aVariant['valid']) {
+            $aVariant['VV']['EFAIL'] = 'Please first correct the variant description to run VariantValidator.';
+
+        } elseif (isset($aVariant['messages']['IREFSEQMISSING'])) {
+            $aVariant['VV']['EREFSEQMISSING'] = 'Please provide a reference sequence to run VariantValidator.';
+            unset($aVariant['messages']['IREFSEQMISSING']);
+
+        } else {
+            // Call VariantValidator. Use the information we have to determine whether this is a genomic variant or not.
+            $aVV = ($HGVS->ReferenceSequence->molecule_type == 'chromosome'?
+                $_VV->verifyGenomic($sVariant) :
+                // Be as strict as possible with the transcripts returned, in case an NG or LRG is submitted.
+                $_VV->verifyVariant($sVariant, ['select_transcripts' => 'mane_select'])
+            );
+
+            if ($aVV === false) {
+                // In theory, this can be our fault as well, because our VV library returns false on internal errors.
+                // However, assuming we coded everything well, it's most likely VV's fault.
+                $aVariant['VV']['EINTERNAL'] = 'An internal error within VariantValidator occurred when trying to validate your variant.';
+            }
+        }
+    }
+
     // Add the total confidence which is easy for us to calculate. JS will use this to determine the colors.
     $aVariant['corrected_values_confidence'] = array_sum($aVariant['corrected_values']);
 
