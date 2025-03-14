@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-10
+ * Modified    : 2025-03-14
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -319,10 +319,42 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                             }
                         }
 
-                        // Add the IREFSEQMISSING last.
+                        // Add the IREFSEQMISSING last (never set if we called VV).
                         if ("IREFSEQMISSING" in aVariant.messages && !("EFAIL" in aVariant.errors)) {
                             aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': aVariant.messages.IREFSEQMISSING});
                         }
+
+                        // Add VV's output, if present. As this can be both an array or an object, let's use jQuery.
+                        $.each(
+                            aVariant.VV,
+                            function (sCode, sMessage)
+                            {
+                                var sClassName = 'danger';
+                                var sIcon = 'x-circle-fill';
+                                var sData = 'VariantValidator';
+                                if (sCode == 'EFAIL') {
+                                    sIcon = 'arrow-right-circle-fill';
+                                } else if (sCode == 'EREFSEQMISSING') {
+                                    sClassName = 'secondary';
+                                    sIcon = 'info-circle-fill';
+                                } else if (sCode == 'WCORRECTED') {
+                                    sClassName = 'warning';
+                                    sIcon = 'arrow-right-circle-fill';
+                                    sMessage = sMessage.replace("{{VARIANT}}", '<b>' + Object.keys(aVariant.corrected_values)[0] + '</b>');
+                                    sData = 'Correction';
+                                } else if (sCode == 'WNOTSUPPORTED') {
+                                    sClassName = 'secondary';
+                                    sIcon = 'info-circle-fill';
+                                } else if (sCode == 'WREFERENCENOTSUPPORTED') {
+                                    sClassName = 'warning';
+                                    sIcon = 'exclamation-circle-fill';
+                                } else if (sCode == 'IOK') {
+                                    sClassName = 'success';
+                                    sIcon = 'check-circle-fill';
+                                }
+                                aMessages.push({'style': sClassName, 'icon': sIcon, 'data': sData, 'body': sMessage});
+                            }
+                        );
 
                         var sBody = '<ul class="list-group list-group-flush">';
                         aMessages.forEach(
