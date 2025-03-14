@@ -82,6 +82,11 @@ foreach ($aVariants as $sVariant) {
         unset($aVariant['errors']['ENOTSUPPORTED']);
     }
 
+    if (isset($aVariant['warnings']['WNOTSUPPORTED'])) {
+        // Catch and reword WNOTSUPPORTED.
+        $aVariant['warnings']['WNOTSUPPORTED'] = str_replace(' for mapping and validation', ' for sequence-level validation', $aVariant['warnings']['WNOTSUPPORTED']);
+    }
+
     if (isset($aVariant['messages']['IREFSEQMISSING'])) {
         // Our version is more informative.
         $aVariant['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
