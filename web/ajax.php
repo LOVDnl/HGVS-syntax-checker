@@ -114,7 +114,6 @@ foreach ($aVariants as $sVariant) {
 
     $aVariant['VV'] = array();
     if ($bVV && empty($aVariant['messages']['INOTSUPPORTED']) && empty($aVariant['warnings']['WNOTSUPPORTED'])) {
-        $aVariant['corrected_values'] = [];
 
         if (!empty($aVariant['warnings']['WREFERENCENOTSUPPORTED'])) {
             $aVariant['VV']['WNOTSUPPORTED'] = 'This reference sequence type is not currently supported by VariantValidator.';
@@ -128,6 +127,7 @@ foreach ($aVariants as $sVariant) {
 
         } else {
             // Call VariantValidator. Use the information we have to determine whether this is a genomic variant or not.
+            $aVariant['corrected_values'] = [];
             $aVV = ($HGVS->ReferenceSequence->molecule_type == 'chromosome'?
                 $_VV->verifyGenomic($sVariant) :
                 // Be as strict as possible with the transcripts returned, in case an NG or LRG is submitted.
