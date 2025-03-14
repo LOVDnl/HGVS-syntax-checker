@@ -959,16 +959,13 @@ class LOVD_VV
         //  use GRCh37's NC_012920.1 instead of hg19's NC_001807.4.
         $sBuild = HGVS_Genome::getBuilds()[$sBuild];
 
-        // Strip the NC off of the variant unless this variant is intronic or outside the transcript's boundaries.
+        // Strip the NC off of the variant. VV gives us only the NM back, so we'll get confused, otherwise.
+        // Also, the NC(NM) can cause issues.
         // See https://github.com/openvar/variantValidator/issues/218.
-        // When the sequence in the NC and the NM mismatch, we'll get an error,
-        //  so dump the NC unless necessary (variants outside the NM sequence).
-        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript'
-            && empty($HGVS->Variant->DNAVariantBody->DNAPositions->intronic)
-            && empty($HGVS->Variant->DNAVariantBody->DNAPositions->UTR)) {
-            // This is an NC(NM) or NG(NM), but the positions are not intronic, nor in the UTR.
-            // The genomic component is not needed, and cause problems. Discard it.
-            // (in reality, we'd need to check whether the positions in the UTR are outside the transcript boundaries)
+        $bRefSeqWasCleaned = false;
+        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript') {
+            // This is an NC(NM) or NG(NM). Discard the genomic component. We'll put it back later.
+            $bRefSeqWasCleaned = true;
             $sVariant = substr(strstr($HGVS->ReferenceSequence->getCorrectedValue(), '('), 1, -1)
                 . strstr($sVariant, ':');
         }
@@ -1125,6 +1122,11 @@ class LOVD_VV
             if ($sVariant != $aData['data']['DNA']) {
                 // Check why the variant returned by VV and the input variant differ.
                 $this->detectDNAChangeType($aData, $sVariant, $HGVS);
+            }
+
+            // If we get an NM back but put in an NC(NM), restore things.
+            if ($bRefSeqWasCleaned) {
+                $aData['data']['DNA'] = $HGVS->ReferenceSequence->getCorrectedValue() . strstr($aData['data']['DNA'], ':');
             }
 
             if (strpos($sDNA, ':') !== false) {
