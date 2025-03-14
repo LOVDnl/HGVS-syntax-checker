@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-03-13
+ * Modified    : 2025-03-14
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -973,9 +973,10 @@ class LOVD_VV
                 . strstr($sVariant, ':');
         }
 
-        // Transcript list should be a list, or 'select'.
+        // Transcript list should be a list, 'select', 'mane', or 'mane_select'.
         if (!$aOptions['select_transcripts']
-            || (!is_array($aOptions['select_transcripts']) && $aOptions['select_transcripts'] != 'select')) {
+            || (!is_array($aOptions['select_transcripts'])
+                && !in_array(strtolower($aOptions['select_transcripts']), array('select', 'mane', 'mane_select')))) {
             $aOptions['select_transcripts'] = 'select';
         }
 
