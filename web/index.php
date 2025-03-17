@@ -16,6 +16,7 @@ header('Content-type: text/html; charset=UTF-8');
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
+require '../HGVS.php'; // Just for the footer, but better load it here.
 ?>
 <!doctype html>
 <html lang="en">
@@ -39,11 +40,16 @@ if (function_exists('mb_internal_encoding')) {
             color:#83410b;
             background-color:#fdd2af;
         }
+        footer {
+            color: var(--bs-alert-color);
+            background-color: var(--bs-alert-bg);
+            border-top: var(--bs-alert-border);
+        }
     </style>
 
     <title>LOVD HGVS variant description syntax checker</title>
 </head>
-<body class="bg-light">
+<body class="bg-light d-flex flex-column min-vh-100">
 
 <div class="container">
     <main>
@@ -126,6 +132,21 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
         </div>
     </main>
 </div>
+
+<footer class="mt-auto alert-primary p-2 d-flex d-inline-flex justify-content-between">
+    <div>
+        <b>LOVD HGVS variant description syntax checker.</b>
+    </div>
+    <div>
+        LOVD/HGVS library version:
+        <?php
+        echo (HGVS::getVersions()['library_version'] ?? 'unknown');
+        ?>.
+    </div>
+    <div>
+        &copy; 2024 – 2025 the LOVD team.
+    </div>
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
