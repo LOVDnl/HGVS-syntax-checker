@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-14
+ * Modified    : 2025-03-17
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -415,6 +415,15 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
                     $("#" + sMethod + "Response").prepend('\n' + sAlert);
                 }
 
+                // Reset the submit button.
+                $("#" + sMethod + "Button").find("span").remove();
+                $("#" + sMethod + "Button").html(
+                    $("#" + sMethod + "Button").html().replace(/&nbsp;/g, "").trim()
+                ).prop("disabled", false);
+
+                // Enable the download button.
+                $("#" + sMethod + "DownloadButton").removeClass("d-none");
+
                 // Add links to suggested corrections, but only if they don't have links already.
                 $.each(
                     $(aCards).filter("[data-status='warning'],[data-status='error']").not(':has("a")'),
@@ -485,6 +494,65 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
             }
         );
         return false;
+    }
+
+
+
+    function downloadResponse (sMethod)
+    {
+        // Download the result or results into a tab-delimited file.
+        if (sMethod == undefined || $("#" + sMethod + "Response") == null) {
+            alert("downloadResponse() called with an incorrect method.");
+            return false;
+        }
+
+        var aCards = $("#" + sMethod + "Response div.card");
+        var fileContent = '';
+
+        // Loop through cards and convert them into tab-delimited data.
+        $.each(
+            aCards,
+            function (index, aCard)
+            {
+                // Collect the body first.
+                var sBody = '';
+                $(aCard).find("li.list-group-item").each(
+                    function ()
+                    {
+                        // Awkward way of escaping double quotes, but common for spreadsheet users.
+                        sBody += $(this).data("type") + ": " + $(this).text().replace(/"/g, '""') + " ";
+                    }
+                );
+                fileContent +=
+                    '"' + $(aCard).children("div.card-header").text().trim() + '"\t' +
+                    '"' + $(aCard).data("status") + '"\t' +
+                    '"' + $(aCard).find("li.list-group-item-warning b").map(function() { return $(this).text(); }).get().join(" or ") + '"\t' +
+                    '"' + sBody.trim() + '"\r\n';
+            }
+        );
+        // Use base64 encoding so that Firefox will also create a valid file (was missing newlines and tabs).
+        fileContent =
+            "data:text/tab-seperated-values;base64," + btoa(
+            '"Input"\t"Status"\t"Suggested correction(s)"\t"Messages"\r\n' +
+            fileContent + '\r\n');
+
+        var link = document.createElement("a");
+        link.setAttribute("href", fileContent);
+        var d = new Date();
+        // Offset the timezone.
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        link.setAttribute("download", "LOVD_checkHGVS_" + d.toISOString().slice(0, 19) + ".txt");
+        document.body.appendChild(link);
+        link.click();
+
+        // Reset button.
+        $("#" + sMethod + "DownloadButton").find("span").remove();
+        $("#" + sMethod + "DownloadButton").html(
+            $("#" + sMethod + "DownloadButton").html().replace(/&nbsp;/g, "").trim()
+        ).prop("disabled", false);
+
+        // Clean up.
+        link.remove();
     }
 </SCRIPT>
 
