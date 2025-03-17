@@ -1643,6 +1643,12 @@ class HGVS_DNAInsSuffix extends HGVS
             unset($this->messages['WLENGTHFORMAT'], $this->messages['WLENGTHORDER'], $this->messages['WSAMELENGTHS'], $this->messages['WTOOMANYPARENS']);
         }
 
+        if (in_array(strstr($this->getMatchedPattern() . '_', '_', true), ['refseq', 'complex', 'positions'])) {
+            // VV does not support this. At this point, we don't know if this variant description is valid or not.
+            // Keep it simple and don't make any assumptions.
+            $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
+        }
+
         // A deletion-insertion of one base to one base, is a substitution.
         // This check is purely done on the position, and any delXins variant is ignored; they will be handled later.
         if (get_class($this) == 'HGVS_DNAInsSuffix' // Don't run when we're in a complex insertion.
