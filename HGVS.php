@@ -4,27 +4,10 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-05   // When modified, also change the library_version.
- * For LOVD    : 3.0-31
+ * Modified    : 2025-03-18   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
- *
- *
- * This file is part of LOVD.
- *
- * LOVD is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * LOVD is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with LOVD.  If not, see <http://www.gnu.org/licenses/>.
  *
  *************/
 
@@ -762,7 +745,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-03-05',
+            'library_version' => '2025-03-17',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1055,7 +1038,7 @@ class HGVS_Chr extends HGVS
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->setCorrectedValue('chr');
-        $this->caseOK = ($this->value == strtolower($this->value));
+        // None of this is official syntax, so let's not care about the case.
     }
 }
 
@@ -1075,7 +1058,7 @@ class HGVS_Chromosome extends HGVS
         '#[Genome]'    => ['HGVS_ChromosomeNumber', '[', 'HGVS_Genome', ']', []],
         '#'            => ['HGVS_ChromosomeNumber', []],
     ];
-    public array $refseqs = [
+    public static array $refseqs = [
         'hg18' => [
             '1'  => 'NC_000001.9',
             '2'  => 'NC_000002.10',
@@ -1159,6 +1142,25 @@ class HGVS_Chromosome extends HGVS
         ],
     ];
 
+    public static function getInfoByNC ($sNC)
+    {
+        // Find out what build and chromosome belongs to a certain NC.
+        foreach (self::$refseqs as $sBuild => $aBuild) {
+            $sChr = (string) array_search($sNC, $aBuild);
+            if ($sChr) {
+                return [
+                    'build' => $sBuild,
+                    'chr' => $sChr,
+                ];
+            }
+        }
+        return false;
+    }
+
+
+
+
+
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
@@ -1175,23 +1177,23 @@ class HGVS_Chromosome extends HGVS
             if ($this->getParentProperty('Genome')
                 && $this->getParentProperty('Genome')->getCorrectedValue() != $this->Genome->getCorrectedValue()) {
                 $this->messages['EREFERENCEFORMAT'] = 'Found multiple genome build indicators that conflict.';
-                $this->setCorrectedValue($this->refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr], 0.5);
-                $this->addCorrectedValue($this->refseqs[$this->Genome->getCorrectedValue()][$sChr], 0.5);
+                $this->setCorrectedValue(self::$refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr], 0.5);
+                $this->addCorrectedValue(self::$refseqs[$this->Genome->getCorrectedValue()][$sChr], 0.5);
             } else {
-                $this->setCorrectedValue($this->refseqs[$this->Genome->getCorrectedValue()][$sChr]);
+                $this->setCorrectedValue(self::$refseqs[$this->Genome->getCorrectedValue()][$sChr]);
             }
 
         } elseif ($this->getParentProperty('Genome')) {
             // We received a genome build, choose the right NC.
-            $this->setCorrectedValue($this->refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr]);
+            $this->setCorrectedValue(self::$refseqs[$this->getParentProperty('Genome')->getCorrectedValue()][$sChr]);
 
         } else {
             // We didn't receive a genome build. We'll suggest them all.
             // Note that we don't have very reliable information about how much data each genome build has.
             // The given confidence values are estimations.
-            $this->setCorrectedValue($this->refseqs['hg38'][$sChr], 0.5);
-            $this->addCorrectedValue($this->refseqs['hg19'][$sChr], 0.45);
-            $this->addCorrectedValue($this->refseqs['hg18'][$sChr], 0.05);
+            $this->setCorrectedValue(self::$refseqs['hg38'][$sChr], 0.5);
+            $this->addCorrectedValue(self::$refseqs['hg19'][$sChr], 0.45);
+            $this->addCorrectedValue(self::$refseqs['hg18'][$sChr], 0.05);
         }
     }
 }
@@ -1641,6 +1643,12 @@ class HGVS_DNAInsSuffix extends HGVS
             unset($this->messages['WLENGTHFORMAT'], $this->messages['WLENGTHORDER'], $this->messages['WSAMELENGTHS'], $this->messages['WTOOMANYPARENS']);
         }
 
+        if (in_array(strstr($this->getMatchedPattern() . '_', '_', true), ['refseq', 'complex', 'positions'])) {
+            // VV does not support this. At this point, we don't know if this variant description is valid or not.
+            // Keep it simple and don't make any assumptions.
+            $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
+        }
+
         // A deletion-insertion of one base to one base, is a substitution.
         // This check is purely done on the position, and any delXins variant is ignored; they will be handled later.
         if (get_class($this) == 'HGVS_DNAInsSuffix' // Don't run when we're in a complex insertion.
@@ -2070,8 +2078,8 @@ class HGVS_DNAPosition extends HGVS
 {
     public array $patterns = [
         'unknown'          => ['?', []],
-        'unknown_intronic' => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]\?)/u', []],
-        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*\s*bp)/u', []],
+        'unknown_intronic' => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\?)/u', []],
+        'known'            => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\s*([0-9,]+))?(?![0-9]*\s*bp)/u', []],
         'pter'             => ['/pter/', []],
         'qter'             => ['/qter/', []],
     ];
@@ -2268,7 +2276,8 @@ class HGVS_DNAPosition extends HGVS
 class HGVS_DNAPositionSeparator extends HGVS
 {
     public array $patterns = [
-        ['_', []],
+        'valid' =>   ['_', []],
+        'invalid' => ['-', []],
     ];
 
     public function validate ()
@@ -2276,7 +2285,12 @@ class HGVS_DNAPositionSeparator extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->setCorrectedValue('_');
 
-        // We created a class for this, just so we can do a suffix check.
+        // Handle invalid characters.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "' . $this->value . '" found as position separator; use an underscore to separate positions and indicate a range.';
+        }
+
+        // Do a suffix check.
         // We have seen variants like "c.100_c.120del". We have to make sure that if a prefix is given, we remove it.
         if ($this->suffix !== '' && !preg_match('/^[?(0-9*-]/', $this->suffix)) {
             // There is a suffix (should actually always be the case), but it doesn't look like a position.
@@ -4054,10 +4068,25 @@ class HGVS_Dot extends HGVS
 
 class HGVS_Genome extends HGVS
 {
+    public static array $builds = [
+        'hg18' => 'GRCh36',
+        'hg19' => 'GRCh37',
+        'hg38' => 'GRCh38',
+    ];
     public array $patterns = [
         'ucsc' => ['/hg(18|19|38)(?![0-9])/', []],
         'ncbi' => ['/GRCh3(6|7|8)(?![0-9])/', []],
     ];
+
+    public static function getBuilds ()
+    {
+        // What builds do we support?
+        return self::$builds;
+    }
+
+
+
+
 
     public function validate ()
     {
@@ -4065,11 +4094,13 @@ class HGVS_Genome extends HGVS
         if ($this->matched_pattern == 'ucsc') {
             $this->setCorrectedValue(strtolower($this->value));
         } else {
-            $sUCSC = [
-                'grch36' => 'hg18',
-                'grch37' => 'hg19',
-                'grch38' => 'hg38',
-            ][strtolower($this->value)];
+            $sUCSC = array_search(
+                strtolower($this->value),
+                array_map(
+                    'strtolower',
+                    self::$builds
+                )
+            );
             $this->setCorrectedValue($sUCSC);
         }
     }
