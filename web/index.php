@@ -85,6 +85,12 @@ require '../HGVS.php'; // Just for the footer, but better load it here.
             <li class="nav-item" role="presentation">
                 <a class="nav-link" href="https://api.lovd.nl/" target="_blank">API</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="https://github.com/LOVDnl/HGVS-syntax-checker/" target="_blank">
+                    <i class="bi bi-github"></i>
+                    GitHub
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content" id="hgvsTabsContent">
