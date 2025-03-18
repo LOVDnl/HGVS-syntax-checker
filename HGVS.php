@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-17   // When modified, also change the library_version.
+ * Modified    : 2025-03-18   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -2078,8 +2078,8 @@ class HGVS_DNAPosition extends HGVS
 {
     public array $patterns = [
         'unknown'          => ['?', []],
-        'unknown_intronic' => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]\?)/u', []],
-        'known'            => ['/([-‐−–—*]?([0-9,]+))([+—–−‐-]([0-9,]+))?(?![0-9]*\s*bp)/u', []],
+        'unknown_intronic' => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\?)/u', []],
+        'known'            => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\s*([0-9,]+))?(?![0-9]*\s*bp)/u', []],
         'pter'             => ['/pter/', []],
         'qter'             => ['/qter/', []],
     ];
