@@ -300,7 +300,9 @@ NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is
                                 var sIcon = 'exclamation-circle-fill';
                                 if (sCode == 'WNOTSUPPORTED') {
                                     sClassName = 'secondary';
-                                    // return; // FIXME: I think I want to show these, no?
+                                } else if (sCode == 'WPOSITIONSCORRECTED') {
+                                    // Ignore this one, because we never auto-fix here.
+                                    return;
                                 }
                                 aMessages.push({'style': sClassName, 'icon': sIcon, 'data': 'Warning', 'body': sWarning});
                             }
@@ -346,10 +348,14 @@ NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is
                             }
                         }
 
-                        // Add the IREFSEQMISSING last (never set if we called VV).
-                        if ("IREFSEQMISSING" in aVariant.messages && !("EFAIL" in aVariant.errors)) {
-                            aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': aVariant.messages.IREFSEQMISSING});
-                        }
+                        // Add informative messages, if there are any. As messages can be both an array or an object, let's use jQuery.
+                        $.each(
+                            aVariant.messages,
+                            function (sCode, sWarning)
+                            {
+                                aMessages.push({'style': 'secondary', 'icon': 'info-circle-fill', 'data': 'Note', 'body': sWarning});
+                            }
+                        );
 
                         // Add VV's output, if present. As this can be both an array or an object, let's use jQuery.
                         $.each(
