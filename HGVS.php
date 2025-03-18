@@ -2276,7 +2276,8 @@ class HGVS_DNAPosition extends HGVS
 class HGVS_DNAPositionSeparator extends HGVS
 {
     public array $patterns = [
-        ['_', []],
+        'valid' =>   ['_', []],
+        'invalid' => ['-', []],
     ];
 
     public function validate ()
@@ -2284,7 +2285,12 @@ class HGVS_DNAPositionSeparator extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->setCorrectedValue('_');
 
-        // We created a class for this, just so we can do a suffix check.
+        // Handle invalid characters.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "' . $this->value . '" found as position separator; use an underscore to separate positions and indicate a range.';
+        }
+
+        // Do a suffix check.
         // We have seen variants like "c.100_c.120del". We have to make sure that if a prefix is given, we remove it.
         if ($this->suffix !== '' && !preg_match('/^[?(0-9*-]/', $this->suffix)) {
             // There is a suffix (should actually always be the case), but it doesn't look like a position.
