@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-17
+ * Modified    : 2025-03-18
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -515,9 +515,15 @@ NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is
                 return false;
             }
         ).fail(
-            function()
+            function(jqXHR, textStatus, errorThrown)
             {
-                alert("Error checking variant, please try again later. If the problem persists, please contact us at Ivo@LOVD.nl and send us the input you used.");
+                // First, check if maybe the list was too long.
+                if (jqXHR.status == 414) {
+                    // Request-URI Too Long.
+                    alert("The server indicated the list of variants is too long. Please try sending fewer variants per batch.");
+                } else {
+                    alert("Error checking variant, please try again later. If the problem persists, please contact us at Ivo@LOVD.nl and send us the input you used.");
+                }
             }
         );
         return false;
