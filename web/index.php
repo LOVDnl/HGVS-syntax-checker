@@ -97,7 +97,7 @@ require '../HGVS.php'; // Just for the footer, but better load it here.
                 <div class="py-3 tab-pane fade show active" id="single" role="tabpanel">
                     <FORM onsubmit="showResponse('singleVariant'); return false;" action="">
                         <div class="py-2">
-                            <input type="text" class="form-control" id="singleVariant" name="singleVariant" placeholder="NM_002225.3:c.157C>T" value="">
+                            <input type="text" class="form-control" id="singleVariant" name="singleVariant" placeholder="NM_002225.3:c.157C>T" value="<?= (empty($_GET['singleVariant']) || !is_string($_GET['singleVariant'])? '' : htmlspecialchars($_GET['singleVariant'])); ?>">
                         </div>
                         <div class="py-2">
                             <input type="checkbox" class="form-check-input" id="singleVariantUseVV" name="singleVariantUseVV">
@@ -118,7 +118,7 @@ require '../HGVS.php'; // Just for the footer, but better load it here.
                     <FORM onsubmit="showResponse('multipleVariants'); return false;" action="">
                         <div class="py-2">
                             <textarea class="form-control" id="multipleVariants" name="multipleVariants" placeholder="NM_002225.3:c.157C>T
-NC_000015.9:g.40699840C>T" rows="5"></textarea>
+NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is_string($_GET['multipleVariants'])? '' : htmlspecialchars(trim($_GET['multipleVariants']))); ?></textarea>
                         </div>
                         <div class="py-2">
                             <input type="checkbox" class="form-check-input" id="multipleVariantsUseVV" name="multipleVariantsUseVV">
@@ -581,6 +581,18 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
         // Clean up.
         link.remove();
     }
+
+
+
+    // Auto-submit, when requested.
+    <?php
+        if (!empty($_GET['singleVariant']) && is_string($_GET['singleVariant'])) {
+            print('$("#singleVariantButton").click();' . "\n");
+        } elseif (!empty($_GET['multipleVariants']) && is_string($_GET['multipleVariants'])) {
+            print('$("#mutiple-variants").click();
+    $("#multipleVariantsButton").click();' . "\n");
+        }
+    ?>
 </SCRIPT>
 
 </body>
