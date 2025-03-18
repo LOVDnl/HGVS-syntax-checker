@@ -524,6 +524,12 @@ NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is
                 } else {
                     alert("Error checking variant, please try again later. If the problem persists, please contact us at Ivo@LOVD.nl and send us the input you used.");
                 }
+
+                // Reset the submit button.
+                $("#" + sMethod + "Button").find("span").remove();
+                $("#" + sMethod + "Button").html(
+                    $("#" + sMethod + "Button").html().replace(/&nbsp;/g, "").trim()
+                ).prop("disabled", false);
             }
         );
         return false;
