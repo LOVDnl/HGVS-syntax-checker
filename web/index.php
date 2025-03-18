@@ -133,18 +133,18 @@ NC_000015.9:g.40699840C>T" rows="5"></textarea>
     </main>
 </div>
 
-<footer class="mt-auto alert-primary p-2 d-flex d-inline-flex justify-content-between">
+<footer class="mt-auto small alert-primary p-2 d-flex d-inline-flex justify-content-between">
     <div>
-        <b>LOVD HGVS variant description syntax checker.</b>
+        <b>LOVD HGVS variant description syntax checker</b>
     </div>
     <div>
         LOVD/HGVS library version:
         <?php
         echo (HGVS::getVersions()['library_version'] ?? 'unknown');
-        ?>.
+        ?>
     </div>
     <div>
-        &copy; 2024 – 2025 the LOVD team.
+        &copy; 2024 – 2025 the LOVD team
     </div>
 </footer>
 
