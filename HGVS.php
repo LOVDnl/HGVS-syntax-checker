@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-18   // When modified, also change the library_version.
+ * Modified    : 2025-03-19   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -20,6 +20,7 @@ class HGVS
     public array $patterns = [
         'full_variant'       => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
+        'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
         'reference_sequence' => ['HGVS_ReferenceSequence', []],
         'genome_build'       => ['HGVS_Genome', []],
@@ -46,6 +47,7 @@ class HGVS
 
     public function __construct ($sValue, $Parent = null, $bDebugging = false)
     {
+        $sValue = str_replace(' ', ' ', $sValue); // Replace "thin spaces" by spaces, which are trim()able.
         $this->input = $sValue;
         $this->parent = $Parent;
         $this->debugging = $bDebugging;
@@ -518,8 +520,14 @@ class HGVS
             }
         }
 
-        // If we end up here, we have built something.
-        $this->corrected_values = $aCorrectedValues;
+        // If we end up here, we have built something. Round the values to prevent crazy floats.
+        $this->corrected_values = array_map(
+            function ($nVal)
+            {
+                return round($nVal, 5);
+            },
+            $aCorrectedValues
+        );
         return $this->corrected_values;
     }
 
@@ -745,13 +753,13 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-03-17',
+            'library_version' => '2025-03-19',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
-                    'maximum' => '21.1.1',
+                    'maximum' => '21.1.2',
                 ],
-                'output' => '21.1.1',
+                'output' => '21.1.2',
             ],
         ];
     }
@@ -796,6 +804,7 @@ class HGVS
             $this->hasMatched()
             && (get_class($this) == 'HGVS_Variant'
                 || (get_class($this) == 'HGVS' && in_array($this->getMatchedPattern(), ['full_variant', 'variant']))
+                || (get_class($this) == 'HGVS' && $this->getMatchedPattern() == 'ANNOVAR')
             )
         );
     }
@@ -929,6 +938,94 @@ class HGVS
                 }
             }
         }
+    }
+}
+
+
+
+
+
+class HGVS_ANNOVAR extends HGVS
+{
+    public array $patterns = [
+        'gene()' => ['HGVS_Gene', '(', 'HGVS_ANNOVARVariants', ')', []],
+        'gene:'  => ['HGVS_Gene', ':', 'HGVS_ANNOVARVariant', []],
+        'single' => ['HGVS_ANNOVARVariant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->hasProperty('ANNOVARVariants')) {
+            $this->corrected_values = $this->ANNOVARVariants->getCorrectedValues();
+        } else {
+            $this->corrected_values = $this->ANNOVARVariant->getCorrectedValues();
+        }
+    }
+}
+
+
+
+
+
+class HGVS_ANNOVARExon extends HGVS
+{
+    public array $patterns = [
+        ['/exon[0-9]+/', []],
+    ];
+}
+
+
+
+
+
+class HGVS_ANNOVARVariant extends HGVS
+{
+    public array $patterns = [
+        'ref_exon_DNA_protein' => ['HGVS_ReferenceSequence', ':', 'HGVS_ANNOVARExon', ':', 'HGVS_Variant', ':', 'p.', []],
+        'ref_exon_DNA'         => ['HGVS_ReferenceSequence', ':', 'HGVS_ANNOVARExon', ':', 'HGVS_Variant', []],
+        'ref_DNA'              => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->corrected_values = $this->buildCorrectedValues(
+            $this->ReferenceSequence->getCorrectedValues(),
+            ':',
+            $this->Variant->getCorrectedValues(),
+        );
+        if ($this->matched_pattern == 'ref_exon_DNA_protein') {
+            // NOTE: Since we don't have protein support yet, we'll need to fake it.
+            //       Remove everything that looks like the protein description.
+            if (preg_match('/[A-Z][0-9]+[A-Z]/', $this->getSuffix(), $aRegs)) {
+                // Remove that protein description.
+                $this->suffix = substr($this->getSuffix(), strlen($aRegs[0]));
+            }
+            $this->messages['WANNOVARPROTEIN'] = 'This ANNOVAR variant description also contains a protein variant description. If you wish to correct this description, submit it separately.';
+        }
+    }
+}
+
+
+
+
+
+class HGVS_ANNOVARVariants extends HGVS
+{
+    public array $patterns = [
+        'multiple' => ['HGVS_ANNOVARVariant', ',', 'HGVS_ANNOVARVariants', []],
+        'single'   => ['HGVS_ANNOVARVariant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->matched_pattern == 'multiple') {
+            // There's no way for us to provide corrected values for all of them. So remove them.
+            $this->messages['WANNOVARMULTIPLE'] = 'This ANNOVAR variant description contains multiple DNA descriptions. We used the first. If you wish to correct the rest, submit it separately.';
+        }
+        $this->corrected_values = $this->ANNOVARVariant->getCorrectedValues();
     }
 }
 
@@ -4066,6 +4163,18 @@ class HGVS_Dot extends HGVS
 
 
 
+class HGVS_Gene extends HGVS
+{
+    // NOTE: This will be extended later on. For now, we just need a pattern to match gene symbols.
+    public array $patterns = [
+        ['/([A-Z][A-Za-z0-9#@-]*)/', []],
+    ];
+}
+
+
+
+
+
 class HGVS_Genome extends HGVS
 {
     public static array $builds = [
@@ -4278,7 +4387,7 @@ class HGVS_ReferenceSequence extends HGVS
         // NOTE: The HGVS_Chromosome class also handles the chr(build) syntax.
         'chr'                         => ['HGVS_Chromosome', []],
         // Because I do actually want to match something so we can validate the variant itself, match anything.
-        'other'                       => ['/([^:;\[\]]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
+        'other'                       => ['/([A-Z][^:;\[\]\(\)]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
     ];
 
     public function validate ()
