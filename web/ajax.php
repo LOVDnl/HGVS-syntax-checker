@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2011-09-06
- * Modified    : 2025-03-14
+ * Modified    : 2025-03-19
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -120,6 +120,9 @@ foreach ($aVariants as $sVariant) {
 
         } elseif (!$aVariant['valid']) {
             $aVariant['VV']['EFAIL'] = 'Please first correct the variant description to run VariantValidator.';
+
+        } elseif (!in_array($aVariant['identified_as'], ['full_variant_DNA', 'full_variant_RNA', 'variant_DNA', 'variant_RNA'])) {
+            $aVariant['VV']['WNOTSUPPORTED'] = 'VariantValidator currently supports DNA and RNA variants as input.';
 
         } elseif (isset($aVariant['messages']['IREFSEQMISSING'])) {
             $aVariant['VV']['EREFSEQMISSING'] = 'Please provide a reference sequence to run VariantValidator.';
