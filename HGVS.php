@@ -947,6 +947,60 @@ class HGVS_ANNOVARExon extends HGVS
 
 
 
+class HGVS_ANNOVARVariant extends HGVS
+{
+    public array $patterns = [
+        'ref_exon_DNA_protein' => ['HGVS_ReferenceSequence', ':', 'HGVS_ANNOVARExon', ':', 'HGVS_Variant', ':', 'p.', []],
+        'ref_exon_DNA'         => ['HGVS_ReferenceSequence', ':', 'HGVS_ANNOVARExon', ':', 'HGVS_Variant', []],
+        'ref_DNA'              => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->corrected_values = $this->buildCorrectedValues(
+            $this->ReferenceSequence->getCorrectedValues(),
+            ':',
+            $this->Variant->getCorrectedValues(),
+        );
+        if ($this->matched_pattern == 'ref_exon_DNA_protein') {
+            // NOTE: Since we don't have protein support yet, we'll need to fake it.
+            //       Remove everything that looks like the protein description.
+            if (preg_match('/[A-Z][0-9]+[A-Z]/', $this->getSuffix(), $aRegs)) {
+                // Remove that protein description.
+                $this->suffix = substr($this->getSuffix(), strlen($aRegs[0]));
+            }
+            $this->messages['WANNOVARPROTEIN'] = 'This ANNOVAR variant description also contains a protein variant description. If you wish to correct this description, submit it separately.';
+        }
+    }
+}
+
+
+
+
+
+class HGVS_ANNOVARVariants extends HGVS
+{
+    public array $patterns = [
+        'multiple' => ['HGVS_ANNOVARVariant', ',', 'HGVS_ANNOVARVariants', []],
+        'single'   => ['HGVS_ANNOVARVariant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->matched_pattern == 'multiple') {
+            // There's no way for us to provide corrected values for all of them. So remove them.
+            $this->messages['WANNOVARMULTIPLE'] = 'This ANNOVAR variant description contains multiple DNA descriptions. We used the first. If you wish to correct the rest, submit it separately.';
+        }
+        $this->corrected_values = $this->ANNOVARVariant->getCorrectedValues();
+    }
+}
+
+
+
+
+
 class HGVS_Caret extends HGVS
 {
     public array $patterns = [
