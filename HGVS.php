@@ -20,6 +20,7 @@ class HGVS
     public array $patterns = [
         'full_variant'       => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
+        'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
         'reference_sequence' => ['HGVS_ReferenceSequence', []],
         'genome_build'       => ['HGVS_Genome', []],
@@ -796,6 +797,7 @@ class HGVS
             $this->hasMatched()
             && (get_class($this) == 'HGVS_Variant'
                 || (get_class($this) == 'HGVS' && in_array($this->getMatchedPattern(), ['full_variant', 'variant']))
+                || (get_class($this) == 'HGVS' && $this->getMatchedPattern() == 'ANNOVAR')
             )
         );
     }
@@ -928,6 +930,29 @@ class HGVS
                     array_shift($this->patterns[$this->matched_pattern]);
                 }
             }
+        }
+    }
+}
+
+
+
+
+
+class HGVS_ANNOVAR extends HGVS
+{
+    public array $patterns = [
+        'gene()' => ['HGVS_Gene', '(', 'HGVS_ANNOVARVariants', ')', []],
+        'gene:'  => ['HGVS_Gene', ':', 'HGVS_ANNOVARVariant', []],
+        'single' => ['HGVS_ANNOVARVariant', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->hasProperty('ANNOVARVariants')) {
+            $this->corrected_values = $this->ANNOVARVariants->getCorrectedValues();
+        } else {
+            $this->corrected_values = $this->ANNOVARVariant->getCorrectedValues();
         }
     }
 }
