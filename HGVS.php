@@ -47,6 +47,7 @@ class HGVS
 
     public function __construct ($sValue, $Parent = null, $bDebugging = false)
     {
+        $sValue = str_replace(' ', ' ', $sValue); // Replace "thin spaces" by spaces, which are trim()able.
         $this->input = $sValue;
         $this->parent = $Parent;
         $this->debugging = $bDebugging;
