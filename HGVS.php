@@ -520,8 +520,14 @@ class HGVS
             }
         }
 
-        // If we end up here, we have built something.
-        $this->corrected_values = $aCorrectedValues;
+        // If we end up here, we have built something. Round the values to prevent crazy floats.
+        $this->corrected_values = array_map(
+            function ($nVal)
+            {
+                return round($nVal, 5);
+            },
+            $aCorrectedValues
+        );
         return $this->corrected_values;
     }
 
