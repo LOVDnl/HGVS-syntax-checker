@@ -936,6 +936,17 @@ class HGVS
 
 
 
+class HGVS_ANNOVARExon extends HGVS
+{
+    public array $patterns = [
+        ['/exon[0-9]+/', []],
+    ];
+}
+
+
+
+
+
 class HGVS_Caret extends HGVS
 {
     public array $patterns = [
@@ -4060,6 +4071,18 @@ class HGVS_Dot extends HGVS
             }
         }
     }
+}
+
+
+
+
+
+class HGVS_Gene extends HGVS
+{
+    // NOTE: This will be extended later on. For now, we just need a pattern to match gene symbols.
+    public array $patterns = [
+        ['/([A-Z][A-Za-z0-9#@-]*)/', []],
+    ];
 }
 
 
