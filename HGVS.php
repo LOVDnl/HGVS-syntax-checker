@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-19   // When modified, also change the library_version.
+ * Modified    : 2025-03-21   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,7 +753,7 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-03-19',
+            'library_version' => '2025-03-21',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -3423,6 +3423,7 @@ class HGVS_DNASub extends HGVS
     public array $patterns = [
         'valid'   => ['>', []],
         'slash'   => ['/', []],
+        'curly'   => ['}', []],
         // Special characters arising from copying variants from PDFs. Some journals decided to use specialized fonts to
         //  create markup for normal characters, such as the ">" in a substitution. This is a terrible idea, as
         //  text-recognition then completely fails and copying the variant from the PDF results in a broken format.
@@ -3445,6 +3446,8 @@ class HGVS_DNASub extends HGVS
         $this->data['type'] = $this->getCorrectedValue();
         if ($this->matched_pattern == 'slash') {
             $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "/" character.';
+        } elseif ($this->matched_pattern == 'curly') {
+            $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "}" character.';
         } elseif ($this->matched_pattern == 'invalid') {
             // A bit of a weird hack. We made our match optional, since we need to match a space. But a fully optional
             //  match will match always and mess everything up.
