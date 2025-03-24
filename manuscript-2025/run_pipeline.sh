@@ -1,6 +1,6 @@
 #!/bin/bash
 # Created  2024-12-30
-# Modified 2025-01-10
+# Modified 2025-01-14
 
 # Extract the data.
 PREFIX="HGVS_list.$(date +%Y-%m-%d)";
@@ -291,3 +291,14 @@ else
         fi
     fi;
 fi;
+
+# And our output already.
+IN=$OUT;
+OUT="$PREFIX.G.DNA-and-reference-sequences-only.output-HGVS.txt";
+cat $IN | while IFS='' read -r DNA;
+do
+    grep -Fm1 "${DNA}" <(cut -f 1,3-5 "$PREFIX.C.validated.txt");
+done | sed 's/valid/Valid/g' \
+     | sed 's/inValid/Invalid/g' \
+     | sed 's/Valid?/Valid/' \
+     | sed 's/Invalid!/Invalid/' > $OUT;
