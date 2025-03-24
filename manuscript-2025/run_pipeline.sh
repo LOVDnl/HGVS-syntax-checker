@@ -302,3 +302,26 @@ done | sed 's/valid/Valid/g' \
      | sed 's/inValid/Invalid/g' \
      | sed 's/Valid?/Valid/' \
      | sed 's/Invalid!/Invalid/' > $OUT;
+
+# And create a file for the Mutalyzer output.
+OUT="$PREFIX.G.DNA-and-reference-sequences-only.output-Mutalyzer.txt";
+if [ ! -f $OUT ];
+then
+    ./run_mutalyzer $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    ./run_mutalyzer $IN > $OUTNEW;
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
