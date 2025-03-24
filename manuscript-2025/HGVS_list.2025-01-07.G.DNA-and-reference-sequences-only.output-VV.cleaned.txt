@@ -1,0 +1,382 @@
+Input	Warnings	HGVS_transcript	HGVS_intronic_chr_context	HGVS_intronic_rsg_context	HGVS_RefSeqGene	HGVS_LRG	HGVS_LRG_transcript	HGVS_Genomic_GRCh37	HGVS_Genomic_GRCh38
+GJB2:c.76AC	HGVS variant nomenclature does not allow the use of a gene symbol (GJB2) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+J01749.1:o.4344_197dup	Reference sequence type o. should only be used for circular reference sequences that are not mitochondrial. Instead use m.|Variant description J01749.1:o.4344_197dup is not in an accepted format	None	None	None	None	None	None	None	None
+L01538.1:g.1407C>T	L01538.1 is not part of genome build GRCh38	None	None	None	None	None	None	None	None
+LRG_163t1:n.5C>T		NR_003051.3:n.5C>T	None	None	None	None	LRG_163t1:n.5C>T	NC_000009.11:g.35658011G>A	NC_000009.12:g.35658014G>A
+LRG_199:c.357+1G>A	NG_:c.PositionVariation descriptions should not be used unless a transcript reference sequence has also been provided e.g. NG_(NM_):c.PositionVariation	None	None	None	None	None	None	None	None
+LRG_199:g.954966C>T		NM_004006.3:c.4375C>T	None	None	None	None	None	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+LRG_199:g.981731G>A		NM_004006.3:c.5234G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+LRG_199t1:c.(6195_6381)_(7422_7628)del	6195_6381 is an invlaid range for accession LRG_199t1	None	None	None	None	None	None	None	None
+LRG_199t1:c.(6196_6382)_(7423_7629)dup	6196_6382 is an invlaid range for accession LRG_199t1	None	None	None	None	None	None	None	None
+LRG_199t1:c.(6278_6438+69)_(7310-43_7575)del		None	None	None	None	None	None	None	None
+LRG_199t1:c.(6290+9193_6291-1)_(7309+1_7310-1630)del		None	None	None	None	None	None	None	None
+LRG_199t1:c.(6290+9193_6291-1398)_(7309+2010_7310-1630)dup		None	None	None	None	None	None	None	None
+LRG_199t1:c.(71_72)G>A	71_72 is an invlaid range for accession LRG_199t1	None	None	None	None	None	None	None	None
+LRG_199t1:c.-244-147T>C	Using a transcript reference sequence to specify a variant position that lies outside of the reference sequence is not HGVS-compliant. Instead re-submit NC_000023.11:g.33211703A>G	None	None	None	None	None	None	None	None
+LRG_199t1:c.-391T>C	Using a transcript reference sequence to specify a variant position that lies outside of the reference sequence is not HGVS-compliant: Instead re-submit NC_000023.11:g.33211703A>G	None	None	None	None	None	None	None	None
+LRG_199t1:c.11T>G	NM_004006.2:c.11T>G: Variant reference (T) does not agree with reference sequence (G)	None	None	None	None	None	None	None	None
+LRG_199t1:c.123=		NM_004006.2:c.123=		NC_000023.10:g.32867908=	NC_000023.11:g.32849791=				
+LRG_199t1:c.123C>T		NM_004006.2:c.123C>T	None	None	NG_012232.1:g.494819C>T	LRG_199:g.494819C>T	LRG_199t1:c.123C>T	NC_000023.10:g.32867908G>A	NC_000023.11:g.32849791G>A
+LRG_199t1:c.123_145=		NM_004006.2:c.123_145=		NC_000023.10:g.32867886_32867908=	NC_000023.11:g.32849769_32849791=				
+LRG_199t1:c.145_147delinsTGG		NM_004006.2:c.145_147delinsTGG	None	None	NG_012232.1:g.494841_494843delinsTGG	LRG_199:g.494841_494843delinsTGG	LRG_199t1:c.145_147delinsTGG	NC_000023.10:g.32867884_32867886delinsCCA	NC_000023.11:g.32849767_32849769delinsCCA
+LRG_199t1:c.1704+1del		NM_004006.2:c.1704+1del	NC_000023.11(NM_004006.2):c.1704+1del	NG_012232.1(NM_004006.2):c.1704+1del	NG_012232.1:g.770866del	LRG_199:g.770866del	LRG_199t1:c.1704+1del	NC_000023.10:g.32591862del	NC_000023.11:g.32573745del
+LRG_199t1:c.1813del		NM_004006.2:c.1813del	None	None	NG_012232.1:g.778729del	LRG_199:g.778729del	LRG_199t1:c.1813del	NC_000023.10:g.32583999del	NC_000023.11:g.32565882del
+LRG_199t1:c.235A>T(;)237G>T		NM_004006.2:c.235A>T	None	None	NG_012232.1:g.499798A>T	LRG_199:g.499798A>T	LRG_199t1:c.235A>T	NC_000023.10:g.32862929T>A	NC_000023.11:g.32844812T>A
+LRG_199t1:c.235_236delinsTT		NM_004006.2:c.235_236inv	None	None	NG_012232.1:g.499798_499799inv	LRG_199:g.499798_499799inv	LRG_199t1:c.235_236inv	NC_000023.10:g.32862928_32862929inv	NC_000023.11:g.32844811_32844812inv
+LRG_199t1:c.235_237delinsTAT		NM_004006.2:c.235_237delinsTAT	None	None	NG_012232.1:g.499798_499800delinsTAT	LRG_199:g.499798_499800delinsTAT	LRG_199t1:c.235_237delinsTAT	NC_000023.10:g.32862927_32862929delinsATA	NC_000023.11:g.32844810_32844812delinsATA
+LRG_199t1:c.240_241insAGG		NM_004006.2:c.240_241insAGG	None	None	NG_012232.1:g.499803_499804insAGG	LRG_199:g.499803_499804insAGG	LRG_199t1:c.240_241insAGG	NC_000023.10:g.32862923_32862924insCCT	NC_000023.11:g.32844806_32844807insCCT
+LRG_199t1:c.357+1G>A		NM_004006.2:c.357+1G>A	NC_000023.11(NM_004006.2):c.357+1G>A	NG_012232.1(NM_004006.2):c.357+1G>A	NG_012232.1:g.521316G>A	LRG_199:g.521316G>A	LRG_199t1:c.357+1G>A	NC_000023.10:g.32841411C>T	NC_000023.11:g.32823294C>T
+LRG_199t1:c.3921del		NM_004006.2:c.3921del	None	None	NG_012232.1:g.903430del	LRG_199:g.903430del	LRG_199t1:c.3921del	NC_000023.10:g.32459297del	NC_000023.11:g.32441180del
+LRG_199t1:c.3921dup		NM_004006.2:c.3921dup	None	None	NG_012232.1:g.903430dup	LRG_199:g.903430dup	LRG_199t1:c.3921dup	NC_000023.10:g.32459297dup	NC_000023.11:g.32441180dup
+LRG_199t1:c.3922del		NM_004006.2:c.3922del	None	None	NG_012232.1:g.906220del	LRG_199:g.906220del	LRG_199t1:c.3922del	NC_000023.10:g.32456507del	NC_000023.11:g.32438390del
+LRG_199t1:c.419_420ins[T;450_470;AGGG]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+LRG_199t1:c.4661delinsTC		NM_004006.2:c.4661delinsTC	None	None	NG_012232.1:g.958287delinsTC	LRG_199:g.958287delinsTC	LRG_199t1:c.4661delinsTC	NC_000023.10:g.32404440delinsGA	NC_000023.11:g.32386323delinsGA
+LRG_199t1:c.5234G>A		NM_004006.2:c.5234G>A	None	None	NG_012232.1:g.981731G>A	LRG_199:g.981731G>A	LRG_199t1:c.5234G>A	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+LRG_199t1:c.54G>H		NM_004006.2:c.54G>H	None	None	NG_012232.1:g.324432G>H	LRG_199:g.324432G>H	LRG_199t1:c.54G>H	NC_000023.10:g.33038295C>H	NC_000023.11:g.33020178C>H
+LRG_199t1:c.57_58del		NM_004006.2:c.57_58del	None	None	NG_012232.1:g.324435_324436del	LRG_199:g.324435_324436del	LRG_199t1:c.57_58del	NC_000023.10:g.33038293_33038294del	NC_000023.11:g.33020176_33020177del
+LRG_199t1:c.79_80delinsTT		NM_004006.2:c.79_80delinsTT	None	None	NG_012232.1:g.324457_324458delinsTT	LRG_199:g.324457_324458delinsTT	LRG_199t1:c.79_80delinsTT	NC_000023.10:g.33038269_33038270delinsAA	NC_000023.11:g.33020152_33020153delinsAA
+LRG_199t1:c.850_901delinsTTCCTCGATGCCTG		NM_004006.2:c.850_901delinsTTCCTCGATGCCTG	None	None	NG_012232.1:g.646630_646681delinsTTCCTCGATGCCTG	LRG_199:g.646630_646681delinsTTCCTCGATGCCTG	LRG_199t1:c.850_901delinsTTCCTCGATGCCTG	NC_000023.10:g.32716046_32716097delinsCAGGCATCGAGGAA	NC_000023.11:g.32697929_32697980delinsCAGGCATCGAGGAA
+LRG_199t1:c.85=/T>C	LRG_199t1:c.85=/T>C: char 15: expected EOF	None	None	None	None	None	None	None	None
+LRG_199t1:c.897T>G		NM_004006.2:c.897T>G		NC_000023.10:g.32716050A>C	NC_000023.11:g.32697933A>C				
+LRG_199t1:c.9002_9009delinsTTT		NM_004006.2:c.9002_9009delinsTTT	None	None	NG_012232.1:g.1900047_1900054delinsTTT	LRG_199:g.1900047_1900054delinsTTT	LRG_199t1:c.9002_9009delinsTTT	NC_000023.10:g.31462673_31462680delinsAAA	NC_000023.11:g.31444556_31444563delinsAAA
+LRG_199t1:c.94-23_188+33=	ExonBoundaryError: Position c.188+33 does not correspond with an exon boundary for transcript NM_004006.2	None	None	None	None	None	None	None	None
+LRG_199t1:c.94-2A>G		NM_004006.2:c.94-2A>G	NC_000023.11(NM_004006.2):c.94-2A>G	NG_012232.1(NM_004006.2):c.94-2A>G	NG_012232.1:g.494788A>G	LRG_199:g.494788A>G	LRG_199t1:c.94-2A>G	NC_000023.10:g.32867939T>C	NC_000023.11:g.32849822T>C
+LRG_199t1:c.940_941ins[885_940inv;A;851_883inv]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+LRG_199t1:c.992_1004delinsAC		NM_004006.2:c.992_1004delinsAC	None	None	NG_012232.1:g.699489_699501delinsAC	LRG_199:g.699489_699501delinsAC	LRG_199t1:c.992_1004delinsAC	NC_000023.10:g.32663226_32663238delinsGT	NC_000023.11:g.32645109_32645121delinsGT
+LRG_199t1:c.[235A>T;238G>T]		NM_004006.2:c.235A>T	None	None	NG_012232.1:g.499798A>T	LRG_199:g.499798A>T	LRG_199t1:c.235A>T	NC_000023.10:g.32862929T>A	NC_000023.11:g.32844812T>A
+LRG_199t1:c.[2376G>C;3103=];[2376=;3103del]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+LRG_199t1:c.[2376G>C];[2376=]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+LRG_199t1:c.[2376G>C];[3103del]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+LRG_199t1:c.[2962T>G;2970A>T]		NM_004006.2:c.2962T>G	None	None	NG_012232.1:g.875912T>G	LRG_199:g.875912T>G	LRG_199t1:c.2962T>G	NC_000023.10:g.32486815A>C	NC_000023.11:g.32468698A>C
+LRG_199t1:c.[633A>G];[531_648=;961_1149=]		NM_004006.2:c.633A>G	None	None	NG_012232.1:g.535101A>G	LRG_199:g.535101A>G	LRG_199t1:c.633A>G	NC_000023.10:g.32827626T>C	NC_000023.11:g.32809509T>C
+LRG_199t1:c.[633A>G];[633=]		NM_004006.2:c.633A>G	None	None	NG_012232.1:g.535101A>G	LRG_199:g.535101A>G	LRG_199t1:c.633A>G	NC_000023.10:g.32827626T>C	NC_000023.11:g.32809509T>C
+LRG_199t1:c.[76A>C];[0]	variant must be a parsed HGVS sequence variant object	None	None	None	None	None	None	None	None
+LRG_199t1:c.[76A>C];[76=]		NM_004006.2:c.76A>C	None	None	NG_012232.1:g.324454A>C	LRG_199:g.324454A>C	LRG_199t1:c.76A>C	NC_000023.10:g.33038273T>G	NC_000023.11:g.33020156T>G
+LRG_199t61:c.(6278_6291-1)_(7542+49_7575)dup		None	None	None	None	None	None	None	None
+LRG_232t1:c.1365_1373del		NM_000495.3:c.1365_1373del		NC_000023.10:g.107834816_107834824del	NC_000023.11:g.108591586_108591594del				
+LRG_232t1:c.1365_1373dup		NM_000495.3:c.1365_1373dup		NC_000023.10:g.107834816_107834824dup	NC_000023.11:g.108591586_108591594dup				
+LRG_476:g.4950_39800=		None	None	None	NG_008675.1:g.4950_39800=	LRG_476:g.4950_39800=	None	NC_000021.8:g.47517982_47552832=	NC_000021.9:g.46098068_46132918=
+LRG_663t1:c.1521_1523del		NM_000492.3:c.1521_1523del		NC_000007.13:g.117199646_117199648del	NC_000007.14:g.117559592_117559594del				
+LRG_763t1:52_153CAG[21]CAA[1]CAG[1]CCG[1]CCA[1]CCG[7]CCT[2]	No information should be included after the number of repeat units. Currently CAA[1]CAG[1]CCG[1]CCA[1]CCG[7]CCT[2] is included.	None	None	None	None	None	None	None	None
+LRG_763t1:c.54_110GCA[23]		NM_002111.8:c.111_116dup	None	None	NG_009378.1:g.5256_5261dup	LRG_763:g.5256_5261dup	LRG_763t1:c.111_116dup	NC_000004.11:g.3076651_3076662dup	NC_000004.12:g.3074924_3074935dup
+MT-ND1{NC_012920.1}:m.[3460G>A]	Variant description MT-ND1{NC_012920.1}:m.[3460G>A] is not in an accepted format	None	None	None	None	None	None	None	None
+NC_000001.11(NM_206933.2):c.[675-542_1211-703dup;1211-703_1211-704insGTAAA]	base start position must be <= end position								
+NC_000001.11:g.1234=									
+NC_000001.11:g.1234_1235insACGT		None	None	None	None	None	None	None	NC_000001.11:g.1234_1235insACGT
+NC_000001.11:g.1234_2345=									
+NC_000001.11:g.1234_2345del		None	None	None	None	None	None	None	None
+NC_000001.11:g.1234_2345dup		None	None	None	None	None	None	None	None
+NC_000001.11:g.1234_2345inv		None	None	None	None	None	None	None	NC_000001.11:g.248956422=
+NC_000001.11:g.1234del		None	None	None	None	None	None	None	None
+NC_000001.11:g.1234dup		None	None	None	None	None	None	None	None
+NC_000001.11:g.123G>A(;)345del	NC_000001.11:g.123G>A: Variant reference (G) does not agree with reference sequence (N)	None	None	None	None	None	None	None	None
+NC_000001.11:g.123_129delinsAC		None	None	None	None	None	None	None	None
+NC_000001.11:g.123delinsAC		None	None	None	None	None	None	None	None
+NC_000001.11:g.57367047_57367121ATAAA[15]		NM_001365792.1:c.-137+56809_-137+56883=	NC_000001.11(NM_001365792.1):c.-137+56809_-137+56883=	NG_046914.3(NM_001365792.1):c.-137+56809_-137+56883=	NG_046914.3:g.1184605_1184679=	None	None	NC_000001.10:g.57832719_57832793=	NC_000001.11:g.57367047_57367121=
+NC_000001.11:g.[123G>A;345del]	NC_000001.11:g.123G>A: Variant reference (G) does not agree with reference sequence (N)	None	None	None	None	None	None	None	None
+NC_000001.11:g.[123G>A];[345del]	NC_000001.11:g.123G>A: Variant reference (G) does not agree with reference sequence (N)	None	None	None	None	None	None	None	None
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:35788169_35788352]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:g.35788169_35788352]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000002.11:g.48031621_48031622ins[TAT;48026961_48027223;GGC]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000002.11:g.?_?ins[NC_000022.10:g.35788169_35788352]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000002.12:g.17450009_qterdelins[NC_000011.10:g.108111987_qter]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000002.12:g.[32310435_32310710del;32310711_171827243inv;insG]	variant must be a parsed HGVS sequence variant object	None	None	None	None	None	None	None	None
+NC_000002.12:g.pter_8247756::NC_000011.10:g.15825273_cen_qter	NC_000002.12:g.pter_8247756::NC_000011.10:g.15825273_cen_qter: char 15: expected one of (, ?, or a digit	None	None	None	None	None	None	None	None
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825266]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825272]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000003.12:g.(63912602_63912844)delN[15]		NM_001377405.1:c.(4_246)delNNNNNNNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)delNNNNNNNNNNNNNNN
+NC_000003.12:g.(63912602_63912844)insN[(150_180)]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000003.12:g.(63912602_63912844)insN[15]		NM_001377405.1:c.(4_246)insNNNNNNNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)insNNNNNNNNNNNNNNN
+NC_000003.12:g.(63912602_63912844)insN[9]		NM_001377405.1:c.(4_246)insNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)insNNNNNNNNN
+NC_000003.12:g.158573187_qterdelins[NC_000008.11:g.(128534000_128546000)_qter]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000003.12:g.63912687AGC[(50_60)]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000003.12:g.63912687AGC[(60_?)]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000003.12:g.63912687_63912716AGC[13]		NM_001377405.1:c.110_118dup	None	None	NG_008227.1:g.53152_53160dup	LRG_866:g.53152_53160dup	None	NC_000003.11:g.63898384_63898392dup	NC_000003.12:g.63912708_63912716dup
+NC_000003.12:g.pter_36969141delins[CATTTGTTCAAATTTAGTTCAAATGA;NC_000014.9:g.29745314_qterinv]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000004.11:g.(3076562_3076732)insN[12]		NM_001388492.1:c.(10_180)insNNNNNNNNNNNN	None	None	None	None	None	None	NC_000004.11:g.(3076562_3076732)insNNNNNNNNNNNN
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080inv]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000005.10:g.29658442delins[NC_000010.11:g.67539995_qterinv]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000006.11:g.10791926_10791927ins[NC_000004.11:g.106370094_106370420;A[26]]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000006.11:g.117198495_117198496del		NM_173560.4:c.57_58del	None	None	NG_027699.1:g.5120_5121del	None	None	NC_000006.11:g.117198495_117198496del	NC_000006.12:g.116877332_116877333del
+NC_000006.11:g.8897754_8897755ins[N[543];8897743_8897754]	NC_000006.11:g.8897754_8897755insNNN(deleted)NNN8897743_8897754: char 577: expected EOF	None	None	None	None	None	None	None	None
+NC_000006.12:g.[776788_93191545inv;93191546T>C]	data should be a string, bytes, bytearray, Seq, or MutableSeq object	None	None	None	None	None	None	None	None
+NC_000008.11:g.(127300001_131500000)_(131500001_136400000)dup		None	None	None	None	None	None	None	NC_000008.11:g.(127300001_131500000)_(131500001_136400000)dup
+NC_000008.11:g.(131500001_136400000)ins[(127300001_131500000)_(131500001_136400000)inv]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000009.12:g.102425452_qterdelinspter_26393001inv	NC_000009.12:g.102425452_qterdelinspter_26393001inv: char 25: expected one of ?, or a digit	None	None	None	None	None	None	None	None
+NC_000009.12:g.pter_26393001delins102425452_qterinv	NC_000009.12:g.pter_26393001delins102425452_qterinv: char 15: expected one of (, ?, or a digit	None	None	None	None	None	None	None	None
+NC_000011.10:g.108111982_qterdelins[NC_000002.12:g.17450009_qter]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000011.10:g.1999904_1999946|gom		NM_001400176.1:c.498-11637_498-11595|gom	NC_000011.9(NM_001400176.1):c.498-11637_498-11595|gom	NC_000011.9:g.2021134_2021176|gom	NC_000011.10:g.1999904_1999946|gom				
+NC_000011.10:g.1999904_1999946|lom		NM_001400176.1:c.498-11637_498-11595|lom	NC_000011.9(NM_001400176.1):c.498-11637_498-11595|lom	NC_000011.9:g.2021134_2021176|lom	NC_000011.10:g.1999904_1999946|lom				
+NC_000011.10:g.1999904_1999946|met=	(Ivo: VV split the variant in two and complained twice, about each part)|NC_000011.10:g.1999904_1999946: char 31: end of input|This not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters.|Variant description met= is not in an accepted format								
+NC_000011.10:g.pter_15825272::NC_000002.12:g.8247757_cen_qter	NC_000011.10:g.pter_15825272::NC_000002.12:g.8247757_cen_qter: char 15: expected one of (, ?, or a digit	None	None	None	None	None	None	None	None
+NC_000011.10:g.pter_5825272delins[NC_000002.12:g.pter_8247756]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000011.9:g.12345611G>A		NM_001393937.1:c.5415G>A						NC_000011.9:g.12345611G>A	NC_000011.10:g.12324064G>A
+NC_000012.11:g.112036755_112036823CTG[9]TTG[1]CTG[13]	No information should be included after the number of repeat units. Currently TTG[1]CTG[13] is included.	None	None	None	None	None	None	None	None
+NC_000012.11:g.6128892_6128954delins[NC_000022.10:g.17179029_17179091]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000012.12:g.6128479_6128749con[NC_000022.11:g.17178616_17178886]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric	None	None	None	None	None	None	None	None
+NC_000012.12:g.6128479_6128749delins[NC_000022.11:g.17178616_17178886]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000013.11:g.(19385993_19394916)_(25045592_25059364)del		None	None	None	None	None	None	None	NC_000013.11:g.(19385993_19394916)_(25045592_25059364)del
+NC_000013.11:g.(?_19394916)_(25045592_?)del		None	None	None	None	None	None	None	None
+NC_000014.8:g.101179660_101179695TG[14]		None	None	None	None	None	None	None	None
+NC_000014.8:g.123CAG[23]	RepeatSyntaxError: The provided repeat sequence CAG does not match the reference sequence NNN at the given position 123_125 of reference sequence NC_000014.8	None	None	None	None	None	None	None	None
+NC_000014.8:g.123_191CAG[19]CAA[4]	No information should be included after the number of repeat units. Currently CAA[4] is included.	None	None	None	None	None	None	None	None
+NC_000014.8:g.[101179660_101179695TG[14]];[101179660_101179695TG[18]]	variant must be a parsed HGVS sequence variant object	None	None	None	None	None	None	None	None
+NC_000014.9:g.29745314_qterdelins[NC_000003.12:g.36969141_pterinv]	RepeatSyntaxError: The number of repeat units included between square brackets must be numeric								
+NC_000022.10:g.42522624_42522669con42536337_42536382	Conversions are no longer valid HGVS Sequence Variant Descriptions	None	None	None	None	None	None	None	None
+NC_000022.10:g.42522624_42522669delins42536337_42536382	NC_000022.10:g.42522624_42522669delins42536337_42536382: char 39: expected EOF	None	None	None	None	None	None	None	None
+NC_000022.11:g.[pter_(12200001_14700000)del::(37600001_410000000)_qterdel]sup	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000022.11:g.pter_(12200001_14700000)del::(37600001_410000000)_qterdel	not enough values to unpack (expected 2, got 1)	None	None	None	None	None	None	None	None
+NC_000023.10(NM_000109.3):c.-401C>T	The given coordinate is outside the bounds of the reference sequence.|Required information for NM_000109.3 is missing from the Universal Transcript Archive	None	None	None	None	None	None	None	None
+NC_000023.10(NM_004006.1):c.-128354C>T	The given coordinate is outside the bounds of the reference sequence.|Required information for NM_004006.1 is missing from the Universal Transcript Archive	None	None	None	None	None	None	None	None
+NC_000023.10(NM_004006.2):c.-244-u147T>C	NM_004006.2:c.-244-u147T>C: char 19: expected a digit	None	None	None	None	None	None	None	None
+NC_000023.10(NM_004006.2):c.2950-11_2950-5del		NM_004006.2:c.2950-9_2950-3del	NC_000023.10(NM_004006.2):c.2950-9_2950-3del	NC_000023.10:g.32486832_32486838del	NC_000023.11:g.32468715_32468721del				
+NC_000023.10(NM_004006.2):c.357+1G>A		NM_004006.2:c.357+1G>A	NC_000023.11(NM_004006.2):c.357+1G>A	NG_012232.1(NM_004006.2):c.357+1G>A	NG_012232.1:g.521316G>A	LRG_199:g.521316G>A	LRG_199t1:c.357+1G>A	NC_000023.10:g.32841411C>T	NC_000023.11:g.32823294C>T
+NC_000023.10(NM_004006.2):c.94-2A>G		NM_004006.2:c.94-2A>G	NC_000023.11(NM_004006.2):c.94-2A>G	NG_012232.1(NM_004006.2):c.94-2A>G	NG_012232.1:g.494788A>G	LRG_199:g.494788A>G	LRG_199t1:c.94-2A>G	NC_000023.10:g.32867939T>C	NC_000023.11:g.32849822T>C
+NC_000023.10(NM_004006.3):c.357+1G>A		NM_004006.3:c.357+1G>A	NC_000023.11(NM_004006.3):c.357+1G>A	None	None	None	None	NC_000023.10:g.32841411C>T	NC_000023.11:g.32823294C>T
+NC_000023.10(NR_028379.1):n.696-38544del	Expected a cDNA (c.); got NR_028379.1:n.696-38544del	None	None	None	None	None	None	None	None
+NC_000023.10:g.(32057077_32364657)_(32894352_33055973)del		NM_004006.3:c.(32-17656_94-26415)_(5449-459_6439-70445)del	None	None	None	None	None	None	NC_000023.10:g.(32057077_32364657)_(32894352_33055973)del
+NC_000023.10:g.(32057077_32364657)_(32975163_33394206)del		None	None	None	None	None	None	None	NC_000023.10:g.(32057077_32364657)_(32975163_33394206)del
+NC_000023.10:g.(32218983_32238146)_(32984039_33252615)del	list index out of range	None	None	None	None	None	None	None	NC_000023.10:g.(32218983_32238146)_(32984039_33252615)del
+NC_000023.10:g.(33038277_33038278)C>T	NC_000023.10:g.(33038277_33038278)C>T: Variant reference (C) does not agree with reference sequence (CC)	NM_004006.3:c.(71_72)C>T	None	None	None	None	None	None	NC_000023.10:g.(33038277_33038278)C>T
+NC_000023.10:g.(?_32238146)_(32984039_?)del		None	None	None	None	None	None	None	None
+NC_000023.10:g.(?_32364657)_(32975163_?)del		None	None	None	None	None	None	None	None
+NC_000023.10:g.111754331_111966764inv		None	None	None	None	None	None	None	None
+NC_000023.10:g.32361300del		NM_004006.3:c.5697del	None	None	None	None	None	NC_000023.10:g.32361300del	NC_000023.11:g.32343183del
+NC_000023.10:g.32361330_32361333inv		NM_004006.3:c.5657_5660inv	None	None	None	None	None	NC_000023.10:g.32361330_32361333inv	NC_000023.11:g.32343213_32343216inv
+NC_000023.10:g.32380996C>T		NM_004006.3:c.5234G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NC_000023.10:g.32407761G>A		NM_004006.3:c.4375C>T	None	None	None	None	None	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+NC_000023.10:g.32456507del		NM_004006.3:c.3922del	None	None	None	None	None	NC_000023.10:g.32456507del	NC_000023.11:g.32438390del
+NC_000023.10:g.32456507dup		NM_004006.3:c.3922dup	None	None	None	None	None	NC_000023.10:g.32456507dup	NC_000023.11:g.32438390dup
+NC_000023.10:g.32459297del		NM_004006.3:c.3921del	None	None	None	None	None	NC_000023.10:g.32459297del	NC_000023.11:g.32441180del
+NC_000023.10:g.32459297dup		NM_004006.3:c.3921dup	None	None	None	None	None	NC_000023.10:g.32459297dup	NC_000023.11:g.32441180dup
+NC_000023.10:g.32717298_32717299insN		NM_004006.3:c.761_762insN	None	None	None	None	None	NC_000023.10:g.32717298_32717299insN	NC_000023.11:g.32699181_32699182insN
+NC_000023.10:g.32717298_32717299insN[(80_120)]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000023.10:g.32717298_32717299insN[100]		NM_004006.3:c.761_762insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN	None	None	None	None	None	NC_000023.10:g.32717298_32717299insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN	NC_000023.11:g.32699181_32699182insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+NC_000023.10:g.32717298_32717299insN[?]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NC_000023.10:g.32862923_32862924insCCT		NM_004006.3:c.240_241insAGG	None	None	None	None	None	NC_000023.10:g.32862923_32862924insCCT	NC_000023.11:g.32844806_32844807insCCT
+NC_000023.10:g.32862927_32862929delinsATA		NM_004006.3:c.235_237delinsTAT	None	None	None	None	None	NC_000023.10:g.32862927_32862929delinsATA	NC_000023.11:g.32844810_32844812delinsATA
+NC_000023.10:g.32867861_32867862insT		NM_004006.3:c.169_170insA	None	None	None	None	None	NC_000023.10:g.32867861_32867862insT	NC_000023.11:g.32849744_32849745insT
+NC_000023.10:g.33038255C>A		NM_004006.3:c.93+1G>T	NC_000023.11(NM_004006.3):c.93+1G>T	None	None	None	None	NC_000023.10:g.33038255C>A	NC_000023.11:g.33020138C>A
+NC_000023.10:g.33229410dup		NM_004006.3:c.20dup	None	None	None	None	None	NC_000023.10:g.33229410dup	NC_000023.11:g.33211293dup
+NC_000023.10:g.33229820A>G		NM_000109.4:c.7+127556T>C	NC_000023.11(NM_000109.4):c.7+127556T>C					NC_000023.10:g.33229820A>G	NC_000023.11:g.33211703A>G
+NC_000023.10:g.33357783G>A		None	None	None	None	None	None	None	None
+NC_000023.10:g.[30683643A>G;33038273T>G]		NM_001205019.2:c.94A>G	None	None	NG_008178.1:g.17168A>G	LRG_848:g.17168A>G	None	NC_000023.10:g.30683643A>G	NC_000023.11:g.30665526A>G
+NC_000023.11(NM_004006.2):c.(-205839_-62966)_(*21568_*61692)dup	NC_000023.11(NM_004006.2):c.-205839_-62966dup: char 12: expected one of :, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)del	NoneType object has no attribute posedit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)dup	NoneType object has no attribute posedit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(3996_4196)_(5090_5284)del	NC_000023.11(NM_004006.2):c.3996_4196del: char 12: expected one of :, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)[3]	NC_000023.11(NM_004006.2):c.4071+1_4072-1[3]: char 12: expected one of :, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)del	NC_000023.11(NM_004006.2):c.4071+1_4072-1del: char 12: expected one of :, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)dup	NC_000023.11(NM_004006.2):c.4071+1_4072-1dup: char 12: expected one of :, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)del	NoneType object has no attribute posedit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)dup	NoneType object has no attribute posedit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.1704+1dup		NM_004006.2:c.1704+1dup	NC_000023.11(NM_004006.2):c.1704+1dup	NG_012232.1(NM_004006.2):c.1704+1dup	NG_012232.1:g.770866dup	LRG_199:g.770866dup	LRG_199t1:c.1704+1dup	NC_000023.10:g.32591862dup	NC_000023.11:g.32573745dup
+NC_000023.11(NM_004006.2):c.1813dup		NM_004006.2:c.1813dup	None	None	NG_012232.1:g.778729dup	LRG_199:g.778729dup	LRG_199t1:c.1813dup	NC_000023.10:g.32583999dup	NC_000023.11:g.32565882dup
+NC_000023.11(NM_004006.2):c.183_186+48del		NM_004006.2:c.183_186+48del	NC_000023.11(NM_004006.2):c.183_186+48del	NG_012232.1(NM_004006.2):c.183_186+48del	NG_012232.1:g.494879_494930del	LRG_199:g.494879_494930del	LRG_199t1:c.183_186+48del	NC_000023.10:g.32867797_32867848del	NC_000023.11:g.32849680_32849731del
+NC_000023.11(NM_004006.2):c.260_264+48dup		NM_004006.2:c.260_264+48dup	NC_000023.11(NM_004006.2):c.260_264+48dup	NG_012232.1(NM_004006.2):c.260_264+48dup	NG_012232.1:g.499823_499875dup	LRG_199:g.499823_499875dup	LRG_199t1:c.260_264+48dup	NC_000023.10:g.32862852_32862904dup	NC_000023.11:g.32844735_32844787dup
+NC_000023.11(NM_004006.2):c.3921dup		NM_004006.2:c.3921dup	None	None	NG_012232.1:g.903430dup	LRG_199:g.903430dup	LRG_199t1:c.3921dup	NC_000023.10:g.32459297dup	NC_000023.11:g.32441180dup
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246del		NM_004006.2:c.4072-1234_5155-246del	NC_000023.11(NM_004006.2):c.4072-1234_5155-246del	NG_012232.1(NM_004006.2):c.4072-1234_5155-246del	NG_012232.1:g.931463_981406del	LRG_199:g.931463_981406del	LRG_199t1:c.4072-1234_5155-246del	NC_000023.10:g.32381322_32431265del	NC_000023.11:g.32363205_32413148del
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246dup		NM_004006.2:c.4072-1234_5155-246dup	NC_000023.11(NM_004006.2):c.4072-1234_5155-246dup	NG_012232.1(NM_004006.2):c.4072-1234_5155-246dup	NG_012232.1:g.931463_981406dup	LRG_199:g.931463_981406dup	LRG_199t1:c.4072-1234_5155-246dup	NC_000023.10:g.32381322_32431265dup	NC_000023.11:g.32363205_32413148dup
+NC_000023.11(NM_004006.2):c.4072-?_5154+?del	NM_004006.2:c.4072-?_5154+?del: char 19: expected a digit	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.720_991dup	NC_000023.11:g.32645122_32699223dup(deleted): Variant reference (272 chars) does not agree with reference sequence (54102 chars)	None	None	None	None	None	None	None	None
+NC_000023.11(NM_004006.2):c.93+1G>T		NM_004006.2:c.93+1G>T	NC_000023.11(NM_004006.2):c.93+1G>T	NG_012232.1(NM_004006.2):c.93+1G>T	NG_012232.1:g.324472G>T	LRG_199:g.324472G>T	LRG_199t1:c.93+1G>T	NC_000023.10:g.33038255C>A	NC_000023.11:g.33020138C>A
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)del		None	None	None	None	None	None	None	NC_000023.11:g.(31060227_31100351)_(33274278_33417151)del
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)dup		None	None	None	None	None	None	None	NC_000023.11:g.(31060227_31100351)_(33274278_33417151)dup
+NC_000023.11:g.(31729662_31774079)_(32216972_32287623)dup		NM_004006.3:c.(6196_6382)_(7423_7629)dup	None	None	None	None	None	None	NC_000023.11:g.(31729662_31774079)_(32216972_32287623)dup
+NC_000023.11:g.(31729663_31774080)_(32216973_32287624)del		NM_004006.3:c.(6195_6381)_(7422_7628)del	None	None	None	None	None	None	NC_000023.11:g.(31729663_31774080)_(32216973_32287624)del
+NC_000023.11:g.(31729716_31773911)_(32217064_32287541)dup		NM_004006.3:c.(6278_6291-1)_(7542+49_7575)dup	None	None	None	None	None	None	NC_000023.11:g.(31729716_31773911)_(32217064_32287541)dup
+NC_000023.11:g.(31729716_31774235)_(32216847_32287541)del		NM_004006.3:c.(6280_6438+71)_(7310-43_7575)del	None	None	None	None	None	None	NC_000023.11:g.(31729716_31774235)_(32216847_32287541)del
+NC_000023.11:g.(31775822_31817965)_(32218461_32278336)dup		NM_004006.3:c.(6290+9193_6291-1398)_(7309+2010_7310-1630)dup	None	None	None	None	None	None	NC_000023.11:g.(31775822_31817965)_(32218461_32278336)dup
+NC_000023.11:g.(31775822_31819974)_(32217064_32278336)del		NM_004006.3:c.(6290+9193_6291-1)_(7309+1_7310-1630)del	None	None	None	None	None	None	NC_000023.11:g.(31775822_31819974)_(32217064_32278336)del
+NC_000023.11:g.(32381076_32382698)_(32430031_32456357)[3]	NC_000023.11:g.32381076_32382698[3]: char 32: expected one of =, con, copy, del, dup, ins, inv, or a digit	None	None	None	None	None	None	None	None
+NC_000023.11:g.(86200001_103700000)del		None	None	None	None	None	None	None	NC_000023.11:g.(86200001_103700000)del
+NC_000023.11:g.(?_31120496)_(33339477_?)del		None	None	None	None	None	None	None	None
+NC_000023.11:g.(?_31120496)_(33339477_?)dup		None	None	None	None	None	None	None	None
+NC_000023.11:g.32343183del		NM_004006.3:c.5697del	None	None	None	None	None	NC_000023.10:g.32361300del	NC_000023.11:g.32343183del
+NC_000023.11:g.32343183dup		NM_004006.3:c.5697dup	None	None	None	None	None	NC_000023.10:g.32361300dup	NC_000023.11:g.32343183dup
+NC_000023.11:g.32362879C>T		NM_004006.3:c.5234G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NC_000023.11:g.32386323delCinsGA	NC_000023.11:g.32386323delCinsGA: Variant reference (C) does not agree with reference sequence (T)	None	None	None	None	None	None	None	None
+NC_000023.11:g.32386323delTinsGA		NM_004006.3:c.4661delinsTC	None	None	None	None	None	NC_000023.10:g.32404440delinsGA	NC_000023.11:g.32386323delinsGA
+NC_000023.11:g.32386323delinsGA		NM_004006.3:c.4661delinsTC	None	None	None	None	None	NC_000023.10:g.32404440delinsGA	NC_000023.11:g.32386323delinsGA
+NC_000023.11:g.32389644G>A		NM_004006.3:c.4375C>T	None	None	None	None	None	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+NC_000023.11:g.32441180dup		NM_004006.3:c.3921dup	None	None	None	None	None	NC_000023.10:g.32459297dup	NC_000023.11:g.32441180dup
+NC_000023.11:g.32844735_32844787dup		NM_004006.3:c.260_264+48dup	NC_000023.11(NM_004006.3):c.260_264+48dup	None	None	None	None	NC_000023.10:g.32862852_32862904dup	NC_000023.11:g.32844735_32844787dup
+NC_000023.11:g.32849790T>A		NM_004006.3:c.124A>T	None	None	None	None	None	NC_000023.10:g.32867907T>A	NC_000023.11:g.32849790T>A
+NC_000023.11:g.32867908=		NM_004006.3:c.94-18088=	NC_000023.10(NM_004006.3):c.94-18088=	NC_000023.10:g.32886025=	NC_000023.11:g.32867908=				
+NC_000023.11:g.32867908_32867923=		NM_004006.3:c.94-18103_94-18088=	NC_000023.10(NM_004006.3):c.94-18103_94-18088=	NC_000023.10:g.32886025_32886040=	NC_000023.11:g.32867908_32867923=				
+NC_000023.11:g.33211290_33211293dup		NM_004006.3:c.20_23dup	None	None	None	None	None	NC_000023.10:g.33229407_33229410dup	NC_000023.11:g.33211290_33211293dup
+NC_000023.11:g.33344590_33344592=//del	NC_000023.11:g.33344590_33344592=//del: char 33: expected EOF	None	None	None	None	None	None	None	None
+NC_000023.11:g.33344590_33344592=//dup	NC_000023.11:g.33344590_33344592=//dup: char 33: expected EOF	None	None	None	None	None	None	None	None
+NC_000023.11:g.33344590_33344592=/del	NC_000023.11:g.33344590_33344592=/del: char 33: expected EOF	None	None	None	None	None	None	None	None
+NC_000023.11:g.33344590_33344592=/dup	NC_000023.11:g.33344590_33344592=/dup: char 33: expected EOF	None	None	None	None	None	None	None	None
+NC_000023.11:g.33344590_33344592del		None	None	None	NG_012232.1:g.19_21del	LRG_199:g.19_21del	None	NC_000023.10:g.33362707_33362709del	NC_000023.11:g.33344590_33344592del
+NC_000023.11:g.33344590_33344592delGAT	Removing redundant reference bases from variant description	None	None	None	NG_012232.1:g.19_21del	LRG_199:g.19_21del	None	NC_000023.10:g.33362707_33362709del	NC_000023.11:g.33344590_33344592del
+NC_000023.11:g.33344590_33344592delTTA	Removing redundant reference bases from variant description|NC_000023.11:g.33344590_33344592delTTA: Variant reference (TTA) does not agree with reference sequence (GAT)	None	None	None	None	None	None	None	None
+NC_000023.11:g.33344591del		None	None	None	NG_012232.1:g.19del	LRG_199:g.19del	None	NC_000023.10:g.33362708del	NC_000023.11:g.33344591del
+NC_000023.11:g.33344591delA	Removing redundant reference bases from variant description	None	None	None	NG_012232.1:g.19del	LRG_199:g.19del	None	NC_000023.10:g.33362708del	NC_000023.11:g.33344591del
+NC_000023.11:g.33344591delG	Removing redundant reference bases from variant description|NC_000023.11:g.33344591delG: Variant reference (G) does not agree with reference sequence (A)	None	None	None	None	None	None	None	None
+NC_000023.11:g.89555676_100352080del		None	None	None	None	None	None	NC_000023.10:g.88810675_99607079del	NC_000023.11:g.89555677_100352081del
+NC_000023.11:g.pter_qter[2]	RepeatSyntaxError: The provided start coordinate pdoes not appear to be a simple transcript coordinate, or an intronic location	None	None	None	None	None	None	None	None
+NC_000023.11:g.pter_qtersup	NC_000023.11:g.pter_qtersup: char 15: expected one of (, ?, or a digit	None	None	None	None	None	None	None	None
+NC_000023.9:g.(123456_234567)_(345678_456789)del		None	None	None	None	None	None	None	NC_000023.9:g.(123456_234567)_(345678_456789)del
+NC_000023.9:g.32290917C>T	Failed to find NC_000023.9 in our sequence store: This may mean that the sequence has been mistyped, or it may be missing from our data, possibly due to being either deprecated or yet to be added.	None	None	None	None	None	None	None	None
+NC_000023.9:g.32317682G>A	Failed to find NC_000023.9 in our sequence store: This may mean that the sequence has been mistyped, or it may be missing from our data, possibly due to being either deprecated or yet to be added.	None	None	None	None	None	None	None	None
+NC_012920.1(MT-ND1):m.3460G>A		None	None	None	None	None	None	NC_012920.1:m.3460G>A	NC_012920.1:m.3460G>A
+NC_012920.1(MT-TL1):m.3243A>G		None	None	None	None	None	None	NC_012920.1:m.3243A>G	NC_012920.1:m.3243A>G
+NC_012920.1(MT-TL1):n.14A>G	Accession (NC_012920.1) is not compatible with variant type n	None	None	None	None	None	None	None	None
+NC_012920.1:m.16563_13del	The variant positions are valid but we cannot normalize variants spanning the origin of circular reference sequences	None	None	None	None	None	None	None	None
+NC_012920.1:m.3243A>G		None	None	None	None	None	None	NC_012920.1:m.3243A>G	NC_012920.1:m.3243A>G
+NC_012920.1:m.3460G>A		None	None	None	None	None	None	NC_012920.1:m.3460G>A	NC_012920.1:m.3460G>A
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[N[603];123+45_123+51]	NM_004006.2:c.123+51_123+52ins[N[603];123+45_123+51] may also be written as NM_004006.2:c.123+51_123+52insNNN(deleted by Ivo)NNN123+45_123+51|NM_004006.2:c.123+51_123+52insNNN(deleted by Ivo)NNN123+45_123+51: char 634: expected EOF	None	None	None	None	None	None	None	None
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[[XXXXXX.y:g.393_1295];123+45_123+51]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NG_012232.1(NM_004006.2):c.357+1G>A		NM_004006.2:c.357+1G>A	NC_000023.11(NM_004006.2):c.357+1G>A	NG_012232.1(NM_004006.2):c.357+1G>A	NG_012232.1:g.521316G>A	LRG_199:g.521316G>A	LRG_199t1:c.357+1G>A	NC_000023.10:g.32841411C>T	NC_000023.11:g.32823294C>T
+NG_012232.1(NM_004006.2):c.93+1G>T		NM_004006.2:c.93+1G>T	NC_000023.11(NM_004006.2):c.93+1G>T	NG_012232.1(NM_004006.2):c.93+1G>T	NG_012232.1:g.324472G>T	LRG_199:g.324472G>T	LRG_199t1:c.93+1G>T	NC_000023.10:g.33038255C>A	NC_000023.11:g.33020138C>A
+NG_012232.1:g.123_128del		None	None	None	NG_012232.1:g.124_129del	LRG_199:g.124_129del	None	NC_000023.10:g.33362600_33362605del	NC_000023.11:g.33344483_33344488del
+NG_012232.1:g.123del6	Length implied by coordinates must equal sequence deletion length|Trailing digits are not permitted in HGVS variant descriptions|Refer to http://varnomen.hgvs.org/recommendations/DNA/variant/	None	None	None	None	None	None	None	None
+NG_012232.1:g.12G>T(;)13C>G		None	None	None	NG_012232.1:g.12G>T	LRG_199:g.12G>T	None	NC_000023.10:g.33362715C>A	NC_000023.11:g.33344598C>A
+NG_012232.1:g.12GC>TG		None	None	None	NG_012232.1:g.12_13delinsTG	LRG_199:g.12_13delinsTG	None	NC_000023.10:g.33362714_33362715delinsCA	NC_000023.11:g.33344597_33344598delinsCA
+NG_012232.1:g.12_13delinsTG		None	None	None	NG_012232.1:g.12_13delinsTG	LRG_199:g.12_13delinsTG	None	NC_000023.10:g.33362714_33362715delinsCA	NC_000023.11:g.33344597_33344598delinsCA
+NG_012232.1:g.954966C>T		NM_004006.3:c.4375C>T	None	None	None	None	None	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+NG_012232.1:g.981731G>A		NM_004006.3:c.5234G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_000044.3:c.(92_331)insN[33]	Insertion length must be 1 e.g. 92_93insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN	NM_000044.3:c.(92_331)insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN	None	None	None	None	None	None	NC_000023.11:g.(67545238_67545477)insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+NM_000044.3:c.171_239GCA[34]		NM_000044.3:c.207_239dup	None	None	NG_009014.2:g.6322_6354dup	LRG_1406:g.6322_6354dup	None	NC_000023.10:g.66765195_66765227dup	NC_000023.11:g.67545353_67545385dup
+NM_000109.3:c.-401C>T	Using a transcript reference sequence to specify a variant position that lies outside of the reference sequence is not HGVS-compliant: Instead re-submit NC_000023.11:g.33339666G>A	None	None	None	None	None	None	None	None
+NM_000109.3:c.5210G>A		NM_000109.3:c.5210G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_000222.3:c.1676_1684del		NM_000222.3:c.1676_1684del		NC_000004.11:g.55593610_55593618del	NC_000004.12:g.54727444_54727452del				
+NM_000333.3:c.(4_246)delN[15]		NM_000333.3:c.(4_246)delNNNNNNNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)delNNNNNNNNNNNNNNN
+NM_000333.3:c.(4_246)insN[(150_180)]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NM_000333.3:c.(4_246)insN[15]	Insertion length must be 1 e.g. 4_5insNNNNNNNNNNNNNNN	NM_000333.3:c.(4_246)insNNNNNNNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)insNNNNNNNNNNNNNNN
+NM_000333.3:c.(4_246)insN[9]	Insertion length must be 1 e.g. 4_5insNNNNNNNNN	NM_000333.3:c.(4_246)insNNNNNNNNN	None	None	None	None	None	None	NC_000003.12:g.(63912602_63912844)insNNNNNNNNN
+NM_000492.3:c.1210-12_1210-6T[7]		NM_000492.3:c.1210-12_1210-6=	NC_000007.14(NM_000492.3):c.1210-12_1210-6=	NG_016465.4(NM_000492.3):c.1210-12_1210-6=	NG_016465.4:g.87846_87852=	LRG_663:g.87846_87852=	LRG_663t1:c.1210-12_1210-6=	NC_000007.13:g.117188683_117188689=	NC_000007.14:g.117548629_117548635=
+NM_000492.3:c.1210-33_1210-6GT[11]T[6]	No information should be included after the number of repeat units. Currently T[6] is included.	None	None	None	None	None	None	None	None
+NM_000492.3:c.1521_1523del		NM_000492.3:c.1521_1523del	None	None	NG_016465.4:g.98809_98811del	LRG_663:g.98809_98811del	LRG_663t1:c.1521_1523del	NC_000007.13:g.117199646_117199648del	NC_000007.14:g.117559592_117559594del
+NM_000492.3:c.1522_1524del		NM_000492.3:c.1522_1524del	None	None	NG_016465.4:g.98810_98812del	LRG_663:g.98810_98812del	LRG_663t1:c.1522_1524del	NC_000007.13:g.117199647_117199649del	NC_000007.14:g.117559593_117559595del
+NM_000492.3:c.1522_1524delTTT	Removing redundant reference bases from variant description	NM_000492.3:c.1522_1524del	None	None	NG_016465.4:g.98810_98812del	LRG_663:g.98810_98812del	LRG_663t1:c.1522_1524del	NC_000007.13:g.117199647_117199649del	NC_000007.14:g.117559593_117559595del
+NM_000517.4:c.424C>T^NM_000558.3:c.424C>T	NM_000517.4:c.424C>T^NM_000558.3:c.424C>T: char 20: expected EOF	None	None	None	None	None	None	None	None
+NM_000553.4:c.3050_3051ins[NM_004006.3:c.284_293]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NM_000797.3:c.812_829delins908_925	NM_000797.3:c.812_829delins908_925: char 28: expected EOF	None	None	None	None	None	None	None	None
+NM_001849.3:c.-1_*1=		NM_001849.3:c.-1_*1=	None	None	NG_008675.1:g.18474_38831delins(deleted by Ivo)	LRG_476:g.18474_38831delins(deleted by Ivo)	LRG_476t1:c.115+1_2462-5delins(deleted by Ivo)	NC_000021.8:g.47531506_47551863delins(deleted by Ivo)	NC_000021.9:g.46111592_46131949delins(deleted by Ivo)
+NM_001849.3:c.=	NM_001849.3:c.=: char 14: expected one of (, *, or a digit	None	None	None	None	None	None	None	None
+NM_002024.5:c.(-144_-16)insN[(1800_2400)]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NM_002024.5:c.-128_-69GGC[10]GGA[1]GGC[9]GGA[1]GGC[10]	No information should be included after the number of repeat units. Currently GGA[1]GGC[9]GGA[1]GGC[10] is included.	None	None	None	None	None	None	None	None
+NM_002024.5:c.-128_-69GGC[68]GGA[1]GGC[10]	No information should be included after the number of repeat units. Currently GGA[1]GGC[10] is included.	None	None	None	None	None	None	None	None
+NM_002024.5:c.-128_-69GGM[108]		NM_002024.5:c.-127_-126insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	None	None	NG_007529.2:g.5063_5064insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	LRG_762:g.5063_5064insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	LRG_762t1:c.-127_-126insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	NC_000023.10:g.146993571_146993572insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	NC_000023.11:g.147912053_147912054insGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+NM_002024.5:c.-129CGG[79]		NM_002024.5:c.-100_-99insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG	None	None	NG_007529.2:g.5090_5091insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG	LRG_762:g.5090_5091insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG	LRG_762t1:c.-100_-99insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG	NC_000023.10:g.146993598_146993599insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG	NC_000023.11:g.147912080_147912081insCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG
+NM_002111:c.211C>T	RefSeq variant accession numbers MUST include a version number								
+NM_003079.4:c.374_395inv		NM_003079.4:c.374_395inv		NC_000017.10:g.38792329_38792350inv	NC_000017.11:g.40636077_40636098inv				
+NM_004006.1:c.-128354C>T	Using a transcript reference sequence to specify a variant position that lies outside of the reference sequence is not HGVS-compliant: Instead re-submit NC_000023.11:g.33339666G>A	None	None	None	None	None	None	None	None
+NM_004006.1:c.123+45_123+51TSDinsL1.603bp	NM_004006.1:c.123+45_123+51TSDinsL1.603bp: char 30: expected the character =	None	None	None	None	None	None	None	None
+NM_004006.1:c.123=		NM_004006.1:c.123=	None	None	None	None	None	NC_000023.10:g.32867908=	NC_000023.11:g.32849791=
+NM_004006.1:c.5697del		NM_004006.1:c.5697del	None	None	None	None	None	NC_000023.10:g.32361300del	NC_000023.11:g.32343183del
+NM_004006.1:c.761_762insN[5]		NM_004006.1:c.761_762insNNNNN	None	None	None	None	None	NC_000023.10:g.32717298_32717299insNNNNN	NC_000023.11:g.32699181_32699182insNNNNN
+NM_004006.1:c.76A/G	NM_004006.1:c.76A/G: char 17: expected one of =, or >	None	None	None	None	None	None	None	None
+NM_004006.1:c.76A>G		NM_004006.1:c.76A>G	None	None	None	None	None	NC_000023.10:g.33038273T>C	NC_000023.11:g.33020156T>C
+NM_004006.1:c.[123=;456=;789=]		NM_004006.1:c.123=	None	None	None	None	None	NC_000023.10:g.32867908=	NC_000023.11:g.32849791=
+NM_004006.1:c.[837G>A;1704+51T>C;3734C>T;6438+2669T[(16_23)];6571C>T;7098+13212GT[(15_19)]]	Unsupported format c.[837G>A;1704+51T>C;3734C>T;6438+2669T[(16_23)];6571C>T;7098+13212GT[(15_19)]]	None	None	None	None	None	None	None	None
+NM_004006.2:c.(222_226)insG	Insertion length must be 1 e.g. 222_223insG	NM_004006.2:c.(222_226)insG	None	None	None	None	None	None	NC_000023.11:g.(32844821_32844825)insG
+NM_004006.2:c.*1162_*2691{2}	NM_004006.2:c.*1162_*2691{2}: char 25: expected one of =, con, copy, del, dup, ins, inv, or a digit	None	None	None	None	None	None	None	None
+NM_004006.2:c.-244_*2691del		NM_004006.2:c.-244_*2691del	None	None	NG_012232.1:g.133054_2225382del	LRG_199:g.133054_2225382del	LRG_199t1:c.-244_*2691del	NC_000023.10:g.31137345_33229673del	NC_000023.11:g.31119228_33211556del
+NM_004006.2:c.-244_*2691{0}	NM_004006.2:c.-244_*2691{0}: char 24: expected one of =, con, copy, del, dup, ins, inv, or a digit	None	None	None	None	None	None	None	None
+NM_004006.2:c.-244_187{0}	NM_004006.2:c.-244_187{0}: char 22: expected one of =, con, copy, del, dup, ins, inv, or a digit	None	None	None	None	None	None	None	None
+NM_004006.2:c.123=		NM_004006.2:c.123=	None	None	NG_012232.1:g.494819=	LRG_199:g.494819=	LRG_199t1:c.123=	NC_000023.10:g.32867908=	NC_000023.11:g.32849791=
+NM_004006.2:c.145_147delinsTGG		NM_004006.2:c.145_147delinsTGG	None	None	NG_012232.1:g.494841_494843delinsTGG	LRG_199:g.494841_494843delinsTGG	LRG_199t1:c.145_147delinsTGG	NC_000023.10:g.32867884_32867886delinsCCA	NC_000023.11:g.32849767_32849769delinsCCA
+NM_004006.2:c.169_170insA		NM_004006.2:c.169_170insA	None	None	NG_012232.1:g.494865_494866insA	LRG_199:g.494865_494866insA	LRG_199t1:c.169_170insA	NC_000023.10:g.32867861_32867862insT	NC_000023.11:g.32849744_32849745insT
+NM_004006.2:c.20_23dup		NM_004006.2:c.20_23dup	None	None	NG_012232.1:g.133317_133320dup	LRG_199:g.133317_133320dup	LRG_199t1:c.20_23dup	NC_000023.10:g.33229407_33229410dup	NC_000023.11:g.33211290_33211293dup
+NM_004006.2:c.20dup		NM_004006.2:c.20dup	None	None	NG_012232.1:g.133317dup	LRG_199:g.133317dup	LRG_199t1:c.20dup	NC_000023.10:g.33229410dup	NC_000023.11:g.33211293dup
+NM_004006.2:c.20dupG	Removing redundant reference bases from variant description|NM_004006.2:c.20dupG: Variant reference (G) does not agree with reference sequence (T)	None	None	None	None	None	None	None	None
+NM_004006.2:c.20dupT	Removing redundant reference bases from variant description	NM_004006.2:c.20dup	None	None	NG_012232.1:g.133317dup	LRG_199:g.133317dup	LRG_199t1:c.20dup	NC_000023.10:g.33229410dup	NC_000023.11:g.33211293dup
+NM_004006.2:c.2376G>C(;)(2376G>C)	NM_004006.2:c.2376G>C=: char 21: expected EOF	NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.2376G>C(;)3103del		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.357+1G>A		NM_004006.2:c.357+1G>A	NC_000023.11(NM_004006.2):c.357+1G>A	NG_012232.1(NM_004006.2):c.357+1G>A	NG_012232.1:g.521316G>A	LRG_199:g.521316G>A	LRG_199t1:c.357+1G>A	NC_000023.10:g.32841411C>T	NC_000023.11:g.32823294C>T
+NM_004006.2:c.4072-1234_5155-246dup		NM_004006.2:c.4072-1234_5155-246dup	NC_000023.11(NM_004006.2):c.4072-1234_5155-246dup	NG_012232.1(NM_004006.2):c.4072-1234_5155-246dup	NG_012232.1:g.931463_981406dup	LRG_199:g.931463_981406dup	LRG_199t1:c.4072-1234_5155-246dup	NC_000023.10:g.32381322_32431265dup	NC_000023.11:g.32363205_32413148dup
+NM_004006.2:c.4145_4160inv		NM_004006.2:c.4145_4160inv	None	None	NG_012232.1:g.932770_932785inv	LRG_199:g.932770_932785inv	LRG_199t1:c.4145_4160inv	NC_000023.10:g.32429942_32429957inv	NC_000023.11:g.32411825_32411840inv
+NM_004006.2:c.419_420ins[T;401_419]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NM_004006.2:c.4375C>T		NM_004006.2:c.4375C>T	None	None	NG_012232.1:g.954966C>T	LRG_199:g.954966C>T	LRG_199t1:c.4375C>T	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+NM_004006.2:c.5657_5660inv		NM_004006.2:c.5657_5660inv	None	None	NG_012232.1:g.1001394_1001397inv	LRG_199:g.1001394_1001397inv	LRG_199t1:c.5657_5660inv	NC_000023.10:g.32361330_32361333inv	NC_000023.11:g.32343213_32343216inv
+NM_004006.2:c.5690del	NM_004006.2:c.5690del automapped to NM_004006.2:c.5697del	NM_004006.2:c.5697del	None	None	NG_012232.1:g.1001434del	LRG_199:g.1001434del	LRG_199t1:c.5697del	NC_000023.10:g.32361300del	NC_000023.11:g.32343183del
+NM_004006.2:c.5690dup	NM_004006.2:c.5690dup automapped to NM_004006.2:c.5697dup	NM_004006.2:c.5697dup	None	None	NG_012232.1:g.1001434dup	LRG_199:g.1001434dup	LRG_199t1:c.5697dup	NC_000023.10:g.32361300dup	NC_000023.11:g.32343183dup
+NM_004006.2:c.5697del		NM_004006.2:c.5697del	None	None	NG_012232.1:g.1001434del	LRG_199:g.1001434del	LRG_199t1:c.5697del	NC_000023.10:g.32361300del	NC_000023.11:g.32343183del
+NM_004006.2:c.5697dup		NM_004006.2:c.5697dup	None	None	NG_012232.1:g.1001434dup	LRG_199:g.1001434dup	LRG_199t1:c.5697dup	NC_000023.10:g.32361300dup	NC_000023.11:g.32343183dup
+NM_004006.2:c.6775_6777delGAGinsC		NM_004006.2:c.6775_6777delinsC	None	None	NG_012232.1:g.1414877_1414879delinsC	LRG_199:g.1414877_1414879delinsC	LRG_199t1:c.6775_6777delinsC	NC_000023.10:g.31947848_31947850delinsG	NC_000023.11:g.31929731_31929733delinsG
+NM_004006.2:c.6775_6777delGTGinsC	NM_004006.2:c.6775_6777delGTGinsC: Variant reference (GTG) does not agree with reference sequence (GAG)	None	None	None	None	None	None	None	None
+NM_004006.2:c.6775_6777delinsC		NM_004006.2:c.6775_6777delinsC	None	None	NG_012232.1:g.1414877_1414879delinsC	LRG_199:g.1414877_1414879delinsC	LRG_199t1:c.6775_6777delinsC	NC_000023.10:g.31947848_31947850delinsG	NC_000023.11:g.31929731_31929733delinsG
+NM_004006.2:c.761_762insN		NM_004006.2:c.761_762insN	None	None	NG_012232.1:g.645428_645429insN	LRG_199:g.645428_645429insN	LRG_199t1:c.761_762insN	NC_000023.10:g.32717298_32717299insN	NC_000023.11:g.32699181_32699182insN
+NM_004006.2:c.761_762insNNNNN		NM_004006.2:c.761_762insNNNNN	None	None	NG_012232.1:g.645428_645429insNNNNN	LRG_199:g.645428_645429insNNNNN	LRG_199t1:c.761_762insNNNNN	NC_000023.10:g.32717298_32717299insNNNNN	NC_000023.11:g.32699181_32699182insNNNNN
+NM_004006.2:c.812_829delinsN[12]		NM_004006.2:c.812_829delinsNNNNNNNNNNNN	None	None	NG_012232.1:g.645479_645496delinsNNNNNNNNNNNN	LRG_199:g.645479_645496delinsNNNNNNNNNNNN	LRG_199t1:c.812_829delinsNNNNNNNNNNNN	NC_000023.10:g.32717231_32717248delinsNNNNNNNNNNNN	NC_000023.11:g.32699114_32699131delinsNNNNNNNNNNNN
+NM_004006.2:c.849_850ins850_900inv	NM_004006.2:c.849_850ins850_900inv: char 24: Syntax error	None	None	None	None	None	None	None	None
+NM_004006.2:c.849_850ins858_895	NM_004006.2:c.849_850ins858_895: char 24: Syntax error	None	None	None	None	None	None	None	None
+NM_004006.2:c.85=//T>C	NM_004006.2:c.85=//T>C: char 17: expected EOF	None	None	None	None	None	None	None	None
+NM_004006.2:c.900_901ins850_900inv	NM_004006.2:c.900_901ins850_900inv: char 24: Syntax error	None	None	None	None	None	None	None	None
+NM_004006.2:c.940_941ins[903_940inv;851_885inv]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]	None	None	None	None	None	None	None	None
+NM_004006.2:c.=	NM_004006.2:c.=: char 14: expected one of (, *, or a digit	None	None	None	None	None	None	None	None
+NM_004006.2:c.[123=;456=;789=]		NM_004006.2:c.123=		NC_000023.10:g.32867908=	NC_000023.11:g.32849791=				
+NM_004006.2:c.[2376G>C;3103del]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.[2376G>C];[2376=]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.[2376G>C];[2376G>C]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.[2376G>C];[3103del]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.[2376G>C];[?]		NM_004006.2:c.2376G>C	None	None	NG_012232.1:g.842851G>C	LRG_199:g.842851G>C	LRG_199t1:c.2376G>C	NC_000023.10:g.32519876C>G	NC_000023.11:g.32501759C>G
+NM_004006.2:c.[296T>G;476T>C;1083A>C];[296T>G;1083A>C]		NM_004006.2:c.296T>G	None	None	NG_012232.1:g.521254T>G	LRG_199:g.521254T>G	LRG_199t1:c.296T>G	NC_000023.10:g.32841473A>C	NC_000023.11:g.32823356A>C
+NM_004006.2:c.[296T>G;476T>C];[476T>C](;)1083A>C		NM_004006.2:c.1083A>C	None	None	NG_012232.1:g.699580A>C	LRG_199:g.699580A>C	LRG_199t1:c.1083A>C	NC_000023.10:g.32663147T>G	NC_000023.11:g.32645030T>G
+NM_004006.2:c.[296T>G];[476T>C](;)1083G>C(;)1406del	NM_004006.2:c.1083G>C: Variant reference (G) does not agree with reference sequence (A)	None	None	None	None	None	None	None	None
+NM_004006.2:c.[762_768del;767_774dup]	AlleleSyntaxError: Submitted variants are out of order or their ranges overlap	None	None	None	None	None	None	None	None
+NM_004006.2c.2622G>C	Unable to identify a colon (:) in the variant description NM_004006.2c.2622G>C. A colon is required in HGVS variant descriptions to separate the reference accession from the reference type i.e. <accession>:<type>. e.g. :c.								
+NM_004006.3:c.124A>T		NM_004006.3:c.124A>T	None	None	None	None	None	NC_000023.10:g.32867907T>A	NC_000023.11:g.32849790T>A
+NM_004006.3:c.2453del		NM_004006.3:c.2453del	None	None	None	None	None	NC_000023.10:g.32509564del	NC_000023.11:g.32491447del
+NM_004006.3:c.299_300ins284_293	NM_004006.3:c.299_300ins284_293: char 24: Syntax error	None	None	None	None	None	None	None	None
+NM_004006.3:c.299_300insGAAGTACTG		NM_004006.3:c.299_300insGAAGTACTG	None	None	None	None	None	NC_000023.10:g.32841469_32841470insCAGTACTTC	NC_000023.11:g.32823352_32823353insCAGTACTTC
+NM_004006.3:c.3430C>T		NM_004006.3:c.3430C>T		NC_000023.10:g.32481558G>A	NC_000023.11:g.32463441G>A				
+NM_004006.3:c.4375C>T		NM_004006.3:c.4375C>T	None	None	None	None	None	NC_000023.10:g.32407761G>A	NC_000023.11:g.32389644G>A
+NM_004006.3:c.472A>G		NM_004006.3:c.472A>G		NC_000023.10:g.32834643T>C	NC_000023.11:g.32816526T>C				
+NM_004006.3:c.5234G>A		NM_004006.3:c.5234G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_004006.3:c.897T>G		NM_004006.3:c.897T>G		NC_000023.10:g.32716050A>C	NC_000023.11:g.32697933A>C				
+NM_004007.2:c.4865G>A		NM_004007.2:c.4865G>A	None	None	None	None	None	NC_000023.10:g.32366638A>T	NC_000023.11:g.32348521A>T
+NM_004009.3:c.5222G>A		NM_004009.3:c.5222G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_004010.3:c.4865G>A		NM_004010.3:c.4865G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_004011.3:c.1211G>A		NM_004011.3:c.1211G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_004012.3:c.1202G>A		NM_004012.3:c.1202G>A	None	None	None	None	None	NC_000023.10:g.32380996C>T	NC_000023.11:g.32362879C>T
+NM_004380.2:c.138_139insTCATCATGAGCTCCC		NM_004380.2:c.138_139insTCATCATGAGCTCCC		NC_000016.9:g.3900960_3900961insAGCTCATGATGAGGG	NC_000016.10:g.3850959_3850960insAGCTCATGATGAGGG				
+NM_004380.2:c.139delinsTCATCATGAGCTG		NM_004380.2:c.139delinsTCATCATGAGCTG		NC_000016.9:g.3900957delinsCAGCTCATGATGA	NC_000016.10:g.3850956delinsCAGCTCATGATGA				
+NM_007294.3:c.2077G>A		NM_007294.3:c.2077G>A	None	None	NG_005905.2:g.124530G>A	LRG_292:g.124530G>A	LRG_292t1:c.2077G>A	NC_000017.10:g.41245471C>T	NC_000017.11:g.43093454C>T
+NM_007294.3:c.2077delinsATA		NM_007294.3:c.2077delinsATA	None	None	NG_005905.2:g.124530delinsATA	LRG_292:g.124530delinsATA	LRG_292t1:c.2077delinsATA	NC_000017.10:g.41245471delinsTAT	NC_000017.11:g.43093454delinsTAT
+NM_007294.3:c.[2077G>A;2077_2078insTA]	AlleleSyntaxError: Submitted variants are out of order or their ranges overlap	None	None	None	None	None	None	None	None
+NM_021080.3:c.-136-75952_-136-75878ATTTT[15]	ExonBoundaryError: Position -136-75952_-136-75878 does not correspond with an exon boundary for transcript NM_021080.3	None	None	None	None	None	None	None	None
+NM_023035.2:c.6955_6993CAG[26]		NM_023035.2:c.6955_6993dup	None	None	None	None	None	NC_000019.9:g.13318674_13318712dup	NC_000019.10:g.13207860_13207898dup
+NM_024312.4:c.1738TA[6]		NM_024312.4:c.1741_1742insTATATATA	None	None	NG_021243.1:g.70692_70693insTATATATA	None	None	NC_000012.11:g.102158957_102158958insTATATATA	NC_000012.12:g.101765179_101765180insTATATATA
+NM_024312.4:c.1741_1742insTATATATA		NM_024312.4:c.1741_1742insTATATATA	None	None	NG_021243.1:g.70692_70693insTATATATA	None	None	NC_000012.11:g.102158957_102158958insTATATATA	NC_000012.12:g.101765179_101765180insTATATATA
+NM_024312.4:c.2686A[10]		NM_024312.4:c.2692_2693dup	None	None	NG_021243.1:g.71643_71644dup	None	None	NC_000012.11:g.102158008_102158009dup	NC_000012.12:g.101764230_101764231dup
+NM_024312.4:c.2692_2693dup		NM_024312.4:c.2692_2693dup	None	None	NG_021243.1:g.71643_71644dup	None	None	NC_000012.11:g.102158008_102158009dup	NC_000012.12:g.101764230_101764231dup
+NM_080877.2:c.1732_1794del		NM_080877.2:c.1732_1794del		NC_000009.11:g.140130800_140130862del	NC_000009.12:g.137236348_137236410del				
+NM_080877.2:c.1733_1735delinsTTT		NM_080877.2:c.1733_1735delinsTTT		NC_000009.11:g.140130801_140130803delinsTTT	NC_000009.12:g.137236349_137236351delinsTTT				
+NM_080877.2c.1733_1735delinsTTT	Unable to identify a colon (:) in the variant description NM_080877.2c.1733_1735delinsTTT. A colon is required in HGVS variant descriptions to separate the reference accession from the reference type i.e. <accession>:<type>. e.g. :c.								
+NR_002196.1:n.601G>T		NR_002196.1:n.601G>T	None	None	None	None	None	NC_000011.9:g.2018465C>A	NC_000011.10:g.1997235C>A
+NR_028379.1:n.345A>G		NR_028379.1:n.345A>G	None	None	None	None	None	NC_000023.10:g.73501562T>C	NC_000023.11:g.74281727T>C
+OPRM1:c.118A	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.118A>G	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.118AA	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.118G	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.118GA	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.118GG	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.[118>G];[118>G]	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.[118A=];[118A=]	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+OPRM1:c.[118A>G];[118A=]	HGVS variant nomenclature does not allow the use of a gene symbol (OPRM1) in place of a valid reference sequence	None	None	None	None	None	None	None	None
+[GJB2:c.35del];[GJB6:c.689_690insT]	[GJB2 is not part of genome build GRCh38	None	None	None	None	None	None	None	None
+[M59228.1:g.250G>C;AF209160.1:g.572CA[(11_21)];Z11861.1:g.61T>C;Z16803.1:g.114A[(18_22)]]	[M59228.1 is not part of genome build GRCh38	None	None	None	None	None	None	None	None
+[NM_004004.2:c.35del];[NM_006783.1:c.689_690insT]	The transcript NM_004004.2 is not in our database. Please check the transcript ID|The following versions of the requested transcript are available in our database: NM_004004.3|NM_004004.4|NM_004004.5|NM_004004.6								
+chr11:g.12345611G>A	This is not a valid HGVS variant description, because no reference sequence ID has been provided	NM_001393937.1:c.5415G>A		NC_000011.9:g.12345611G>A	NC_000011.10:g.12324064G>A				
+chr11:g.pter_15,825,272::chr2:g.8,247,757_cen_qter	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000011.9:g.pter_15,825,272chr2g.8,247,757_cen_qter: char 14: expected one of (, ?, or a digit								
+chr11:g.pter_cen_108111981::chr2:g.174500099_qter	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000011.9:g.pter_cen_108111981chr2g.174500099_qter: char 14: expected one of (, ?, or a digit								
+chr14:g.29,745,314_qterinv::CATTTGTTCAAATTTAGTTCAAATGA::chr3:g.36,969,142_cen_qter	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000014.8:g.29,745,314_qterinvCATTTGTTCAAATTTAGTTCAAATGAchr3g.36,969,142_cen_qter: char 16: expected one of =, _, con, copy, del, dup, ins, inv, or a digit								
+chr14:g.[pter_cen_qter]add	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]								
+chr14:g.pter_cen_29,745,313::chr3:g.pter_36,969,141inv	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000014.8:g.pter_cen_29,745,313chr3g.pter_36,969,141inv: char 14: expected one of (, ?, or a digit								
+chr22:g.[pter_10000000del::40000000_qterdel]add	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]								
+chr22:g.pter_10000000del::40000000_qterdel	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000022.10:g.pter_10000000del40000000_qterdel: char 15: expected one of (, ?, or a digit								
+chr2:g.[32310435_32310710del;32310711_171827243inv;insG]	variant must be a parsed HGVS sequence variant object								
+chr2:g.pter_8,247,756::chr11:g.15,825,273_cen_qter	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000002.11:g.pter_8,247,756chr11g.15,825,273_cen_qter: char 15: expected one of (, ?, or a digit								
+chr2:g.pter_cen_174500098::chr11:g.108111987_qter	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000002.11:g.pter_cen_174500098chr11g.108111987_qter: char 15: expected one of (, ?, or a digit								
+chr6:g.[776788_93191545inv;93191546T>C]	data should be a string, bytes, bytearray, Seq, or MutableSeq object								
+chr8:g.128746677_128749160dup	This is not a valid HGVS variant description, because no reference sequence ID has been provided			NC_000008.10:g.128746677_128749160dup	NC_000008.11:g.127734431_127736914dup				
+chr8:g.128746677_128749160dupinv	This is not a valid HGVS variant description, because no reference sequence ID has been provided|NC_000008.10:g.128746677_128749160dupinv: char 38: expected EOF								
+chrX:g.89555676_100352080del	This is not a valid HGVS variant description, because no reference sequence ID has been provided			NC_000023.10:g.89555677_100352081del	NC_000023.11:g.90300677_101097081del				
+chrX:g.[89555676_100352080del]	RepeatSyntaxError: Ensure that the repeated sequence is included between the variant position and the number of repeat units, e.g. g.1_3ACT[20]								
+
