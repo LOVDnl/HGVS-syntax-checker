@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-21   // When modified, also change the library_version.
+ * Modified    : 2025-03-26   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -1366,7 +1366,8 @@ class HGVS_DNAAlts extends HGVS
 class HGVS_DNACNV extends HGVS
 {
     public array $patterns = [
-        ['[', 'HGVS_Lengths', ']', []],
+        'valid'   => ['[', 'HGVS_Lengths', ']', []],
+        'invalid' => ['{', 'HGVS_Lengths', '}', []],
     ];
 
     public function validate ()
@@ -1375,7 +1376,25 @@ class HGVS_DNACNV extends HGVS
 
         // At least two positions are required. With only one position, it's very old repeat syntax.
         $Positions = $this->getParentProperty('DNAPositions');
-        if ($Positions && !$Positions->range) {
+        if ($this->getMatchedPattern() == 'invalid') {
+            // "New", but unofficial, notation for deletions or duplications where the (possibly unknown)
+            //  breakpoints lie outside of the transcript reference sequence.
+            // See https://hgvs-nomenclature.org/stable/consultation/open-issues/#beyond-transcripts
+            if ($Positions && $Positions->range
+                && $this->getParentProperty('DNAPrefix') && $this->getParentProperty('DNAPrefix')->molecule_type == 'transcript'
+                && !$this->Lengths->range && in_array($this->Lengths->getCorrectedValue(), [0, 2])) {
+                // OK, we understand what this means. But we can't approve it, nor can we provide a fix.
+                // So we have to throw an error.
+                $this->data['type'] = 'cnv';
+                $this->messages['EALTSYNTAX'] = 'This syntax has not been approved by the HGVS nomenclature. We currently cannot provide a valid alternative.';
+                // If the length was zero, it will complain. We can remove that.
+                unset($this->messages['ELENGTHFORMAT']);
+            } else {
+                // Curly braces, but used in a way that we don't know what is meant here. Let's just reject for now.
+                return false; // Break out of the entire object.
+            }
+
+        } elseif ($Positions && !$Positions->range) {
             // This is very old repeat syntax. Actually, with a range, it is too,
             //  but we can't really tell the difference (except for the variant length, I guess).
             // Anyway, this, for sure, is wrong.
