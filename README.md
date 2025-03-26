@@ -134,13 +134,14 @@ This returns:
 ```json
 [
     {
-        "library_version": "2025-02-12",
+        "library_date": "2025-03-26",
+        "library_version": "0.4.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.1"
+                "maximum": "21.1.2"
             },
-            "output": "21.1.1"
+            "output": "21.1.2"
         }
     }
 ]
@@ -163,13 +164,14 @@ require 'path/to/HGVS.php';
 // Check all version info.
 $aVersions = HGVS::getVersions();
 // [
-//     "library_version" => "2025-02-13",
+//     "library_date" => "2025-03-26",
+//     "library_version" => "0.4.2",
 //     "HGVS_nomenclature_versions" => [
 //         "input" => [
 //             "minimum" => "15.11",
-//             "maximum" => "21.1.1"
+//             "maximum" => "21.1.2"
 //         ],
-//         "output" => "21.1.1"
+//         "output" => "21.1.2"
 //     ]
 // ]
 
