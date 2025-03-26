@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-19   // When modified, also change the library_version.
+ * Modified    : 2025-03-26   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,7 +753,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_version' => '2025-03-19',
+            'library_date' => '2025-03-26',
+            'library_version' => '0.4.2',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1366,7 +1367,8 @@ class HGVS_DNAAlts extends HGVS
 class HGVS_DNACNV extends HGVS
 {
     public array $patterns = [
-        ['[', 'HGVS_Lengths', ']', []],
+        'valid'   => ['[', 'HGVS_Lengths', ']', []],
+        'invalid' => ['{', 'HGVS_Lengths', '}', []],
     ];
 
     public function validate ()
@@ -1375,7 +1377,25 @@ class HGVS_DNACNV extends HGVS
 
         // At least two positions are required. With only one position, it's very old repeat syntax.
         $Positions = $this->getParentProperty('DNAPositions');
-        if ($Positions && !$Positions->range) {
+        if ($this->getMatchedPattern() == 'invalid') {
+            // "New", but unofficial, notation for deletions or duplications where the (possibly unknown)
+            //  breakpoints lie outside of the transcript reference sequence.
+            // See https://hgvs-nomenclature.org/stable/consultation/open-issues/#beyond-transcripts
+            if ($Positions && $Positions->range
+                && $this->getParentProperty('DNAPrefix') && $this->getParentProperty('DNAPrefix')->molecule_type == 'transcript'
+                && !$this->Lengths->range && in_array($this->Lengths->getCorrectedValue(), [0, 2])) {
+                // OK, we understand what this means. But we can't approve it, nor can we provide a fix.
+                // So we have to throw an error.
+                $this->data['type'] = 'cnv';
+                $this->messages['EALTSYNTAX'] = 'This syntax has not been approved by the HGVS nomenclature. We currently cannot provide a valid alternative.';
+                // If the length was zero, it will complain. We can remove that.
+                unset($this->messages['ELENGTHFORMAT']);
+            } else {
+                // Curly braces, but used in a way that we don't know what is meant here. Let's just reject for now.
+                return false; // Break out of the entire object.
+            }
+
+        } elseif ($Positions && !$Positions->range) {
             // This is very old repeat syntax. Actually, with a range, it is too,
             //  but we can't really tell the difference (except for the variant length, I guess).
             // Anyway, this, for sure, is wrong.
@@ -3423,6 +3443,7 @@ class HGVS_DNASub extends HGVS
     public array $patterns = [
         'valid'   => ['>', []],
         'slash'   => ['/', []],
+        'curly'   => ['}', []],
         // Special characters arising from copying variants from PDFs. Some journals decided to use specialized fonts to
         //  create markup for normal characters, such as the ">" in a substitution. This is a terrible idea, as
         //  text-recognition then completely fails and copying the variant from the PDF results in a broken format.
@@ -3445,6 +3466,8 @@ class HGVS_DNASub extends HGVS
         $this->data['type'] = $this->getCorrectedValue();
         if ($this->matched_pattern == 'slash') {
             $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "/" character.';
+        } elseif ($this->matched_pattern == 'curly') {
+            $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "}" character.';
         } elseif ($this->matched_pattern == 'invalid') {
             // A bit of a weird hack. We made our match optional, since we need to match a space. But a fully optional
             //  match will match always and mess everything up.
@@ -4363,19 +4386,19 @@ class HGVS_Lengths extends HGVS
 class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
-        'refseq_genomic_coding'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[({]([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_genomic_non-coding'   => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[({]([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_genomic_with_gene'    => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[({]([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)[)}]/', []],
+        'refseq_genomic_coding'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic_non-coding'   => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic_with_gene'    => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_genomic'              => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_coding_genomic'       => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?[({](N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_coding_with_gene'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?[({]([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)[)}]/', []],
+        'refseq_coding_genomic'       => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_coding_with_gene'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_coding'               => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_non-coding_genomic'   => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?[({](N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_non-coding_with_gene' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?[({]([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)[)}]/', []],
+        'refseq_non-coding_genomic'   => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_non-coding_with_gene' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_non-coding'           => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_gene_with_genomic'    => ['/([A-Z][A-Za-z0-9#@-]*)[({](N[CG])([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_gene_with_coding'     => ['/(?:[A-Z][A-Za-z0-9#@-]*)[({]([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
-        'refseq_gene_with_non-coding' => ['/(?:[A-Z][A-Za-z0-9#@-]*)[({]([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?[)}]/', []],
+        'refseq_gene_with_genomic'    => ['/([A-Z][A-Za-z0-9#@-]*)\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_gene_with_coding'     => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_gene_with_non-coding' => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
         'refseq_protein'              => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'refseq_other'                => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
         'ensembl_genomic'             => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
