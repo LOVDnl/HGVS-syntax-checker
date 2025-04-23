@@ -29,10 +29,10 @@
 
 
 \begin{document}
-\begin{frame}[plain]{Figure 1: Overview of used classes for parsing NM\_004006.2:c.419\_420ins[T;401\_419].}
+\begin{frame}[plain]{Figure 1: Overview of used classes for parsing NM\_004006.3:c.419\_420ins[T;401\_419].}
 \begin{tikzpicture}[every edge/.append style={>=stealth',->,semithick}]
     \node at (0,0) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
-      (refseq) {\bfseries NM\_004006.2};
+      (refseq) {\bfseries NM\_004006.3};
     \node at (refseq.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm,yshift=1]
       (colon) {\bfseries :};
     \node at (colon.north east) [anchor=north west,rectangle,minimum height=1cm,text height=0.6cm]
@@ -109,7 +109,18 @@
 
 
 
-\begin{frame}{Figure 2: Agreement with the HGVS nomenclature validation set.}
+\begin{frame}[plain]
+\begin{figure}[!h]
+  \centering
+  \includegraphics[height=\textheight]{figures_02.png}
+\end{figure}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Figure 3: Agreement with the HGVS nomenclature validation set.}
 \begin{tikzpicture}
 \begin{axis}[xbar,
   width=11cm,
@@ -134,7 +145,7 @@
 \addplot
 [draw=black,fill=LOVD]
 coordinates
-{(90.00,-1) (56.32,-2) (76.84,-3)};
+{(90.00,-1) (63.95,-2) (75.26,-3)};
 \end{axis}
 \end{tikzpicture}
 \end{frame}
@@ -143,7 +154,7 @@ coordinates
 
 
 
-\begin{frame}{Figure 3: Comparison of performance using the HGVS nomenclature validation set.}
+\begin{frame}{Figure 4: Comparison of performance using the HGVS nomenclature validation set.}
 \raggedleft
 \begin{tikzpicture}
 \begin{axis}[xbar,
@@ -164,17 +175,17 @@ coordinates
   ytick={-1,...,-8}, % Easier to work with negatives, so the sorting of the graph works top to bottom.
   ytick style={draw=none}, % Please don't draw the ticks.
   yticklabels={Tools perform equally (A), LOVD performs better (B),
-    Unable to assess (A/B), Mutalyzer performs better (C)},
+    Mutalyzer performs better (C), Unable to assess due to failure},
   yticklabel style={font=\small},
 ]
 \addplot
 [draw=black,fill=Mutalyzer]
 coordinates
-{(42.11,-1) (29.74,-2) (20.79,-3) (7.37,-4)};
-%Tools perform equally: 42.11%
-%HGVS outperforms Mutalyzer: 29.74%
-%Unable to assess: 20.79%
-%Mutalyzer outperforms HGVS: 7.37%
+{(50.53,-1) (36.58,-2) (6.32,-4) (6.58,-3)};
+%Tools perform equally: 50.53%
+%HGVS outperforms Mutalyzer: 36.58% (HGVS corrects more + HGVS handles more syntax + Mutalyzer is too tolerant + Mutalyzer normalization irregularity)
+%Mutalyzer outperforms HGVS: 6.32% (HGVS is too tolerant + Mutalyzer corrects more + Mutalyzer handles more syntax)
+%Unable to assess: 6.58%
 \end{axis}
 \end{tikzpicture}\hspace{5em}
 
@@ -202,10 +213,10 @@ coordinates
 \addplot
 [draw=black,fill=VV]
 coordinates
-{(63.95,-1) (27.63,-2) (8.42,-3)};
-%Tools perform equally: 63.95%
-%HGVS outperforms VV: 27.63%
-%VV outperforms HGVS: 8.42%
+{(61.84,-1) (29.74,-2) (8.42,-3)};
+%Tools perform equally: 61.84%
+%HGVS outperforms VV: 29.74% (HGVS corrects more + HGVS handles more syntax + VV is too tolerant + VV normalization irregularity)
+%VV outperforms HGVS: 8.42% (HGVS is too tolerant + VV corrects more + VV handles more syntax)
 \end{axis}
 \end{tikzpicture}\hspace{5em}
 

@@ -1,0 +1,381 @@
+input	status	messages	fixed_variant
+GJB2:c.76AC	Invalid	{"ERETR":"Reference GJB2 could not be retrieved."}	GJB2:c.76AC
+J01749.1:o.4344_197dup	Invalid	{"ECOORDINATESYSTEMMISMATCH":"Coordinate system o does not match with J01749.1 None coordinate system."}	J01749.1:o.4344_197dup
+L01538.1:g.1407C>T	Valid	[]	L01538.1:g.1407C>T
+LRG_163t1:n.5C>T	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_163t1 was identified as LRG with ID LRG_163 and selector t1.","ILRGWARNING":"Reference LRG_163 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_163(t1):n.5C>T
+LRG_199:c.357+1G>A	Corrected	{"ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated.","ICORRECTEDSELECTORID":"Selector  was corrected to t1 from coordinate system."}	LRG_199(t1):c.357+1G>A
+LRG_199:g.954966C>T	Valid	{"ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199:g.954966C>T
+LRG_199:g.981731G>A	Valid	{"ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199:g.981731G>A
+LRG_199t1:c.(6195_6381)_(7422_7628)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(6195_6381)_(7422_7628)del
+LRG_199t1:c.(6196_6382)_(7423_7629)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(6196_6382)_(7423_7629)dup
+LRG_199t1:c.(6278_6438+69)_(7310-43_7575)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(6278_6438+69)_(7310-43_7575)del
+LRG_199t1:c.(6290+9193_6291-1)_(7309+1_7310-1630)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(6290+9193_6291-1)_(7309+1_7310-1630)del
+LRG_199t1:c.(6290+9193_6291-1398)_(7309+2010_7310-1630)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(6290+9193_6291-1398)_(7309+2010_7310-1630)dup
+LRG_199t1:c.(71_72)G>A	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.(71_72)G>A
+LRG_199t1:c.-244-147T>C	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated.","ICORRECTEDPOINT":"Point corrected from '-244-147' to '-391'"}	LRG_199(t1):c.-391T>C
+LRG_199t1:c.-391T>C	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.-391T>C
+LRG_199t1:c.11T>G	Invalid	{"ESEQUENCEMISMATCH":"T not found in the reference sequence, found G instead.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.11T>G
+LRG_199t1:c.123=	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.123=
+LRG_199t1:c.123C>T	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.123C>T
+LRG_199t1:c.123_145=	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.123_145=
+LRG_199t1:c.145_147delinsTGG	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.[145C>T;147C>G]
+LRG_199t1:c.1704+1del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.1704+1del
+LRG_199t1:c.1813del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.1813del
+LRG_199t1:c.235A>T(;)237G>T	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.235_236delinsTT	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.235_236inv
+LRG_199t1:c.235_237delinsTAT	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.[235A>T;237G>T]
+LRG_199t1:c.240_241insAGG	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.240_241insAGG
+LRG_199t1:c.357+1G>A	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.357+1G>A
+LRG_199t1:c.3921del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.3921del
+LRG_199t1:c.3921dup	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.3921dup
+LRG_199t1:c.3922del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.3922del
+LRG_199t1:c.419_420ins[T;450_470;AGGG]	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.419_420insTTTATCCACAGGTTAATGTAATAGGG
+LRG_199t1:c.4661delinsTC	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.4661delinsTC
+LRG_199t1:c.5234G>A	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.5234G>A
+LRG_199t1:c.54G>H	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.54G>H
+LRG_199t1:c.57_58del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.57_58del
+LRG_199t1:c.79_80delinsTT	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.79_80delinsTT
+LRG_199t1:c.850_901delinsTTCCTCGATGCCTG	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.850_901delinsTTCCTCGATGCCTG
+LRG_199t1:c.85=/T>C	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+LRG_199t1:c.897T>G	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.897T>G
+LRG_199t1:c.9002_9009delinsTTT	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.9002_9009delinsTTT
+LRG_199t1:c.94-23_188+33=	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated.","ICORRECTEDPOINT":"Point corrected from '188+33' to '221'"}	LRG_199(t1):c.94-23_221=
+LRG_199t1:c.94-2A>G	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.94-2A>G
+LRG_199t1:c.940_941ins[885_940inv;A;851_883inv]	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.941_942ins[885_939inv;AGAGGCTTAGGGGAAGAAGTTCTCTCATATCCCTG]
+LRG_199t1:c.992_1004delinsAC	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.992_1004delinsAC
+LRG_199t1:c.[235A>T;238G>T]	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.[235A>T;238G>T]
+LRG_199t1:c.[2376G>C;3103=];[2376=;3103del]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[2376G>C];[2376=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[2376G>C];[3103del]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[2962T>G;2970A>T]	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_199t1 was identified as LRG with ID LRG_199 and selector t1.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t1):c.[2962T>G;2970A>T]
+LRG_199t1:c.[633A>G];[531_648=;961_1149=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[633A>G];[633=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[76A>C];[0]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t1:c.[76A>C];[76=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+LRG_199t61:c.(6278_6291-1)_(7542+49_7575)dup	Invalid	{"ENOSELECTORFOUND":"No t61 selector found in reference LRG_199.","EUNCERTAIN":"Uncertainties present in locations.","ICORRECTEDLRGREFERENCE":"Reference LRG_199t61 was identified as LRG with ID LRG_199 and selector t61.","ILRGWARNING":"Reference LRG_199 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_199(t61):c.(6278_6291-1)_(7542+49_7575)dup
+LRG_232t1:c.1365_1373del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_232t1 was identified as LRG with ID LRG_232 and selector t1.","ILRGWARNING":"Reference LRG_232 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_232(t1):c.1365_1373del
+LRG_232t1:c.1365_1373dup	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_232t1 was identified as LRG with ID LRG_232 and selector t1.","ILRGWARNING":"Reference LRG_232 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_232(t1):c.1365_1373dup
+LRG_476:g.4950_39800=	Valid	{"ILRGWARNING":"Reference LRG_476 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_476:g.4950_39800=
+LRG_663t1:c.1521_1523del	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_663t1 was identified as LRG with ID LRG_663 and selector t1.","ILRGWARNING":"Reference LRG_663 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_663(t1):c.1521_1523del
+LRG_763t1:52_153CAG[21]CAA[1]CAG[1]CCG[1]CCA[1]CCG[7]CCT[2]	Invalid	["Internal Server Error"]	
+LRG_763t1:c.54_110GCA[23]	Corrected	{"ICORRECTEDLRGREFERENCE":"Reference LRG_763t1 was identified as LRG with ID LRG_763 and selector t1.","ILRGWARNING":"Reference LRG_763 was identified as LRG. Please note that LRGs are no longer updated."}	LRG_763(t1):c.54_116GCA[25]
+MT-ND1{NC_012920.1}:m.[3460G>A]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000001.11(NM_206933.2):c.[675-542_1211-703dup;1211-703_1211-704insGTAAA]	Invalid	{"ERANGEREVERSED":"Range start position greater than the end position in 216324988_216324987.","EOVERLAP":"Variant locations overlap.","ICORRECTEDPOINT":"Point corrected from '1211-704' to '1143+316'"}	NC_000001.11(NM_206933.2):c.[652-519_1143+317dup;1143+317_1143+316insGTAAA]
+NC_000001.11:g.1234=	Valid	[]	NC_000001.11:g.1234=
+NC_000001.11:g.1234_1235insACGT	Valid	[]	NC_000001.11:g.1234_1235insACGT
+NC_000001.11:g.1234_2345=	Valid	[]	NC_000001.11:g.1234_2345=
+NC_000001.11:g.1234_2345del	Corrected	[]	NC_000001.11:g.8889_10000del
+NC_000001.11:g.1234_2345dup	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000001.11:g.1234_2345inv	Corrected	[]	NC_000001.11:g.=
+NC_000001.11:g.1234del	Corrected	[]	NC_000001.11:g.10000del
+NC_000001.11:g.1234dup	Corrected	[]	NC_000001.11:g.10000dup
+NC_000001.11:g.123G>A(;)345del	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000001.11:g.123_129delinsAC	Valid	[]	NC_000001.11:g.123_129delinsAC
+NC_000001.11:g.123delinsAC	Valid	[]	NC_000001.11:g.123delinsAC
+NC_000001.11:g.57367047_57367121ATAAA[15]	Corrected	[]	NC_000001.11:g.=
+NC_000001.11:g.[123G>A;345del]	Invalid	{"ESEQUENCEMISMATCH":"G not found in the reference sequence, found N instead."}	NC_000001.11:g.[123G>A;345del]
+NC_000001.11:g.[123G>A];[345del]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:35788169_35788352]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:g.35788169_35788352]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000002.11:g.48031621_48031622ins[TAT;48026961_48027223;GGC]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000002.11:g.?_?ins[NC_000022.10:g.35788169_35788352]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000002.11:g.?_?insNC_000022.10:g.35788169_35788352
+NC_000002.12:g.17450009_qterdelins[NC_000011.10:g.108111987_qter]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000002.12:g.[32310435_32310710del;32310711_171827243inv;insG]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000002.12:g.pter_8247756::NC_000011.10:g.15825273_cen_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825266]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825272]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000003.12:g.(63912602_63912844)delN[15]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000003.12:g.(63912602_63912844)delN[15]
+NC_000003.12:g.(63912602_63912844)insN[(150_180)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000003.12:g.(63912602_63912844)insN[15]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000003.12:g.(63912602_63912844)insN[15]
+NC_000003.12:g.(63912602_63912844)insN[9]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000003.12:g.(63912602_63912844)insN[9]
+NC_000003.12:g.158573187_qterdelins[NC_000008.11:g.(128534000_128546000)_qter]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000003.12:g.158573187_qterdelinsNC_000008.11:g.(128534000_128546000)_qter
+NC_000003.12:g.63912687AGC[(50_60)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000003.12:g.63912687AGC[(60_?)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000003.12:g.63912687_63912716AGC[13]	Valid	[]	NC_000003.12:g.63912687_63912716AGC[13]
+NC_000003.12:g.pter_36969141delins[CATTTGTTCAAATTTAGTTCAAATGA;NC_000014.9:g.29745314_qterinv]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000004.11:g.(3076562_3076732)insN[12]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000004.11:g.(3076562_3076732)insN[12]
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080inv]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000005.10:g.29658442delins[NC_000010.11:g.67539995_qterinv]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000006.11:g.10791926_10791927ins[NC_000004.11:g.106370094_106370420;A[26]]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000006.11:g.117198495_117198496del	Valid	[]	NC_000006.11:g.117198495_117198496del
+NC_000006.11:g.8897754_8897755ins[N[543];8897743_8897754]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000006.12:g.[776788_93191545inv;93191546T>C]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000008.11:g.(127300001_131500000)_(131500001_136400000)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000008.11:g.(127300001_131500000)_(131500001_136400000)dup
+NC_000008.11:g.(131500001_136400000)ins[(127300001_131500000)_(131500001_136400000)inv]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000008.11:g.(131500001_136400000)ins(127300001_131500000)_(131500001_136400000)inv
+NC_000009.12:g.102425452_qterdelinspter_26393001inv	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000009.12:g.pter_26393001delins102425452_qterinv	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000011.10:g.108111982_qterdelins[NC_000002.12:g.17450009_qter]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000011.10:g.1999904_1999946|gom	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000011.10:g.1999904_1999946|lom	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000011.10:g.1999904_1999946|met=	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000011.10:g.pter_15825272::NC_000002.12:g.8247757_cen_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000011.10:g.pter_5825272delins[NC_000002.12:g.pter_8247756]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000011.9:g.12345611G>A	Valid	[]	NC_000011.9:g.12345611G>A
+NC_000012.11:g.112036755_112036823CTG[9]TTG[1]CTG[13]	Invalid	{"EREPEATUNSUPPORTED":"Repeat variant 112036755_112036823[CTG[9];TTG[1];CTG[13]] not supported."}	NC_000012.11:g.112036755_112036823[CTG[9];TTG[1];CTG[13]]
+NC_000012.11:g.6128892_6128954delins[NC_000022.10:g.17179029_17179091]	Corrected	[]	NC_000012.11:g.[6128892T>G;6128898A>C;6128945G>A;6128954G>A]
+NC_000012.12:g.6128479_6128749con[NC_000022.11:g.17178616_17178886]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000012.12:g.6128479_6128749delins[NC_000022.11:g.17178616_17178886]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000013.11:g.(19385993_19394916)_(25045592_25059364)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000013.11:g.(19385993_19394916)_(25045592_25059364)del
+NC_000013.11:g.(?_19394916)_(25045592_?)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000013.11:g.(?_19394916)_(25045592_?)del
+NC_000014.8:g.101179660_101179695TG[14]	Corrected	[]	NC_000014.8:g.101179688_101179695del
+NC_000014.8:g.123CAG[23]	Invalid	{"EREPEATMISMATCH":"Reference sequence  does not contain the repeat sequence CAG."}	NC_000014.8:g.123CAG[23]
+NC_000014.8:g.123_191CAG[19]CAA[4]	Invalid	{"EREPEATUNSUPPORTED":"Repeat variant 123_191[CAG[19];CAA[4]] not supported."}	NC_000014.8:g.123_191[CAG[19];CAA[4]]
+NC_000014.8:g.[101179660_101179695TG[14]];[101179660_101179695TG[18]]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000014.9:g.29745314_qterdelins[NC_000003.12:g.36969141_pterinv]	Invalid	{"ERANGEREVERSED":"Range start position greater than the end position in 36969140_0.","ICORRECTEDPOINT":"Point corrected from 'pter' to '1'"}	NC_000014.9:g.29745314_107043718delinsNC_000003.12:g.36969141_1inv
+NC_000022.10:g.42522624_42522669con42536337_42536382	Corrected	[]	NC_000022.10:g.42522624_42522669delinsGCTGACGACACGAGAGTGGCTGGGCCGGGGCTGTCCGGCGGCCACG
+NC_000022.10:g.42522624_42522669delins42536337_42536382	Corrected	[]	NC_000022.10:g.42522624_42522669delinsGCTGACGACACGAGAGTGGCTGGGCCGGGGCTGTCCGGCGGCCACG
+NC_000022.11:g.[pter_(12200001_14700000)del::(37600001_410000000)_qterdel]sup	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000022.11:g.pter_(12200001_14700000)del::(37600001_410000000)_qterdel	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000023.10(NM_000109.3):c.-401C>T	Invalid	{"ENOSELECTORFOUND":"No NM_000109.3 selector found in reference NC_000023.10."}	NC_000023.10(NM_000109.3):c.-401C>T
+NC_000023.10(NM_004006.1):c.-128354C>T	Invalid	{"ENOSELECTORFOUND":"No NM_004006.1 selector found in reference NC_000023.10."}	NC_000023.10(NM_004006.1):c.-128354C>T
+NC_000023.10(NM_004006.2):c.-244-u147T>C	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000023.10(NM_004006.2):c.2950-11_2950-5del	Corrected	[]	NC_000023.10(NM_004006.2):c.2950-9_2950-3del
+NC_000023.10(NM_004006.2):c.357+1G>A	Valid	[]	NC_000023.10(NM_004006.2):c.357+1G>A
+NC_000023.10(NM_004006.2):c.94-2A>G	Valid	[]	NC_000023.10(NM_004006.2):c.94-2A>G
+NC_000023.10(NM_004006.3):c.357+1G>A	Valid	[]	NC_000023.10(NM_004006.3):c.357+1G>A
+NC_000023.10(NR_028379.1):n.696-38544del	Corrected	[]	NC_000023.10(NR_028379.1):n.696-38541del
+NC_000023.10:g.(32057077_32364657)_(32894352_33055973)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(32057077_32364657)_(32894352_33055973)del
+NC_000023.10:g.(32057077_32364657)_(32975163_33394206)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(32057077_32364657)_(32975163_33394206)del
+NC_000023.10:g.(32218983_32238146)_(32984039_33252615)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(32218983_32238146)_(32984039_33252615)del
+NC_000023.10:g.(33038277_33038278)C>T	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(33038277_33038278)C>T
+NC_000023.10:g.(?_32238146)_(32984039_?)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(?_32238146)_(32984039_?)del
+NC_000023.10:g.(?_32364657)_(32975163_?)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.(?_32364657)_(32975163_?)del
+NC_000023.10:g.111754331_111966764inv	Valid	[]	NC_000023.10:g.111754331_111966764inv
+NC_000023.10:g.32361300del	Valid	[]	NC_000023.10:g.32361300del
+NC_000023.10:g.32361330_32361333inv	Valid	[]	NC_000023.10:g.32361330_32361333inv
+NC_000023.10:g.32380996C>T	Valid	[]	NC_000023.10:g.32380996C>T
+NC_000023.10:g.32407761G>A	Valid	[]	NC_000023.10:g.32407761G>A
+NC_000023.10:g.32456507del	Valid	[]	NC_000023.10:g.32456507del
+NC_000023.10:g.32456507dup	Valid	[]	NC_000023.10:g.32456507dup
+NC_000023.10:g.32459297del	Valid	[]	NC_000023.10:g.32459297del
+NC_000023.10:g.32459297dup	Valid	[]	NC_000023.10:g.32459297dup
+NC_000023.10:g.32717298_32717299insN	Valid	[]	NC_000023.10:g.32717298_32717299insN
+NC_000023.10:g.32717298_32717299insN[(80_120)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NC_000023.10:g.32717298_32717299insN[100]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000023.10:g.32717298_32717299insN[?]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.10:g.32717298_32717299insN[?]
+NC_000023.10:g.32862923_32862924insCCT	Valid	[]	NC_000023.10:g.32862923_32862924insCCT
+NC_000023.10:g.32862927_32862929delinsATA	Corrected	[]	NC_000023.10:g.[32862927C>A;32862929T>A]
+NC_000023.10:g.32867861_32867862insT	Valid	[]	NC_000023.10:g.32867861_32867862insT
+NC_000023.10:g.33038255C>A	Valid	[]	NC_000023.10:g.33038255C>A
+NC_000023.10:g.33229410dup	Valid	[]	NC_000023.10:g.33229410dup
+NC_000023.10:g.33229820A>G	Valid	[]	NC_000023.10:g.33229820A>G
+NC_000023.10:g.33357783G>A	Valid	[]	NC_000023.10:g.33357783G>A
+NC_000023.10:g.[30683643A>G;33038273T>G]	Valid	[]	NC_000023.10:g.[30683643A>G;33038273T>G]
+NC_000023.11(NM_004006.2):c.(-205839_-62966)_(*21568_*61692)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(-205839_-62966)_(*21568_*61692)dup
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)del
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)dup
+NC_000023.11(NM_004006.2):c.(3996_4196)_(5090_5284)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(3996_4196)_(5090_5284)del
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)[3]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","EINSERTEDLENGTH":"Length not supported in the inserted part."}	NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)[3]
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)del
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)dup
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)del
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)dup
+NC_000023.11(NM_004006.2):c.1704+1dup	Valid	[]	NC_000023.11(NM_004006.2):c.1704+1dup
+NC_000023.11(NM_004006.2):c.1813dup	Valid	[]	NC_000023.11(NM_004006.2):c.1813dup
+NC_000023.11(NM_004006.2):c.183_186+48del	Valid	[]	NC_000023.11(NM_004006.2):c.183_186+48del
+NC_000023.11(NM_004006.2):c.260_264+48dup	Valid	[]	NC_000023.11(NM_004006.2):c.260_264+48dup
+NC_000023.11(NM_004006.2):c.3921dup	Valid	[]	NC_000023.11(NM_004006.2):c.3921dup
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246del	Valid	[]	NC_000023.11(NM_004006.2):c.4072-1234_5155-246del
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246dup	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000023.11(NM_004006.2):c.4072-?_5154+?del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11(NM_004006.2):c.4072-?_5154+?del
+NC_000023.11(NM_004006.2):c.720_991dup	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NC_000023.11(NM_004006.2):c.93+1G>T	Valid	[]	NC_000023.11(NM_004006.2):c.93+1G>T
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31060227_31100351)_(33274278_33417151)del
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31060227_31100351)_(33274278_33417151)dup
+NC_000023.11:g.(31729662_31774079)_(32216972_32287623)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31729662_31774079)_(32216972_32287623)dup
+NC_000023.11:g.(31729663_31774080)_(32216973_32287624)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31729663_31774080)_(32216973_32287624)del
+NC_000023.11:g.(31729716_31773911)_(32217064_32287541)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31729716_31773911)_(32217064_32287541)dup
+NC_000023.11:g.(31729716_31774235)_(32216847_32287541)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31729716_31774235)_(32216847_32287541)del
+NC_000023.11:g.(31775822_31817965)_(32218461_32278336)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31775822_31817965)_(32218461_32278336)dup
+NC_000023.11:g.(31775822_31819974)_(32217064_32278336)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(31775822_31819974)_(32217064_32278336)del
+NC_000023.11:g.(32381076_32382698)_(32430031_32456357)[3]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","EINSERTEDLENGTH":"Length not supported in the inserted part."}	NC_000023.11:g.(32381076_32382698)_(32430031_32456357)[3]
+NC_000023.11:g.(86200001_103700000)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(86200001_103700000)del
+NC_000023.11:g.(?_31120496)_(33339477_?)del	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(?_31120496)_(33339477_?)del
+NC_000023.11:g.(?_31120496)_(33339477_?)dup	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NC_000023.11:g.(?_31120496)_(33339477_?)dup
+NC_000023.11:g.32343183del	Valid	[]	NC_000023.11:g.32343183del
+NC_000023.11:g.32343183dup	Valid	[]	NC_000023.11:g.32343183dup
+NC_000023.11:g.32362879C>T	Valid	[]	NC_000023.11:g.32362879C>T
+NC_000023.11:g.32386323delCinsGA	Invalid	{"ESEQUENCEMISMATCH":"C not found in the reference sequence, found T instead."}	NC_000023.11:g.32386323delCinsGA
+NC_000023.11:g.32386323delTinsGA	Corrected	[]	NC_000023.11:g.32386323delinsGA
+NC_000023.11:g.32386323delinsGA	Valid	[]	NC_000023.11:g.32386323delinsGA
+NC_000023.11:g.32389644G>A	Valid	[]	NC_000023.11:g.32389644G>A
+NC_000023.11:g.32441180dup	Valid	[]	NC_000023.11:g.32441180dup
+NC_000023.11:g.32844735_32844787dup	Valid	[]	NC_000023.11:g.32844735_32844787dup
+NC_000023.11:g.32849790T>A	Valid	[]	NC_000023.11:g.32849790T>A
+NC_000023.11:g.32867908=	Valid	[]	NC_000023.11:g.32867908=
+NC_000023.11:g.32867908_32867923=	Valid	[]	NC_000023.11:g.32867908_32867923=
+NC_000023.11:g.33211290_33211293dup	Valid	[]	NC_000023.11:g.33211290_33211293dup
+NC_000023.11:g.33344590_33344592=//del	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NC_000023.11:g.33344590_33344592=//dup	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NC_000023.11:g.33344590_33344592=/del	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NC_000023.11:g.33344590_33344592=/dup	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NC_000023.11:g.33344590_33344592del	Valid	[]	NC_000023.11:g.33344590_33344592del
+NC_000023.11:g.33344590_33344592delGAT	Corrected	[]	NC_000023.11:g.33344590_33344592del
+NC_000023.11:g.33344590_33344592delTTA	Invalid	{"ESEQUENCEMISMATCH":"TTA not found in the reference sequence, found GAT instead."}	NC_000023.11:g.33344590_33344592delTTA
+NC_000023.11:g.33344591del	Valid	[]	NC_000023.11:g.33344591del
+NC_000023.11:g.33344591delA	Corrected	[]	NC_000023.11:g.33344591del
+NC_000023.11:g.33344591delG	Invalid	{"ESEQUENCEMISMATCH":"G not found in the reference sequence, found A instead."}	NC_000023.11:g.33344591delG
+NC_000023.11:g.89555676_100352080del	Corrected	[]	NC_000023.11:g.89555677_100352081del
+NC_000023.11:g.pter_qter[2]	Invalid	{"EINSERTEDLENGTH":"Length not supported in the inserted part."}	NC_000023.11:g.pter_qter[2]
+NC_000023.11:g.pter_qtersup	Invalid	{"ESYNTAXUEOF":"Unexpected end of input."}	
+NC_000023.9:g.(123456_234567)_(345678_456789)del	Invalid	{"ERETR":"Reference NC_000023.9 could not be retrieved."}	NC_000023.9:g.(123456_234567)_(345678_456789)del
+NC_000023.9:g.32290917C>T	Invalid	{"ERETR":"Reference NC_000023.9 could not be retrieved."}	NC_000023.9:g.32290917C>T
+NC_000023.9:g.32317682G>A	Invalid	{"ERETR":"Reference NC_000023.9 could not be retrieved."}	NC_000023.9:g.32317682G>A
+NC_012920.1(MT-ND1):m.3460G>A	Invalid	{"ENOSELECTORFOUND":"No MT-ND1 selector found in reference NC_012920.1."}	NC_012920.1(MT-ND1):m.3460G>A
+NC_012920.1(MT-TL1):m.3243A>G	Invalid	{"ENOSELECTORFOUND":"No MT-TL1 selector found in reference NC_012920.1."}	NC_012920.1(MT-TL1):m.3243A>G
+NC_012920.1(MT-TL1):n.14A>G	Invalid	{"ENOSELECTORFOUND":"No MT-TL1 selector found in reference NC_012920.1."}	NC_012920.1(MT-TL1):n.14A>G
+NC_012920.1:m.16563_13del	Invalid	{"ERANGEREVERSED":"Range start position greater than the end position in 16562_12."}	NC_012920.1:m.16563_13del
+NC_012920.1:m.3243A>G	Valid	[]	NC_012920.1:m.3243A>G
+NC_012920.1:m.3460G>A	Valid	[]	NC_012920.1:m.3460G>A
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[N[603];123+45_123+51]	Corrected	{"ICORRECTEDPOINT":"Point corrected from '123+51' to '174'"}	NG_012232.1(NM_004006.2):c.174_175insNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCCTGACA
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[[XXXXXX.y:g.393_1295];123+45_123+51]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NG_012232.1(NM_004006.2):c.357+1G>A	Valid	[]	NG_012232.1(NM_004006.2):c.357+1G>A
+NG_012232.1(NM_004006.2):c.93+1G>T	Valid	[]	NG_012232.1(NM_004006.2):c.93+1G>T
+NG_012232.1:g.123_128del	Corrected	[]	NG_012232.1:g.124_129del
+NG_012232.1:g.123del6	Invalid	{"ELENGTHMISMATCH":"The length 6 differs from that of the range 1."}	NG_012232.1:g.123del6
+NG_012232.1:g.12G>T(;)13C>G	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NG_012232.1:g.12GC>TG	Invalid	{"ESEQUENCEMISMATCH":"GC not found in the reference sequence, found G instead.","ICORRECTEDVARIANTTYPE":"Variant corrected from 'substitution' to 'deletion insertion'"}	NG_012232.1:g.12delGCinsTG
+NG_012232.1:g.12_13delinsTG	Valid	[]	NG_012232.1:g.12_13delinsTG
+NG_012232.1:g.954966C>T	Valid	[]	NG_012232.1:g.954966C>T
+NG_012232.1:g.981731G>A	Valid	[]	NG_012232.1:g.981731G>A
+NM_000044.3:c.(92_331)insN[33]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations.","IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_000044.3' reference sequence for 'NM_000044.3'. The entire transcript was assumed as one exon."}	NM_000044.3:c.(92_331)insN[33]
+NM_000044.3:c.171_239GCA[34]	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_000044.3' reference sequence for 'NM_000044.3'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000044.3 selector found in NC_000023.10."}	NM_000044.3:c.171_239GCA[34]
+NM_000109.3:c.-401C>T	Invalid	{"EOUTOFBOUNDARY":"Position -401 is 57 nucleotides before the sequence start."}	NM_000109.3:c.-401C>T
+NM_000109.3:c.5210G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_000109.3 and NC_000023.11.","INOSELECTOR":"No NM_000109.3 selector found in NC_000023.10."}	NM_000109.3:c.5210G>A
+NM_000222.3:c.1676_1684del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_000222.3:c.1676_1684del
+NM_000333.3:c.(4_246)delN[15]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NM_000333.3:c.(4_246)delN[15]
+NM_000333.3:c.(4_246)insN[(150_180)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_000333.3:c.(4_246)insN[15]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NM_000333.3:c.(4_246)insN[15]
+NM_000333.3:c.(4_246)insN[9]	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NM_000333.3:c.(4_246)insN[9]
+NM_000492.3:c.1210-12_1210-6T[7]	Invalid	{"EINTRONIC":"Intronic position 1210-6 given for a non-genomic reference sequence. Tip: make use of a genomic reference sequence like NC_*(NM_*)."}	NM_000492.3:c.1210-12_1210-6T[7]
+NM_000492.3:c.1210-33_1210-6GT[11]T[6]	Invalid	{"EINTRONIC":"Intronic position 1210-6 given for a non-genomic reference sequence. Tip: make use of a genomic reference sequence like NC_*(NM_*)."}	NM_000492.3:c.1210-33_1210-6[GT[11];T[6]]
+NM_000492.3:c.1521_1523del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000492.3 selector found in NC_000007.13."}	NM_000492.3:c.1521_1523del
+NM_000492.3:c.1522_1524del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000492.3 selector found in NC_000007.13."}	NM_000492.3:c.1522_1524del
+NM_000492.3:c.1522_1524delTTT	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000492.3 selector found in NC_000007.13."}	NM_000492.3:c.1522_1524del
+NM_000517.4:c.424C>T^NM_000558.3:c.424C>T	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_000553.4:c.3050_3051ins[NM_004006.3:c.284_293]	Corrected	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_000553.4' reference sequence for 'NM_000553.4'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000553.4 selector found in NC_000008.10."}	NM_000553.4:c.3050_3051insGAAGTACTGA
+NM_000797.3:c.812_829delins908_925	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_000797.3 selector found in NC_000011.9."}	NM_000797.3:c.[812G>C;815_816inv;826C>T;829G>A]
+NM_001849.3:c.-1_*1=	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_001849.3 selector found in NC_000021.8."}	NM_001849.3:c.-1_*1=
+NM_001849.3:c.=	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_001849.3 selector found in NC_000021.8."}	NM_001849.3:c.=
+NM_002024.5:c.(-144_-16)insN[(1800_2400)]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_002024.5:c.-128_-69GGC[10]GGA[1]GGC[9]GGA[1]GGC[10]	Invalid	{"EREPEATUNSUPPORTED":"Repeat variant -128_-69[GGC[10];GGA[1];GGC[9];GGA[1];GGC[10]] not supported."}	NM_002024.5:c.-128_-69[GGC[10];GGA[1];GGC[9];GGA[1];GGC[10]]
+NM_002024.5:c.-128_-69GGC[68]GGA[1]GGC[10]	Invalid	{"EREPEATUNSUPPORTED":"Repeat variant -128_-69[GGC[68];GGA[1];GGC[10]] not supported."}	NM_002024.5:c.-128_-69[GGC[68];GGA[1];GGC[10]]
+NM_002024.5:c.-128_-69GGM[108]	Invalid	{"EREPEATMISMATCH":"Reference sequence GGCGGCGGCGGCGGCGGCGGCGGCGGCGGAGGCGGCGGCGGCGGCGGCGGCGGCGGCGGC does not contain the repeat sequence GGM."}	NM_002024.5:c.-128_-69GGM[108]
+NM_002024.5:c.-129CGG[79]	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<html>\r\n<head><title>502 Bad Gateway<\/title><\/head>\r\n<body>\r\n<center><h1>502 Bad Gateway<\/h1><\/center>\r\n<hr><center>nginx\/1.18.0<\/center>\r\n<\/body>\r\n<\/html>\r\n"}	
+NM_002111:c.211C>T	Corrected	{"ICORRECTEDREFERENCEID":"Reference NM_002111.8 was retrieved instead of NM_002111.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_002111.8 and NC_000004.11."}	NM_002111.8:c.211C>T
+NM_003079.4:c.374_395inv	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_003079.4 selector found in NC_000017.10."}	NM_003079.4:c.374_395inv
+NM_004006.1:c.-128354C>T	Invalid	{"EOUTOFBOUNDARY":"Position -128354 is 128110 nucleotides before the sequence start.","IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon."}	NM_004006.1:c.-128354C>T
+NM_004006.1:c.123+45_123+51TSDinsL1.603bp	Invalid	{"ESYNTAXUEOF":"Unexpected end of input."}	
+NM_004006.1:c.123=	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004006.1 selector found in NC_000023.10."}	NM_004006.1:c.123=
+NM_004006.1:c.5697del	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004006.1 selector found in NC_000023.10."}	NM_004006.1:c.5697del
+NM_004006.1:c.761_762insN[5]	Corrected	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004006.1 selector found in NC_000023.10."}	NM_004006.1:c.761_762insNNNNN
+NM_004006.1:c.76A/G	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NM_004006.1:c.76A>G	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004006.1 selector found in NC_000023.10."}	NM_004006.1:c.76A>G
+NM_004006.1:c.[123=;456=;789=]	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004006.1' reference sequence for 'NM_004006.1'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004006.1 selector found in NC_000023.10."}	NM_004006.1:c.[123=;456=;789=]
+NM_004006.1:c.[837G>A;1704+51T>C;3734C>T;6438+2669T[(16_23)];6571C>T;7098+13212GT[(15_19)]]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.(222_226)insG	Invalid	{"EUNCERTAIN":"Uncertainties present in locations."}	NM_004006.2:c.(222_226)insG
+NM_004006.2:c.*1162_*2691{2}	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.-244_*2691del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.-244_*2691del
+NM_004006.2:c.-244_*2691{0}	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.-244_187{0}	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.123=	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.123=
+NM_004006.2:c.145_147delinsTGG	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.[145C>T;147C>G]
+NM_004006.2:c.169_170insA	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.169_170insA
+NM_004006.2:c.20_23dup	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.20_23dup
+NM_004006.2:c.20dup	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.20dup
+NM_004006.2:c.20dupG	Invalid	{"ESEQUENCEMISMATCH":"G not found in the reference sequence, found T instead."}	NM_004006.2:c.20dupG
+NM_004006.2:c.20dupT	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.20dup
+NM_004006.2:c.2376G>C(;)(2376G>C)	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.2376G>C(;)3103del	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.357+1G>A	Invalid	{"EINTRONIC":"Intronic position 357+1 given for a non-genomic reference sequence. Tip: make use of a genomic reference sequence like NC_*(NM_*)."}	NM_004006.2:c.357+1G>A
+NM_004006.2:c.4072-1234_5155-246dup	Invalid	{"EINTRONIC":"Intronic position 5155-246 given for a non-genomic reference sequence. Tip: make use of a genomic reference sequence like NC_*(NM_*)."}	NM_004006.2:c.4072-1234_5155-246dup
+NM_004006.2:c.4145_4160inv	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.4145_4160inv
+NM_004006.2:c.419_420ins[T;401_419]	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.419_420ins[T;401_419]
+NM_004006.2:c.4375C>T	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.4375C>T
+NM_004006.2:c.5657_5660inv	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.5657_5660inv
+NM_004006.2:c.5690del	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.5697del
+NM_004006.2:c.5690dup	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.5697dup
+NM_004006.2:c.5697del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.5697del
+NM_004006.2:c.5697dup	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.5697dup
+NM_004006.2:c.6775_6777delGAGinsC	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.6775_6777delinsC
+NM_004006.2:c.6775_6777delGTGinsC	Invalid	{"ESEQUENCEMISMATCH":"GTG not found in the reference sequence, found GAG instead."}	NM_004006.2:c.6775_6777delGTGinsC
+NM_004006.2:c.6775_6777delinsC	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.6775_6777delinsC
+NM_004006.2:c.761_762insN	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.761_762insN
+NM_004006.2:c.761_762insNNNNN	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.761_762insNNNNN
+NM_004006.2:c.812_829delinsN[12]	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.812_829delinsNNNNNNNNNNNN
+NM_004006.2:c.849_850ins850_900inv	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.849_850ins850_900inv
+NM_004006.2:c.849_850ins858_895	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.849_850ins858_895
+NM_004006.2:c.85=//T>C	Failure	{"EFAIL":"Mutalyzer failed; I can't decode its reply.","EJSON":"<!doctype html>\n<html lang=en>\n<title>404 Not Found<\/title>\n<h1>Not Found<\/h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<\/p>\n"}	
+NM_004006.2:c.900_901ins850_900inv	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.900_901ins850_900inv
+NM_004006.2:c.940_941ins[903_940inv;851_885inv]	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.941_942ins[902_939inv;850_884inv]
+NM_004006.2:c.=	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.=
+NM_004006.2:c.[123=;456=;789=]	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.[123=;456=;789=]
+NM_004006.2:c.[2376G>C;3103del]	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004006.2 and NC_000023.10."}	NM_004006.2:c.[2376G>C;3103del]
+NM_004006.2:c.[2376G>C];[2376=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[2376G>C];[2376G>C]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[2376G>C];[3103del]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[2376G>C];[?]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[296T>G;476T>C;1083A>C];[296T>G;1083A>C]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[296T>G;476T>C];[476T>C](;)1083A>C	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[296T>G];[476T>C](;)1083G>C(;)1406del	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.2:c.[762_768del;767_774dup]	Invalid	{"EOVERLAP":"Variant locations overlap."}	NM_004006.2:c.[762_768del;767_774dup]
+NM_004006.2c.2622G>C	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+NM_004006.3:c.124A>T	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.124A>T
+NM_004006.3:c.2453del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.2453del
+NM_004006.3:c.299_300ins284_293	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.299_300insGAAGTACTGA
+NM_004006.3:c.299_300insGAAGTACTG	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.299_300insGAAGTACTG
+NM_004006.3:c.3430C>T	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.3430C>T
+NM_004006.3:c.4375C>T	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.4375C>T
+NM_004006.3:c.472A>G	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.472A>G
+NM_004006.3:c.5234G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.5234G>A
+NM_004006.3:c.897T>G	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA."}	NM_004006.3:c.897T>G
+NM_004007.2:c.4865G>A	Valid	{"IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_004007.2' reference sequence for 'NM_004007.2'. The entire transcript was assumed as one exon.","IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004007.2 selector found in NC_000023.10."}	NM_004007.2:c.4865G>A
+NM_004009.3:c.5222G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004009.3 and NC_000023.10."}	NM_004009.3:c.5222G>A
+NM_004010.3:c.4865G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004010.3 and NC_000023.10."}	NM_004010.3:c.4865G>A
+NM_004011.3:c.1211G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004011.3 and NC_000023.11.","INOSELECTOR":"No NM_004011.3 selector found in NC_000023.10."}	NM_004011.3:c.1211G>A
+NM_004012.3:c.1202G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_004012.3 and NC_000023.11.","INOSELECTOR":"No NM_004012.3 selector found in NC_000023.10."}	NM_004012.3:c.1202G>A
+NM_004380.2:c.138_139insTCATCATGAGCTCCC	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004380.2 selector found in NC_000016.9."}	NM_004380.2:c.138_139insTCATCATGAGCTCCC
+NM_004380.2:c.139delinsTCATCATGAGCTG	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_004380.2 selector found in NC_000016.9."}	NM_004380.2:c.139delinsTCATCATGAGCTG
+NM_007294.3:c.2077G>A	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_007294.3 selector found in NC_000017.10."}	NM_007294.3:c.2077G>A
+NM_007294.3:c.2077delinsATA	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_007294.3 selector found in NC_000017.10."}	NM_007294.3:c.2077delinsATA
+NM_007294.3:c.[2077G>A;2077_2078insTA]	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_007294.3 selector found in NC_000017.10."}	NM_007294.3:c.2077delinsATA
+NM_021080.3:c.-136-75952_-136-75878ATTTT[15]	Invalid	{"EINTRONIC":"Intronic position -136-75878 given for a non-genomic reference sequence. Tip: make use of a genomic reference sequence like NC_*(NM_*).","IWHOLETRANSCRIPTEXON":"No exon features found in the 'NM_021080.3' reference sequence for 'NM_021080.3'. The entire transcript was assumed as one exon."}	NM_021080.3:c.-136-75952_-136-75878ATTTT[15]
+NM_023035.2:c.6955_6993CAG[26]	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_023035.2 selector found in NC_000019.9."}	NM_023035.2:c.6955_6993CAG[26]
+NM_024312.4:c.1738TA[6]	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_024312.4 selector found in NC_000012.11."}	NM_024312.4:c.1738_1741TA[6]
+NM_024312.4:c.1741_1742insTATATATA	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_024312.4 selector found in NC_000012.11."}	NM_024312.4:c.1738_1741TA[6]
+NM_024312.4:c.2686A[10]	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_024312.4 selector found in NC_000012.11."}	NM_024312.4:c.2686_2693A[10]
+NM_024312.4:c.2692_2693dup	Corrected	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","INOSELECTOR":"No NM_024312.4 selector found in NC_000012.11."}	NM_024312.4:c.2686_2693A[10]
+NM_080877.2:c.1732_1794del	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_080877.2 and NC_000009.11."}	NM_080877.2:c.1732_1794del
+NM_080877.2:c.1733_1735delinsTTT	Valid	{"IMRNAGENOMICTIP":"An 'mRNA' sequence was used with the 'c.' coordinate system. Make use of a genomic reference sequence if the experiment performed involved measured DNA.","IMRNAGENOMICDIFFERENCE":"There are differences between the sequences of NM_080877.2 and NC_000009.11."}	NM_080877.2:c.1733_1735delinsTTT
+NM_080877.2c.1733_1735delinsTTT	Invalid	{"ESYNTAXUEOF":"Unexpected end of input."}	
+NR_002196.1:n.601G>T	Valid	[]	NR_002196.1:n.601G>T
+NR_028379.1:n.345A>G	Valid	[]	NR_028379.1:n.345A>G
+OPRM1:c.118A	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118A
+OPRM1:c.118A>G	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118A>G
+OPRM1:c.118AA	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118AA
+OPRM1:c.118G	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118G
+OPRM1:c.118GA	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118GA
+OPRM1:c.118GG	Invalid	{"ERETR":"Reference OPRM1 could not be retrieved."}	OPRM1:c.118GG
+OPRM1:c.[118>G];[118>G]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+OPRM1:c.[118A=];[118A=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+OPRM1:c.[118A>G];[118A=]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+[GJB2:c.35del];[GJB6:c.689_690insT]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+[M59228.1:g.250G>C;AF209160.1:g.572CA[(11_21)];Z11861.1:g.61T>C;Z16803.1:g.114A[(18_22)]]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+[NM_004004.2:c.35del];[NM_006783.1:c.689_690insT]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr11:g.12345611G>A	Invalid	{"ERETR":"Reference chr11 could not be retrieved."}	chr11:g.12345611G>A
+chr11:g.pter_15,825,272::chr2:g.8,247,757_cen_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr11:g.pter_cen_108111981::chr2:g.174500099_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr14:g.29,745,314_qterinv::CATTTGTTCAAATTTAGTTCAAATGA::chr3:g.36,969,142_cen_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr14:g.[pter_cen_qter]add	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr14:g.pter_cen_29,745,313::chr3:g.pter_36,969,141inv	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr22:g.[pter_10000000del::40000000_qterdel]add	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr22:g.pter_10000000del::40000000_qterdel	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr2:g.[32310435_32310710del;32310711_171827243inv;insG]	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr2:g.pter_8,247,756::chr11:g.15,825,273_cen_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr2:g.pter_cen_174500098::chr11:g.108111987_qter	Invalid	{"ESYNTAXUC":"Unexpected character."}	
+chr6:g.[776788_93191545inv;93191546T>C]	Invalid	{"ERETR":"Reference chr6 could not be retrieved."}	chr6:g.[776788_93191545inv;93191546T>C]
+chr8:g.128746677_128749160dup	Invalid	{"ERETR":"Reference chr8 could not be retrieved."}	chr8:g.128746677_128749160dup
+chr8:g.128746677_128749160dupinv	Invalid	{"ESYNTAXUEOF":"Unexpected end of input."}	
+chrX:g.89555676_100352080del	Invalid	{"ERETR":"Reference chrX could not be retrieved."}	chrX:g.89555676_100352080del
+chrX:g.[89555676_100352080del]	Invalid	{"ERETR":"Reference chrX could not be retrieved."}	chrX:g.89555676_100352080del

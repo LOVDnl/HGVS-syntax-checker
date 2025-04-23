@@ -1,0 +1,380 @@
+GJB2:c.76AC	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"GJB2\"."}
+J01749.1:o.4344_197dup	Valid	Valid	{"WREFERENCENOTSUPPORTED":"Currently, variant descriptions using \"J01749.1\" are not yet supported. This does not necessarily mean the description is not Valid according to the HGVS nomenclature. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG."}
+L01538.1:g.1407C>T	Valid	Valid	{"WREFERENCENOTSUPPORTED":"Currently, variant descriptions using \"L01538.1\" are not yet supported. This does not necessarily mean the description is not Valid according to the HGVS nomenclature. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG."}
+LRG_163t1:n.5C>T	Valid	Valid	[]
+LRG_199:c.357+1G>A	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions."}
+LRG_199:g.954966C>T	Valid	Valid	[]
+LRG_199:g.981731G>A	Valid	Valid	[]
+LRG_199t1:c.(6195_6381)_(7422_7628)del	Valid	Valid	[]
+LRG_199t1:c.(6196_6382)_(7423_7629)dup	Valid	Valid	[]
+LRG_199t1:c.(6278_6438+69)_(7310-43_7575)del	Valid	Valid	[]
+LRG_199t1:c.(6290+9193_6291-1)_(7309+1_7310-1630)del	Valid	Valid	[]
+LRG_199t1:c.(6290+9193_6291-1398)_(7309+2010_7310-1630)dup	Valid	Valid	[]
+LRG_199t1:c.(71_72)G>A	Valid	Valid	[]
+LRG_199t1:c.-244-147T>C	Valid	Valid	[]
+LRG_199t1:c.-391T>C	Valid	Valid	[]
+LRG_199t1:c.11T>G	Valid	Valid	[]
+LRG_199t1:c.123=	Valid	Valid	[]
+LRG_199t1:c.123C>T	Valid	Valid	[]
+LRG_199t1:c.123_145=	Valid	Valid	[]
+LRG_199t1:c.145_147delinsTGG	Valid	Valid	[]
+LRG_199t1:c.1704+1del	Valid	Valid	[]
+LRG_199t1:c.1813del	Valid	Valid	[]
+LRG_199t1:c.235A>T(;)237G>T	Valid	Valid	[]
+LRG_199t1:c.235_236delinsTT	Valid	Valid	[]
+LRG_199t1:c.235_237delinsTAT	Valid	Valid	[]
+LRG_199t1:c.240_241insAGG	Valid	Valid	[]
+LRG_199t1:c.357+1G>A	Valid	Valid	[]
+LRG_199t1:c.3921del	Valid	Valid	[]
+LRG_199t1:c.3921dup	Valid	Valid	[]
+LRG_199t1:c.3922del	Valid	Valid	[]
+LRG_199t1:c.419_420ins[T;450_470;AGGG]	Valid	Valid	[]
+LRG_199t1:c.4661delinsTC	Valid	Valid	[]
+LRG_199t1:c.5234G>A	Valid	Valid	[]
+LRG_199t1:c.54G>H	Valid	Valid	[]
+LRG_199t1:c.57_58del	Valid	Valid	[]
+LRG_199t1:c.79_80delinsTT	Valid	Valid	[]
+LRG_199t1:c.850_901delinsTTCCTCGATGCCTG	Valid	Valid	[]
+LRG_199t1:c.85=/T>C	Valid	Valid	[]
+LRG_199t1:c.897T>G	Valid	Valid	[]
+LRG_199t1:c.9002_9009delinsTTT	Valid	Valid	[]
+LRG_199t1:c.94-23_188+33=	Valid	Valid	[]
+LRG_199t1:c.94-2A>G	Valid	Valid	[]
+LRG_199t1:c.940_941ins[885_940inv;A;851_883inv]	Valid	Valid	[]
+LRG_199t1:c.992_1004delinsAC	Valid	Valid	[]
+LRG_199t1:c.[235A>T;238G>T]	Valid	Valid	[]
+LRG_199t1:c.[2376G>C;3103=];[2376=;3103del]	Invalid	Valid	[]
+LRG_199t1:c.[2376G>C];[2376=]	Valid	Valid	[]
+LRG_199t1:c.[2376G>C];[3103del]	Valid	Valid	[]
+LRG_199t1:c.[2962T>G;2970A>T]	Valid	Valid	[]
+LRG_199t1:c.[633A>G];[531_648=;961_1149=]	Valid	Valid	[]
+LRG_199t1:c.[633A>G];[633=]	Valid	Valid	[]
+LRG_199t1:c.[76A>C];[0]	Valid	Valid	[]
+LRG_199t1:c.[76A>C];[76=]	Valid	Valid	[]
+LRG_199t61:c.(6278_6291-1)_(7542+49_7575)dup	Valid	Valid	[]
+LRG_232t1:c.1365_1373del	Valid	Valid	[]
+LRG_232t1:c.1365_1373dup	Valid	Valid	[]
+LRG_476:g.4950_39800=	Valid	Valid	[]
+LRG_663t1:c.1521_1523del	Valid	Valid	[]
+LRG_763t1:52_153CAG[21]CAA[1]CAG[1]CCG[1]CCA[1]CCG[7]CCT[2]	Invalid	Invalid	{"WPREFIXMISSING":"This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., \"c.\")."}
+LRG_763t1:c.54_110GCA[23]	Valid	Valid	[]
+MT-ND1{NC_012920.1}:m.[3460G>A]	Invalid	Invalid	{"WREFERENCEFORMAT":"The reference sequence is formatted incorrectly.","WWRONGTYPE":"The allele syntax with square brackets is meant for multiple variants."}
+NC_000001.11(NM_206933.2):c.[675-542_1211-703dup;1211-703_1211-704insGTAAA]	Invalid	Invalid	{"WPOSITIONORDER":"This variant description contains positions not given in the correct order."}
+NC_000001.11:g.1234=	Valid	Valid	[]
+NC_000001.11:g.1234_1235insACGT	Valid	Valid	[]
+NC_000001.11:g.1234_2345=	Valid	Valid	[]
+NC_000001.11:g.1234_2345del	Valid	Valid	[]
+NC_000001.11:g.1234_2345dup	Valid	Valid	[]
+NC_000001.11:g.1234_2345inv	Valid	Valid	[]
+NC_000001.11:g.1234del	Valid	Valid	[]
+NC_000001.11:g.1234dup	Valid	Valid	[]
+NC_000001.11:g.123G>A(;)345del	Valid	Valid	[]
+NC_000001.11:g.123_129delinsAC	Valid	Valid	[]
+NC_000001.11:g.123delinsAC	Valid	Valid	[]
+NC_000001.11:g.57367047_57367121ATAAA[15]	Valid	Valid	[]
+NC_000001.11:g.[123G>A;345del]	Valid	Valid	[]
+NC_000001.11:g.[123G>A];[345del]	Valid	Valid	[]
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:35788169_35788352]	Invalid	Invalid	{"WPREFIXMISSING":"This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., \"g.\")."}
+NC_000002.11:g.47643464_47643465ins[NC_000022.10:g.35788169_35788352]	Valid	Valid	[]
+NC_000002.11:g.48031621_48031622ins[TAT;48026961_48027223;GGC]	Valid	Valid	[]
+NC_000002.11:g.?_?ins[NC_000022.10:g.35788169_35788352]	Valid	Valid	[]
+NC_000002.12:g.17450009_qterdelins[NC_000011.10:g.108111987_qter]	Valid	Valid	[]
+NC_000002.12:g.[32310435_32310710del;32310711_171827243inv;insG]	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000002.12\"."}
+NC_000002.12:g.pter_8247756::NC_000011.10:g.15825273_cen_qter	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000002.12\"."}
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825266]	Valid	Valid	[]
+NC_000002.12:g.pter_8247756delins[NC_000011.10:g.pter_15825272]	Valid	Valid	[]
+NC_000003.12:g.(63912602_63912844)delN[15]	Valid	Valid	[]
+NC_000003.12:g.(63912602_63912844)insN[(150_180)]	Valid	Valid	[]
+NC_000003.12:g.(63912602_63912844)insN[15]	Valid	Valid	[]
+NC_000003.12:g.(63912602_63912844)insN[9]	Valid	Valid	[]
+NC_000003.12:g.158573187_qterdelins[NC_000008.11:g.(128534000_128546000)_qter]	Valid	Valid	[]
+NC_000003.12:g.63912687AGC[(50_60)]	Valid	Valid	[]
+NC_000003.12:g.63912687AGC[(60_?)]	Valid	Valid	[]
+NC_000003.12:g.63912687_63912716AGC[13]	Valid	Valid	[]
+NC_000003.12:g.pter_36969141delins[CATTTGTTCAAATTTAGTTCAAATGA;NC_000014.9:g.29745314_qterinv]	Valid	Valid	[]
+NC_000004.11:g.(3076562_3076732)insN[12]	Valid	Valid	[]
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080]	Valid	Valid	[]
+NC_000004.12:g.134850793_134850794ins[NC_000023.11:g.89555676_100352080inv]	Valid	Valid	[]
+NC_000005.10:g.29658442delins[NC_000010.11:g.67539995_qterinv]	Valid	Valid	[]
+NC_000006.11:g.10791926_10791927ins[NC_000004.11:g.106370094_106370420;A[26]]	Valid	Valid	[]
+NC_000006.11:g.117198495_117198496del	Valid	Valid	[]
+NC_000006.11:g.8897754_8897755ins[N[543];8897743_8897754]	Valid	Valid	[]
+NC_000006.12:g.[776788_93191545inv;93191546T>C]	Valid	Valid	[]
+NC_000008.11:g.(127300001_131500000)_(131500001_136400000)dup	Valid	Valid	[]
+NC_000008.11:g.(131500001_136400000)ins[(127300001_131500000)_(131500001_136400000)inv]	Invalid	Invalid	{"WSUFFIXFORMATNOTCOMPLEX":"The part after \"ins\" does not follow HGVS guidelines. Only use square brackets for complex insertions."}
+NC_000009.12:g.102425452_qterdelinspter_26393001inv	Valid	Valid	[]
+NC_000009.12:g.pter_26393001delins102425452_qterinv	Valid	Valid	[]
+NC_000011.10:g.108111982_qterdelins[NC_000002.12:g.17450009_qter]	Valid	Valid	[]
+NC_000011.10:g.1999904_1999946|gom	Valid	Valid	[]
+NC_000011.10:g.1999904_1999946|lom	Valid	Valid	[]
+NC_000011.10:g.1999904_1999946|met=	Valid	Valid	[]
+NC_000011.10:g.pter_15825272::NC_000002.12:g.8247757_cen_qter	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000011.10\"."}
+NC_000011.10:g.pter_5825272delins[NC_000002.12:g.pter_8247756]	Valid	Valid	[]
+NC_000011.9:g.12345611G>A	Valid	Valid	[]
+NC_000012.11:g.112036755_112036823CTG[9]TTG[1]CTG[13]	Valid	Valid	[]
+NC_000012.11:g.6128892_6128954delins[NC_000022.10:g.17179029_17179091]	Valid	Valid	[]
+NC_000012.12:g.6128479_6128749con[NC_000022.11:g.17178616_17178886]	Invalid	Invalid	{"WWRONGTYPE":"A conversion should be described as a deletion-insertion."}
+NC_000012.12:g.6128479_6128749delins[NC_000022.11:g.17178616_17178886]	Valid	Valid	[]
+NC_000013.11:g.(19385993_19394916)_(25045592_25059364)del	Valid	Valid	[]
+NC_000013.11:g.(?_19394916)_(25045592_?)del	Valid	Valid	[]
+NC_000014.8:g.101179660_101179695TG[14]	Valid	Valid	[]
+NC_000014.8:g.123CAG[23]	Valid	Valid	[]
+NC_000014.8:g.123_191CAG[19]CAA[4]	Valid	Valid	[]
+NC_000014.8:g.[101179660_101179695TG[14]];[101179660_101179695TG[18]]	Valid	Valid	[]
+NC_000014.9:g.29745314_qterdelins[NC_000003.12:g.36969141_pterinv]	Invalid	Invalid	{"WPOSITIONORDER":"This variant description contains positions not given in the correct order."}
+NC_000022.10:g.42522624_42522669con42536337_42536382	Invalid	Invalid	{"WWRONGTYPE":"A conversion should be described as a deletion-insertion."}
+NC_000022.10:g.42522624_42522669delins42536337_42536382	Valid	Valid	[]
+NC_000022.11:g.[pter_(12200001_14700000)del::(37600001_410000000)_qterdel]sup	Valid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000022.11\"."}
+NC_000022.11:g.pter_(12200001_14700000)del::(37600001_410000000)_qterdel	Valid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000022.11:g.pter_(12200001_14700000)del\"."}
+NC_000023.10(NM_000109.3):c.-401C>T	Valid	Valid	[]
+NC_000023.10(NM_004006.1):c.-128354C>T	Valid	Valid	[]
+NC_000023.10(NM_004006.2):c.-244-u147T>C	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NC_000023.10(NM_004006.2)\"."}
+NC_000023.10(NM_004006.2):c.2950-11_2950-5del	Valid	Valid	[]
+NC_000023.10(NM_004006.2):c.357+1G>A	Valid	Valid	[]
+NC_000023.10(NM_004006.2):c.94-2A>G	Valid	Valid	[]
+NC_000023.10(NM_004006.3):c.357+1G>A	Valid	Valid	[]
+NC_000023.10(NR_028379.1):n.696-38544del	Valid	Valid	[]
+NC_000023.10:g.(32057077_32364657)_(32894352_33055973)del	Valid	Valid	[]
+NC_000023.10:g.(32057077_32364657)_(32975163_33394206)del	Valid	Valid	[]
+NC_000023.10:g.(32218983_32238146)_(32984039_33252615)del	Valid	Valid	[]
+NC_000023.10:g.(33038277_33038278)C>T	Valid	Valid	[]
+NC_000023.10:g.(?_32238146)_(32984039_?)del	Valid	Valid	[]
+NC_000023.10:g.(?_32364657)_(32975163_?)del	Valid	Valid	[]
+NC_000023.10:g.111754331_111966764inv	Valid	Valid	[]
+NC_000023.10:g.32361300del	Valid	Valid	[]
+NC_000023.10:g.32361330_32361333inv	Valid	Valid	[]
+NC_000023.10:g.32380996C>T	Valid	Valid	[]
+NC_000023.10:g.32407761G>A	Valid	Valid	[]
+NC_000023.10:g.32456507del	Valid	Valid	[]
+NC_000023.10:g.32456507dup	Valid	Valid	[]
+NC_000023.10:g.32459297del	Valid	Valid	[]
+NC_000023.10:g.32459297dup	Valid	Valid	[]
+NC_000023.10:g.32717298_32717299insN	Valid	Valid	[]
+NC_000023.10:g.32717298_32717299insN[(80_120)]	Valid	Valid	[]
+NC_000023.10:g.32717298_32717299insN[100]	Valid	Valid	[]
+NC_000023.10:g.32717298_32717299insN[?]	Valid	Valid	[]
+NC_000023.10:g.32862923_32862924insCCT	Valid	Valid	[]
+NC_000023.10:g.32862927_32862929delinsATA	Valid	Valid	[]
+NC_000023.10:g.32867861_32867862insT	Valid	Valid	[]
+NC_000023.10:g.33038255C>A	Valid	Valid	[]
+NC_000023.10:g.33229410dup	Valid	Valid	[]
+NC_000023.10:g.33229820A>G	Valid	Valid	[]
+NC_000023.10:g.33357783G>A	Valid	Valid	[]
+NC_000023.10:g.[30683643A>G;33038273T>G]	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.(-205839_-62966)_(*21568_*61692)dup	Invalid	Valid	[]
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)del	Invalid	Valid	[]
+NC_000023.11(NM_004006.2):c.(10086+1_10087-1)_(*2691_?)dup	Invalid	Valid	[]
+NC_000023.11(NM_004006.2):c.(3996_4196)_(5090_5284)del	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)[3]	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)del	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.(4071+1_4072-1)_(5154+1_5155-1)dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)del	Invalid	Valid	[]
+NC_000023.11(NM_004006.2):c.(?_-244)_(31+1_32-1)dup	Invalid	Valid	[]
+NC_000023.11(NM_004006.2):c.1704+1dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.1813dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.183_186+48del	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.260_264+48dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.3921dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246del	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.4072-1234_5155-246dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.4072-?_5154+?del	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.720_991dup	Valid	Valid	[]
+NC_000023.11(NM_004006.2):c.93+1G>T	Valid	Valid	[]
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)del	Valid	Valid	[]
+NC_000023.11:g.(31060227_31100351)_(33274278_33417151)dup	Valid	Valid	[]
+NC_000023.11:g.(31729662_31774079)_(32216972_32287623)dup	Valid	Valid	[]
+NC_000023.11:g.(31729663_31774080)_(32216973_32287624)del	Valid	Valid	[]
+NC_000023.11:g.(31729716_31773911)_(32217064_32287541)dup	Valid	Valid	[]
+NC_000023.11:g.(31729716_31774235)_(32216847_32287541)del	Valid	Valid	[]
+NC_000023.11:g.(31775822_31817965)_(32218461_32278336)dup	Valid	Valid	[]
+NC_000023.11:g.(31775822_31819974)_(32217064_32278336)del	Valid	Valid	[]
+NC_000023.11:g.(32381076_32382698)_(32430031_32456357)[3]	Valid	Valid	[]
+NC_000023.11:g.(86200001_103700000)del	Valid	Valid	[]
+NC_000023.11:g.(?_31120496)_(33339477_?)del	Valid	Valid	[]
+NC_000023.11:g.(?_31120496)_(33339477_?)dup	Valid	Valid	[]
+NC_000023.11:g.32343183del	Valid	Valid	[]
+NC_000023.11:g.32343183dup	Valid	Valid	[]
+NC_000023.11:g.32362879C>T	Valid	Valid	[]
+NC_000023.11:g.32386323delCinsGA	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.32386323delTinsGA	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.32386323delinsGA	Valid	Valid	[]
+NC_000023.11:g.32389644G>A	Valid	Valid	[]
+NC_000023.11:g.32441180dup	Valid	Valid	[]
+NC_000023.11:g.32844735_32844787dup	Valid	Valid	[]
+NC_000023.11:g.32849790T>A	Valid	Valid	[]
+NC_000023.11:g.32867908=	Valid	Valid	[]
+NC_000023.11:g.32867908_32867923=	Valid	Valid	[]
+NC_000023.11:g.33211290_33211293dup	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592=//del	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592=//dup	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592=/del	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592=/dup	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592del	Valid	Valid	[]
+NC_000023.11:g.33344590_33344592delGAT	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.33344590_33344592delTTA	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.33344591del	Valid	Valid	[]
+NC_000023.11:g.33344591delA	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.33344591delG	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NC_000023.11:g.89555676_100352080del	Valid	Valid	[]
+NC_000023.11:g.pter_qter[2]	Valid	Valid	[]
+NC_000023.11:g.pter_qtersup	Valid	Valid	[]
+NC_000023.9:g.(123456_234567)_(345678_456789)del	Valid	Valid	[]
+NC_000023.9:g.32290917C>T	Valid	Valid	[]
+NC_000023.9:g.32317682G>A	Valid	Valid	[]
+NC_012920.1(MT-ND1):m.3460G>A	Valid	Valid	[]
+NC_012920.1(MT-TL1):m.3243A>G	Valid	Valid	[]
+NC_012920.1(MT-TL1):n.14A>G	Valid	Valid	[]
+NC_012920.1:m.16563_13del	Valid	Valid	[]
+NC_012920.1:m.3243A>G	Valid	Valid	[]
+NC_012920.1:m.3460G>A	Valid	Valid	[]
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[N[603];123+45_123+51]	Valid	Valid	[]
+NG_012232.1(NM_004006.2):c.123+51_123+52ins[[XXXXXX.y:g.393_1295];123+45_123+51]	Invalid	Invalid	{"ESUFFIXMISSING":"The inserted sequence must be provided for insertions.","WINPUTLEFT":"We stopped reading past \"NG_012232.1(NM_004006.2):c.123+51_123+52ins\"."}
+NG_012232.1(NM_004006.2):c.357+1G>A	Valid	Valid	[]
+NG_012232.1(NM_004006.2):c.93+1G>T	Valid	Valid	[]
+NG_012232.1:g.123_128del	Valid	Valid	[]
+NG_012232.1:g.123del6	Invalid	Invalid	{"WSUFFIXFORMAT":"The part after \"del\" does not follow HGVS guidelines.","ESUFFIXTOOLONG":"The variant's positions indicate a sequence that's shorter than the given deleted sequence. Please adjust either the variant's positions or the given deleted sequence."}
+NG_012232.1:g.12G>T(;)13C>G	Valid	Valid	[]
+NG_012232.1:g.12GC>TG	Invalid	Invalid	{"WWRONGTYPE":"A substitution should be a change of one base to one base. Did you mean to describe a deletion-insertion?"}
+NG_012232.1:g.12_13delinsTG	Valid	Valid	[]
+NG_012232.1:g.954966C>T	Valid	Valid	[]
+NG_012232.1:g.981731G>A	Valid	Valid	[]
+NM_000044.3:c.(92_331)insN[33]	Valid	Valid	[]
+NM_000044.3:c.171_239GCA[34]	Valid	Valid	[]
+NM_000109.3:c.-401C>T	Invalid	Valid	[]
+NM_000109.3:c.5210G>A	Valid	Valid	[]
+NM_000222.3:c.1676_1684del	Valid	Valid	[]
+NM_000333.3:c.(4_246)delN[15]	Valid	Valid	[]
+NM_000333.3:c.(4_246)insN[(150_180)]	Valid	Valid	[]
+NM_000333.3:c.(4_246)insN[15]	Valid	Valid	[]
+NM_000333.3:c.(4_246)insN[9]	Valid	Valid	[]
+NM_000492.3:c.1210-12_1210-6T[7]	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions.","EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_000492.3:c.1210-33_1210-6GT[11]T[6]	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions.","EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_000492.3:c.1521_1523del	Valid	Valid	[]
+NM_000492.3:c.1522_1524del	Valid	Valid	[]
+NM_000492.3:c.1522_1524delTTT	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NM_000517.4:c.424C>T^NM_000558.3:c.424C>T	Valid	Valid	{"ENOTSUPPORTED":"Currently, variant descriptions using \"^\" are not yet supported. This does not necessarily mean the description is not Valid according to the HGVS nomenclature."}
+NM_000553.4:c.3050_3051ins[NM_004006.3:c.284_293]	Valid	Valid	[]
+NM_000797.3:c.812_829delins908_925	Valid	Valid	[]
+NM_001849.3:c.-1_*1=	Valid	Valid	[]
+NM_001849.3:c.=	Valid	Valid	[]
+NM_002024.5:c.(-144_-16)insN[(1800_2400)]	Valid	Valid	[]
+NM_002024.5:c.-128_-69GGC[10]GGA[1]GGC[9]GGA[1]GGC[10]	Valid	Valid	[]
+NM_002024.5:c.-128_-69GGC[68]GGA[1]GGC[10]	Valid	Valid	[]
+NM_002024.5:c.-128_-69GGM[108]	Valid	Valid	[]
+NM_002024.5:c.-129CGG[79]	Valid	Valid	[]
+NM_002111:c.211C>T	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence ID is missing the required version number. NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions."}
+NM_003079.4:c.374_395inv	Valid	Valid	[]
+NM_004006.1:c.-128354C>T	Invalid	Valid	[]
+NM_004006.1:c.123+45_123+51TSDinsL1.603bp	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.1\"."}
+NM_004006.1:c.123=	Valid	Valid	[]
+NM_004006.1:c.5697del	Valid	Valid	[]
+NM_004006.1:c.761_762insN[5]	Valid	Valid	[]
+NM_004006.1:c.76A/G	Invalid	Invalid	{"WSUBSTFORMAT":"Substitutions are indicated using the \">\" character, not the \"\/\" character."}
+NM_004006.1:c.76A>G	Valid	Valid	[]
+NM_004006.1:c.[123=;456=;789=]	Valid	Valid	[]
+NM_004006.1:c.[837G>A;1704+51T>C;3734C>T;6438+2669T[(16_23)];6571C>T;7098+13212GT[(15_19)]]	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions.","EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_004006.2:c.(222_226)insG	Valid	Valid	[]
+NM_004006.2:c.*1162_*2691{2}	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.2\"."}
+NM_004006.2:c.-244_*2691del	Valid	Valid	[]
+NM_004006.2:c.-244_*2691{0}	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.2\"."}
+NM_004006.2:c.-244_187{0}	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.2\"."}
+NM_004006.2:c.123=	Valid	Valid	[]
+NM_004006.2:c.145_147delinsTGG	Valid	Valid	[]
+NM_004006.2:c.169_170insA	Valid	Valid	[]
+NM_004006.2:c.20_23dup	Valid	Valid	[]
+NM_004006.2:c.20dup	Valid	Valid	[]
+NM_004006.2:c.20dupG	Invalid	Invalid	{"WSUFFIXGIVEN":"The duplicated sequence is redundant and should be removed."}
+NM_004006.2:c.20dupT	Invalid	Invalid	{"WSUFFIXGIVEN":"The duplicated sequence is redundant and should be removed."}
+NM_004006.2:c.2376G>C(;)(2376G>C)	Invalid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.2:c.2376G>C\"."}
+NM_004006.2:c.2376G>C(;)3103del	Valid	Valid	[]
+NM_004006.2:c.357+1G>A	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions."}
+NM_004006.2:c.4072-1234_5155-246dup	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions."}
+NM_004006.2:c.4145_4160inv	Valid	Valid	[]
+NM_004006.2:c.419_420ins[T;401_419]	Valid	Valid	[]
+NM_004006.2:c.4375C>T	Valid	Valid	[]
+NM_004006.2:c.5657_5660inv	Valid	Valid	[]
+NM_004006.2:c.5690del	Invalid	Valid	[]
+NM_004006.2:c.5690dup	Valid	Valid	[]
+NM_004006.2:c.5697del	Valid	Valid	[]
+NM_004006.2:c.5697dup	Valid	Valid	[]
+NM_004006.2:c.6775_6777delGAGinsC	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NM_004006.2:c.6775_6777delGTGinsC	Invalid	Invalid	{"WSUFFIXGIVEN":"The deleted sequence is redundant and should be removed."}
+NM_004006.2:c.6775_6777delinsC	Valid	Valid	[]
+NM_004006.2:c.761_762insN	Valid	Valid	[]
+NM_004006.2:c.761_762insNNNNN	Valid	Valid	[]
+NM_004006.2:c.812_829delinsN[12]	Valid	Valid	[]
+NM_004006.2:c.849_850ins850_900inv	Valid	Valid	[]
+NM_004006.2:c.849_850ins858_895	Valid	Valid	[]
+NM_004006.2:c.85=//T>C	Valid	Valid	[]
+NM_004006.2:c.900_901ins850_900inv	Valid	Valid	[]
+NM_004006.2:c.940_941ins[903_940inv;851_885inv]	Valid	Valid	[]
+NM_004006.2:c.=	Valid	Valid	[]
+NM_004006.2:c.[123=;456=;789=]	Valid	Valid	[]
+NM_004006.2:c.[2376G>C;3103del]	Valid	Valid	[]
+NM_004006.2:c.[2376G>C];[2376=]	Valid	Valid	[]
+NM_004006.2:c.[2376G>C];[2376G>C]	Valid	Valid	[]
+NM_004006.2:c.[2376G>C];[3103del]	Valid	Valid	[]
+NM_004006.2:c.[2376G>C];[?]	Valid	Valid	[]
+NM_004006.2:c.[296T>G;476T>C;1083A>C];[296T>G;1083A>C]	Valid	Valid	[]
+NM_004006.2:c.[296T>G;476T>C];[476T>C](;)1083A>C	Valid	Valid	[]
+NM_004006.2:c.[296T>G];[476T>C](;)1083G>C(;)1406del	Valid	Valid	[]
+NM_004006.2:c.[762_768del;767_774dup]	Valid	Valid	[]
+NM_004006.2c.2622G>C	Valid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_004006.2\"."}
+NM_004006.3:c.124A>T	Valid	Valid	[]
+NM_004006.3:c.2453del	Valid	Valid	[]
+NM_004006.3:c.299_300ins284_293	Valid	Valid	[]
+NM_004006.3:c.299_300insGAAGTACTG	Valid	Valid	[]
+NM_004006.3:c.3430C>T	Valid	Valid	[]
+NM_004006.3:c.4375C>T	Valid	Valid	[]
+NM_004006.3:c.472A>G	Valid	Valid	[]
+NM_004006.3:c.5234G>A	Valid	Valid	[]
+NM_004006.3:c.897T>G	Valid	Valid	[]
+NM_004007.2:c.4865G>A	Valid	Valid	[]
+NM_004009.3:c.5222G>A	Valid	Valid	[]
+NM_004010.3:c.4865G>A	Valid	Valid	[]
+NM_004011.3:c.1211G>A	Valid	Valid	[]
+NM_004012.3:c.1202G>A	Valid	Valid	[]
+NM_004380.2:c.138_139insTCATCATGAGCTCCC	Valid	Valid	[]
+NM_004380.2:c.139delinsTCATCATGAGCTG	Valid	Valid	[]
+NM_007294.3:c.2077G>A	Valid	Valid	[]
+NM_007294.3:c.2077delinsATA	Valid	Valid	[]
+NM_007294.3:c.[2077G>A;2077_2078insTA]	Invalid	Valid	[]
+NM_021080.3:c.-136-75952_-136-75878ATTTT[15]	Invalid	Invalid	{"EWRONGREFERENCE":"A genomic transcript reference sequence is required to verify intronic positions.","EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_023035.2:c.6955_6993CAG[26]	Valid	Valid	[]
+NM_024312.4:c.1738TA[6]	Invalid	Invalid	{"EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_024312.4:c.1741_1742insTATATATA	Valid	Valid	[]
+NM_024312.4:c.2686A[10]	Invalid	Invalid	{"EINVALIDREPEATLENGTH":"A repeat sequence of coding DNA should always have a length of (a multiple of) 3."}
+NM_024312.4:c.2692_2693dup	Valid	Valid	[]
+NM_080877.2:c.1732_1794del	Valid	Valid	[]
+NM_080877.2:c.1733_1735delinsTTT	Valid	Valid	[]
+NM_080877.2c.1733_1735delinsTTT	Valid	Invalid	{"WINPUTLEFT":"We stopped reading past \"NM_080877.2\"."}
+NR_002196.1:n.601G>T	Valid	Valid	[]
+NR_028379.1:n.345A>G	Valid	Valid	[]
+OPRM1:c.118A	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.118A>G	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG."}
+OPRM1:c.118AA	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.118G	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.118GA	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.118GG	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.[118>G];[118>G]	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WINPUTLEFT":"We stopped reading past \"OPRM1\"."}
+OPRM1:c.[118A=];[118A=]	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WBASESGIVEN":"The given sequence is redundant and should be removed."}
+OPRM1:c.[118A>G];[118A=]	Invalid	Invalid	{"EREFERENCEFORMAT":"The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.","WBASESGIVEN":"The given sequence is redundant and should be removed."}
+[GJB2:c.35del];[GJB6:c.689_690insT]	Valid	Invalid	{"EFAIL":"Failed to recognize a HGVS nomenclature-compliant variant description in your input."}
+[M59228.1:g.250G>C;AF209160.1:g.572CA[(11_21)];Z11861.1:g.61T>C;Z16803.1:g.114A[(18_22)]]	Valid	Invalid	{"EFAIL":"Failed to recognize a HGVS nomenclature-compliant variant description in your input."}
+[NM_004004.2:c.35del];[NM_006783.1:c.689_690insT]	Valid	Invalid	{"EFAIL":"Failed to recognize a HGVS nomenclature-compliant variant description in your input."}
+chr11:g.12345611G>A	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 11. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome."}
+chr11:g.pter_15,825,272::chr2:g.8,247,757_cen_qter	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 11. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr11\"."}
+chr11:g.pter_cen_108111981::chr2:g.174500099_qter	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 11. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr11\"."}
+chr14:g.29,745,314_qterinv::CATTTGTTCAAATTTAGTTCAAATGA::chr3:g.36,969,142_cen_qter	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 14. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr14\"."}
+chr14:g.[pter_cen_qter]add	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 14. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr14\"."}
+chr14:g.pter_cen_29,745,313::chr3:g.pter_36,969,141inv	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 14. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr14\"."}
+chr22:g.[pter_10000000del::40000000_qterdel]add	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 22. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr22\"."}
+chr22:g.pter_10000000del::40000000_qterdel	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 22. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr22:g.pter_10000000del\"."}
+chr2:g.[32310435_32310710del;32310711_171827243inv;insG]	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 2. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr2\"."}
+chr2:g.pter_8,247,756::chr11:g.15,825,273_cen_qter	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 2. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr2\"."}
+chr2:g.pter_cen_174500098::chr11:g.108111987_qter	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 2. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr2\"."}
+chr6:g.[776788_93191545inv;93191546T>C]	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 6. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome."}
+chr8:g.128746677_128749160dup	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 8. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome."}
+chr8:g.128746677_128749160dupinv	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome 8. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WINPUTLEFT":"We stopped reading past \"chr8:g.128746677_128749160dup\"."}
+chrX:g.89555676_100352080del	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome X. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome."}
+chrX:g.[89555676_100352080del]	Invalid	Invalid	{"WREFSEQMISSING":"You indicated this variant is located on chromosome X. However, the HGVS nomenclature does not include chromosomes in variant descriptions, they are represented by reference sequences. Therefore, please provide a reference sequence for this chromosome.","WWRONGTYPE":"The allele syntax with square brackets is meant for multiple variants."}

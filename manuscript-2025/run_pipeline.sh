@@ -1,6 +1,6 @@
 #!/bin/bash
 # Created  2024-12-30
-# Modified 2025-01-10
+# Modified 2025-01-14
 
 # Extract the data.
 PREFIX="HGVS_list.$(date +%Y-%m-%d)";
@@ -277,6 +277,40 @@ then
 else
     OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
     cat $IN | cut -f 1 | grep -E "(:|^NM)" | grep -vE "^(g\.|rs)" > $OUTNEW;
+    if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
+    then
+        echo "No differences detected in $OUT.";
+        rm $OUTNEW;
+    else
+        echo "Differences detected in $OUT.";
+        if [ $MELD -gt 0 ];
+        then
+            meld $OUT $OUTNEW;
+        else
+            diff -u $OUT $OUTNEW | less -SM;
+        fi
+    fi;
+fi;
+
+# And our output already.
+IN=$OUT;
+OUT="$PREFIX.G.DNA-and-reference-sequences-only.output-HGVS.txt";
+cat $IN | while IFS='' read -r DNA;
+do
+    grep -Fm1 "${DNA}" <(cut -f 1,3-5 "$PREFIX.C.validated.txt");
+done | sed 's/valid/Valid/g' \
+     | sed 's/inValid/Invalid/g' \
+     | sed 's/Valid?/Valid/' \
+     | sed 's/Invalid!/Invalid/' > $OUT;
+
+# And create a file for the Mutalyzer output.
+OUT="$PREFIX.G.DNA-and-reference-sequences-only.output-Mutalyzer.txt";
+if [ ! -f $OUT ];
+then
+    ./run_mutalyzer $IN > $OUT;
+else
+    OUTNEW=$(echo $OUT | sed 's/.txt/.new.txt/');
+    ./run_mutalyzer $IN > $OUTNEW;
     if [ "$(diff -q $OUT $OUTNEW | wc -l)" -eq "0" ];
     then
         echo "No differences detected in $OUT.";

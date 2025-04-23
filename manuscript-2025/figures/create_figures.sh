@@ -31,6 +31,7 @@ pdftk "${1}" burst output figures_%02d.pdf;
 if [ "$?" -eq "0" ];
 then
     rm doc_data.txt;
+    rm figures_02.pdf;
 else
     echo "Failed to burst the PDF into separate pages.";
     exit 1;

@@ -66,6 +66,9 @@ function run_mutalyzer ($sVariant, $nCount = 0)
     //  (not checked on the sequence level). Take the normalized description.
     if (isset($aJSON['normalized_description'])) {
         $aReturn['result'] = $aJSON['normalized_description'];
+    } elseif (isset($aJSON['corrected_description'])) {
+        // OK, I guess then we'll have to.
+        $aReturn['result'] = $aJSON['corrected_description'];
     }
 
     foreach (['errors', 'infos'] as $sCode) {

@@ -1,3 +1,6 @@
+archive
 figures/figures.pdf
 figures/figures_??.pdf
-figures/figures_??.jpg
+figures/figures_*.png
+figures/figures_*.jpg
+HGVS_list.*
