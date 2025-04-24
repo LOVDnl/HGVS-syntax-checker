@@ -2426,6 +2426,45 @@ class HGVS_DNAPositionNumber extends HGVS
 
 
 
+class HGVS_DNAPositionOffsetPrefix extends HGVS
+{
+    public array $patterns = [
+        'valid'   => ['/[+-]/', []],
+        'invalid' => ['/[—–−‐]/u', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+
+        // We've seen input from papers that don't use a hyphen-minus (-) but a non-breaking hyphen (‐) or other
+        //  hyphen-like characters (−, –, —).
+        // Since the user can't really see the difference, it's not really an error, but we do need to fix it.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "' . $this->value . '" found in variant position; only regular hyphens are allowed to be used in the HGVS nomenclature.';
+            $this->value = '-';
+        }
+
+        // Store the corrected value.
+        $this->setCorrectedValue($this->value);
+    }
+}
+
+
+
+
+
+class HGVS_DNAPositionUTRPrefix extends HGVS_DNAPositionOffsetPrefix
+{
+    public array $patterns = [
+        'valid'   => ['/[*-]/', []],
+        'invalid' => ['/[—–−‐]/u', []],
+    ];
+}
+
+
+
+
 
 class HGVS_DNAPositionSeparator extends HGVS
 {
