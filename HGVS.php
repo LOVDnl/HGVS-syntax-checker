@@ -2435,6 +2435,44 @@ class HGVS_DNAPositionExonic extends HGVS
 
 
 
+class HGVS_DNAPositionOffset extends HGVS
+{
+    public array $patterns = [
+        'unknown' => ['HGVS_DNAPositionOffsetPrefix', '?', []],
+        'known'   => ['HGVS_DNAPositionOffsetPrefix', 'HGVS_DNAPositionNumber', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->unknown = ($this->matched_pattern == 'unknown');
+
+        if ($this->unknown) {
+            // +? == +1, -? == -1.
+            $this->offset = (int) ($this->DNAPositionOffsetPrefix->getCorrectedValue() . '1');
+
+        } elseif (!$this->DNAPositionNumber->getCorrectedValue()) {
+            // Check for offsets that evaluate to zero.
+            // HGVS_DNAPositionNumber has already checked for numbers starting with zero.
+            $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid intronic offset: "' . $this->value . '".';
+            // We will simply drop the intronic offset.
+            $this->offset = 0;
+            // That's a very inconfident change, but throwing an error already reduces the confidence immensely.
+            $this->corrected_values = $this->buildCorrectedValues(
+                ['' => 0.75]
+            );
+
+        } else {
+            // A normal value.
+            $this->offset = (int) $this->getCorrectedValue();
+        }
+    }
+}
+
+
+
+
+
 class HGVS_DNAPositionNumber extends HGVS
 {
     public array $patterns = [
