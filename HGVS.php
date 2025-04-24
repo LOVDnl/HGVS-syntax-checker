@@ -2390,6 +2390,51 @@ class HGVS_DNAPosition extends HGVS
 
 
 
+class HGVS_DNAPositionExonic extends HGVS
+{
+    public array $patterns = [
+        'CDS' => ['HGVS_DNAPositionNumber', []],
+        'UTR' => ['HGVS_DNAPositionUTRPrefix', 'HGVS_DNAPositionNumber', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->UTR = ($this->matched_pattern == 'UTR');
+
+        // Check for positions that evaluate to zero.
+        // HGVS_DNAPositionNumber has already checked for numbers starting with zero.
+        if (!$this->DNAPositionNumber->getCorrectedValue()) {
+            $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid position: "' . $this->value . '".';
+        }
+
+        // Store the corrected value and the sortable value, depending on the type of position.
+        if ($this->UTR) {
+            $this->corrected_values = $this->buildCorrectedValues(
+                $this->DNAPositionUTRPrefix->getCorrectedValues(),
+                $this->DNAPositionNumber->getCorrectedValues()
+            );
+
+            if ($this->DNAPositionUTRPrefix->getCorrectedValue() == '*') {
+                // 3' UTR.
+                $this->position_sortable = 1000000 + $this->DNAPositionNumber->getCorrectedValue();
+            } else {
+                $this->position_sortable = (int) $this->getCorrectedValue();
+            }
+
+        } else {
+            $this->corrected_values = $this->buildCorrectedValues(
+                $this->DNAPositionNumber->getCorrectedValues()
+            );
+            $this->position_sortable = (int) $this->getCorrectedValue();
+        }
+    }
+}
+
+
+
+
+
 class HGVS_DNAPositionNumber extends HGVS
 {
     public array $patterns = [
