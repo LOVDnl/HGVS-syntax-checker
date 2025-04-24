@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-26   // When modified, also change the library_version.
+ * Modified    : 2025-04-24   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,8 +753,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-03-26',
-            'library_version' => '0.4.2',
+            'library_date' => '2025-04-24',
+            'library_version' => '0.4.3',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -2385,6 +2385,43 @@ class HGVS_DNAPosition extends HGVS
         }
     }
 }
+
+
+
+
+
+class HGVS_DNAPositionNumber extends HGVS
+{
+    public array $patterns = [
+        ['/[0-9,]+(?![0-9,]*\s*bp)/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $nCorrectionConfidence = 1;
+
+        // Remove grouping separators (thousand separators, commas).
+        if (strpos($this->value, ',') !== false) {
+            $this->value = str_replace(',', '', $this->value);
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "," found in variant position; the HGVS nomenclature does not use grouping separators within positions.';
+        }
+
+        // Check for values with zeros. Of course, zero itself is never a valid position,
+        //  but we don't know yet whether we're "0", "-0", "+0", or "*0". So, just check for zero as a prefix.
+        if ($this->value && substr($this->value, 0, 1) == '0') {
+            $this->messages['WPOSITIONWITHZERO'] = 'Variant positions should not be prefixed by a 0.';
+            $nCorrectionConfidence *= 0.9;
+        }
+
+        // Store the corrected value.
+        $this->corrected_values = $this->buildCorrectedValues(
+            ['' => $nCorrectionConfidence],
+            (int) $this->value
+        );
+    }
+}
+
 
 
 
