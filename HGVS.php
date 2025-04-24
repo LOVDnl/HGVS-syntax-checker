@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-03-26   // When modified, also change the library_version.
+ * Modified    : 2025-04-24   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,8 +753,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-03-26',
-            'library_version' => '0.4.2',
+            'library_date' => '2025-04-24',
+            'library_version' => '0.4.3',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -2194,11 +2194,11 @@ class HGVS_DNAPipeSuffix extends HGVS
 class HGVS_DNAPosition extends HGVS
 {
     public array $patterns = [
-        'unknown'          => ['?', []],
-        'unknown_intronic' => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\?)/u', []],
-        'known'            => ['/([-‐−–—*]?\s*([0-9,]+))\s*([+—–−‐-]\s*([0-9,]+))?(?![0-9]*\s*bp)/u', []],
-        'pter'             => ['/pter/', []],
-        'qter'             => ['/qter/', []],
+        'unknown'  => ['?', []],
+        'intronic' => ['HGVS_DNAPositionExonic', 'HGVS_DNAPositionOffset', []],
+        'exonic'   => ['HGVS_DNAPositionExonic', []],
+        'pter'     => ['/pter/', []],
+        'qter'     => ['/qter/', []],
     ];
     public array $position_limits = [
         'g' => [1, 4294967295, 0, 0], // position min, position max, offset min, offset max.
@@ -2212,17 +2212,16 @@ class HGVS_DNAPosition extends HGVS
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->unknown = ($this->matched_pattern == 'unknown');
-        $this->unknown_offset = ($this->matched_pattern == 'unknown_intronic');
+        $this->intronic = ($this->matched_pattern == 'intronic');
+        $this->unknown_offset = ($this->intronic && $this->DNAPositionOffset->unknown);
         // VCFs usually don't have a prefix, assume g. when missing.
         $VariantPrefix = ($this->getParentProperty('DNAPrefix') ?: ($this->getParentProperty('RNAPrefix') ?: new HGVS_DNAPrefix('g')));
         $sVariantPrefix = str_replace('r', 'c', $VariantPrefix->getCorrectedValue());
         $this->ISCN = false;
         $this->position_limits = $this->position_limits[$sVariantPrefix];
-        $nCorrectionConfidence = 1;
 
         if ($this->matched_pattern == 'unknown') {
             $this->UTR = false;
-            $this->intronic = false;
             $this->position = $this->value;
             $this->position_sortable = null; // This depends on how this position is used; start or end?
             $this->offset = 0;
@@ -2246,7 +2245,6 @@ class HGVS_DNAPosition extends HGVS
             $this->setCorrectedValue(strtolower($this->value));
             $this->caseOK = ($this->value == $this->getCorrectedValue());
             $this->UTR = false;
-            $this->intronic = false;
             $this->offset = 0;
             if ($this->matched_pattern == 'pter') {
                 $this->position = 1;
@@ -2262,67 +2260,12 @@ class HGVS_DNAPosition extends HGVS
             $this->ISCN = true;
 
         } else {
-            // We've seen input from papers that don't use a hyphen-minus (-) but a non-breaking hyphen (‐) or other
-            //  hyphen-like characters (−, –, —).
-            // Since the user can't really see the difference, it's not really an error, but we do need to fix it.
-            if (preg_match('/[‐−–—]/u', $this->value, $aRegs)) {
-                array_walk($this->regex, function (&$sValue) {
-                    $sValue = str_replace(array('‐', '−', '–', '—'), '-', $sValue);
-                });
-                $this->messages['WPOSITIONFORMAT'] = 'Invalid character "' . $aRegs[0] . '" found in variant position; only regular hyphens are allowed to be used in the HGVS nomenclature.';
-            }
-
-            // Remove grouping separators (thousand separators, commas).
-            if (strpos($this->value, ',') !== false) {
-                array_walk($this->regex, function (&$sValue) {
-                    $sValue = str_replace(',', '', $sValue);
-                });
-                $this->messages['WPOSITIONFORMAT'] = 'Invalid character "," found in variant position; the HGVS nomenclature does not use grouping separators within positions.';
-            }
-
-            $this->UTR = !ctype_digit($this->value[0]);
-            $this->intronic = isset($this->regex[3]);
-
-            // Store the position and sortable position separately.
-            if ($this->value[0] == '*') {
-                // 3' UTR. Force the number to an int, to remove 0-prefixed values.
-                $this->position = '*' . (int) $this->regex[2];
-                $this->position_sortable = 1000000 + (int) $this->regex[2];
-            } else {
-                $this->position = (int) $this->regex[1];
-                $this->position_sortable = $this->position;
-            }
+            $this->UTR = $this->DNAPositionExonic->UTR;
 
             // For intronic positions, split the value in position and offset.
-            if (!$this->intronic) {
-                $this->offset = 0;
-            } else {
-                if ($this->matched_pattern == 'unknown_intronic') {
-                    // +? == +1, -? == -1.
-                    $this->offset = (int) ($this->regex[3][0] . '1');
-                } else {
-                    $this->offset = (int) $this->regex[3];
-                }
-            }
-
-            // Check for values with zeros.
-            if (!$this->position || $this->position == '*0') {
-                $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid position: "' . $this->value . '".';
-            } elseif ((string) $this->position !== $this->regex[1]) {
-                $this->messages['WPOSITIONWITHZERO'] = 'Variant positions should not be prefixed by a 0.';
-                $nCorrectionConfidence *= 0.9;
-            }
-            if ($this->intronic && !$this->unknown_offset) {
-                if (!$this->offset) {
-                    $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid intronic position: "' . $this->value . '".';
-                    // Automatically, the corrected value will simply drop the intronic offset.
-                    // That's a very inconfident change, but throwing an error already reduces the confidence immensely.
-                    $nCorrectionConfidence *= 0.75;
-                } elseif ((string) abs($this->offset) !== $this->regex[4]) {
-                    $this->messages['WINTRONICPOSITIONWITHZERO'] = 'Intronic positions should not be prefixed by a 0.';
-                    $nCorrectionConfidence *= 0.9;
-                }
-            }
+            $this->position = $this->DNAPositionExonic->getCorrectedValue();
+            $this->position_sortable = $this->DNAPositionExonic->position_sortable;
+            $this->offset = (!$this->intronic? 0 : $this->DNAPositionOffset->offset);
 
             // Check minimum and maximum values.
             // E.g., disallow negative values for genomic sequences, etc.
@@ -2375,15 +2318,167 @@ class HGVS_DNAPosition extends HGVS
                 // -?, maximum is -1.
                 $this->position_limits[3] = $this->offset;
             }
-
-            // Store the corrected value.
-            $this->corrected_values = $this->buildCorrectedValues(
-                ['' => $nCorrectionConfidence],
-                $this->position .
-                ($this->offset? ($this->offset > 0? '+' : '-') . ($this->unknown_offset? '?' : abs($this->offset)) : '')
-            );
         }
     }
+}
+
+
+
+
+
+class HGVS_DNAPositionExonic extends HGVS
+{
+    public array $patterns = [
+        'CDS' => ['HGVS_DNAPositionNumber', []],
+        'UTR' => ['HGVS_DNAPositionUTRPrefix', 'HGVS_DNAPositionNumber', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->UTR = ($this->matched_pattern == 'UTR');
+
+        // Check for positions that evaluate to zero.
+        // HGVS_DNAPositionNumber has already checked for numbers starting with zero.
+        if (!$this->DNAPositionNumber->getCorrectedValue()) {
+            $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid position: "' . $this->value . '".';
+        }
+
+        // Store the corrected value and the sortable value, depending on the type of position.
+        if ($this->UTR) {
+            $this->corrected_values = $this->buildCorrectedValues(
+                $this->DNAPositionUTRPrefix->getCorrectedValues(),
+                $this->DNAPositionNumber->getCorrectedValues()
+            );
+
+            if ($this->DNAPositionUTRPrefix->getCorrectedValue() == '*') {
+                // 3' UTR.
+                $this->position_sortable = 1000000 + $this->DNAPositionNumber->getCorrectedValue();
+            } else {
+                $this->position_sortable = (int) $this->getCorrectedValue();
+            }
+
+        } else {
+            $this->corrected_values = $this->buildCorrectedValues(
+                $this->DNAPositionNumber->getCorrectedValues()
+            );
+            $this->position_sortable = (int) $this->getCorrectedValue();
+        }
+    }
+}
+
+
+
+
+
+class HGVS_DNAPositionOffset extends HGVS
+{
+    public array $patterns = [
+        'unknown' => ['HGVS_DNAPositionOffsetPrefix', '?', []],
+        'known'   => ['HGVS_DNAPositionOffsetPrefix', 'HGVS_DNAPositionNumber', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->unknown = ($this->matched_pattern == 'unknown');
+
+        if ($this->unknown) {
+            // +? == +1, -? == -1.
+            $this->offset = (int) ($this->DNAPositionOffsetPrefix->getCorrectedValue() . '1');
+
+        } elseif (!$this->DNAPositionNumber->getCorrectedValue()) {
+            // Check for offsets that evaluate to zero.
+            // HGVS_DNAPositionNumber has already checked for numbers starting with zero.
+            $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid intronic offset: "' . $this->value . '".';
+            // We will simply drop the intronic offset.
+            $this->offset = 0;
+            // That's a very inconfident change, but throwing an error already reduces the confidence immensely.
+            $this->corrected_values = $this->buildCorrectedValues(
+                ['' => 0.75]
+            );
+
+        } else {
+            // A normal value.
+            $this->offset = (int) $this->getCorrectedValue();
+        }
+    }
+}
+
+
+
+
+
+class HGVS_DNAPositionNumber extends HGVS
+{
+    public array $patterns = [
+        ['/[0-9,]+(?![0-9,]*\s*bp)/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $nCorrectionConfidence = 1;
+
+        // Remove grouping separators (thousand separators, commas).
+        if (strpos($this->value, ',') !== false) {
+            $this->value = str_replace(',', '', $this->value);
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "," found in variant position; the HGVS nomenclature does not use grouping separators within positions.';
+        }
+
+        // Check for values with zeros. Of course, zero itself is never a valid position,
+        //  but we don't know yet whether we're "0", "-0", "+0", or "*0". So, just check for zero as a prefix.
+        if ($this->value && substr($this->value, 0, 1) == '0') {
+            $this->messages['WPOSITIONWITHZERO'] = 'Variant positions should not be prefixed by a 0.';
+            $nCorrectionConfidence *= 0.9;
+        }
+
+        // Store the corrected value.
+        $this->corrected_values = $this->buildCorrectedValues(
+            ['' => $nCorrectionConfidence],
+            (int) $this->value
+        );
+    }
+}
+
+
+
+
+
+class HGVS_DNAPositionOffsetPrefix extends HGVS
+{
+    public array $patterns = [
+        'valid'   => ['/[+-]/', []],
+        'invalid' => ['/[—–−‐]/u', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+
+        // We've seen input from papers that don't use a hyphen-minus (-) but a non-breaking hyphen (‐) or other
+        //  hyphen-like characters (−, –, —).
+        // Since the user can't really see the difference, it's not really an error, but we do need to fix it.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WPOSITIONFORMAT'] = 'Invalid character "' . $this->value . '" found in variant position; only regular hyphens are allowed to be used in the HGVS nomenclature.';
+            $this->value = '-';
+        }
+
+        // Store the corrected value.
+        $this->setCorrectedValue($this->value);
+    }
+}
+
+
+
+
+
+class HGVS_DNAPositionUTRPrefix extends HGVS_DNAPositionOffsetPrefix
+{
+    public array $patterns = [
+        'valid'   => ['/[*-]/', []],
+        'invalid' => ['/[—–−‐]/u', []],
+    ];
 }
 
 
