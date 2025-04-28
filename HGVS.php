@@ -4284,7 +4284,8 @@ class HGVS_Dot extends HGVS
 class HGVS_Gene extends HGVS
 {
     public array $patterns = [
-        ['/([A-Z][A-Za-z0-9#@-]*)/', []],
+        'HGNC_ID' => ['/HGNC:([0-9]+)/', []],
+        'symbol'  => ['/([A-Z][A-Za-z0-9#@-]*)/', []],
     ];
     public static array $genes = [];
 
@@ -4308,7 +4309,11 @@ class HGVS_Gene extends HGVS
 
         if (self::$genes) {
             // Validate the gene symbol.
-            $nHGNCID = (self::$genes['genes'][strtolower($this->value)] ?? 0);
+            if ($this->matched_pattern == 'symbol') {
+                $nHGNCID = (self::$genes['genes'][strtolower($this->value)] ?? 0);
+            } else {
+                $nHGNCID = $this->regex[1];
+            }
             if (!$nHGNCID) {
                 // This is not recognized as a gene symbol, alias, previous symbol, or anything at all.
                 // Reject the match entirely; this is not a gene symbol.
@@ -4323,18 +4328,27 @@ class HGVS_Gene extends HGVS
                 // Check if we used the correct symbol for this gene.
                 $sSymbol = (self::$genes['IDs'][$nHGNCID] ?? '');
                 if (!$sSymbol) {
-                    // We found an ID, but not the official symbol. This is a bug on our side.
-                    $this->messages['ISYMBOLNOTFOUND'] = 'Although "' . $this->value . '" was recognized as a gene symbol or alias, we could not retrieve the official symbol for this gene.';
+                    // We found an ID, but not the official symbol. This is a bug on our side, when a symbol was passed.
+                    // When an HGNC ID was passed, it's most likely their fault.
+                    if ($this->matched_pattern == 'symbol') {
+                        $this->messages['ISYMBOLNOTFOUND'] = 'Although "' . $this->value . '" was recognized as a gene symbol or alias, we could not retrieve the official symbol for this gene.';
+                    } else {
+                        $this->messages['EINVALIDHGNCID'] = 'Invalid or withdrawn HGNC ID: ' . $this->value . '.';
+                    }
                     // Lower the confidence.
                     $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.75]);
 
                 } else {
-                    // Check our input.
-                    if (strtolower($this->value) != strtolower($sSymbol)) {
-                        // The user used an alias or so.
-                        $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                    if ($this->matched_pattern == 'HGNC_ID') {
+                        $this->messages['WSYMBOLCORRECTED'] = 'The HGNC ID ' . $nHGNCID . ' has been replaced by "' . $sSymbol . '".';
                     } else {
-                        $this->caseOK = ($this->value == $sSymbol);
+                        // Check our input.
+                        if (strtolower($this->value) != strtolower($sSymbol)) {
+                            // The user used an alias or so.
+                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                        } else {
+                            $this->caseOK = ($this->value == $sSymbol);
+                        }
                     }
 
                     // Store the corrected value, full confidence.
@@ -4836,7 +4850,7 @@ class HGVS_ReferenceSequence extends HGVS
                 $this->allowed_prefixes = [];
 
                 // Some black listing is needed, though.
-                if (in_array(strtolower($this->value), ['doi', 'http', 'https'])) {
+                if (in_array(strtolower($this->value), ['doi', 'hgnc', 'http', 'https'])) {
                     return 0; // Break out of this pattern only.
                 } else {
                     // We also want to be absolutely certain that we are not matching a variant description that has a
