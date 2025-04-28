@@ -1362,6 +1362,7 @@ class HGVS_DNAAlts extends HGVS
                 $this->setCorrectedValue(str_replace('U', 'T', $this->getCorrectedValue()));
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -1472,6 +1473,7 @@ class HGVS_DNADel extends HGVS
         $this->setCorrectedValue(strtolower($this->value));
         $this->data['type'] = $this->getCorrectedValue();
         $this->caseOK = ($this->value == $this->getCorrectedValue());
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -1724,6 +1726,7 @@ class HGVS_DNAIns extends HGVS
                 $Positions->makeCertain();
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2047,6 +2050,7 @@ class HGVS_DNAInv extends HGVS
                 ' Please remove the parentheses if the positions are certain.';
             $Positions->makeCertain();
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2189,6 +2193,7 @@ class HGVS_DNAPipeSuffix extends HGVS
                 $this->messages['WMETFORMAT'] = 'To report normal methylation, use "met=".';
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2324,6 +2329,7 @@ class HGVS_DNAPosition extends HGVS
                 $this->position_limits[3] = $this->offset;
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3256,6 +3262,7 @@ class HGVS_DNAPrefix extends HGVS
             unset($this->messages['WPREFIXFORMAT']); // Remove the warning in case HGVS_Dot is missing, too.
             $this->messages['EPREFIXMISSING'] = 'This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., "' . $this->getCorrectedValue() . '.").';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3294,6 +3301,7 @@ class HGVS_DNARefs extends HGVS
                 $this->setCorrectedValue(str_replace('U', 'T', $this->getCorrectedValue()));
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3629,6 +3637,7 @@ class HGVS_DNASup extends HGVS
             $this->messages['EWRONGREFERENCE'] =
                 'A chromosomal reference sequence is required to report supernumerary chromosomes.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4233,6 +4242,7 @@ class HGVS_DNAVariantType extends HGVS
                 $this->possibly_incomplete = true;
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4917,6 +4927,7 @@ class HGVS_RNAPrefix extends HGVS
                 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the RNA type (' . $this->getCorrectedValue() . ').' .
                 ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->molecule_type . ' reference sequence.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -5043,6 +5054,7 @@ class HGVS_ProteinPrefix extends HGVS
                 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the protein type (' . $this->getCorrectedValue() . ').' .
                 ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->molecule_type . ' reference sequence.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -5093,6 +5105,7 @@ class HGVS_ProteinRef extends HGVS
                 $this->messages['EINVALIDAMINOACIDS'] = 'This variant description contains invalid amino acids: "' . $this->value . '".';
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -5155,6 +5168,7 @@ class HGVS_VariantIdentifier extends HGVS
             $this->setCorrectedValue(strtolower($this->value));
         }
         $this->caseOK = ($this->value == $this->getCorrectedValue());
+        parent::validate(); // Do a case-check.
     }
 }
 
