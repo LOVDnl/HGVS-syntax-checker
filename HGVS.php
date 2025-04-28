@@ -4341,6 +4341,12 @@ class HGVS_Gene extends HGVS
                     $this->setCorrectedValue($sSymbol);
                 }
             }
+
+        } else {
+            // Just warn the user that we can't validate gene symbols at the moment.
+            $this->messages['INOSYMBOLVALIDATION'] = 'We currently can not validate gene symbols because the gene list has not been downloaded. See the documentation on how to download the gene symbol list.';
+            // Lower the confidence.
+            $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.5]);
         }
         parent::validate(); // Do a case-check.
     }
