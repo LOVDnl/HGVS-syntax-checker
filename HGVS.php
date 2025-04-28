@@ -4305,6 +4305,43 @@ class HGVS_Gene extends HGVS
                 }
             }
         }
+
+        if (self::$genes) {
+            // Validate the gene symbol.
+            $nHGNCID = (self::$genes['genes'][strtolower($this->value)] ?? 0);
+            if (!$nHGNCID) {
+                // This is not recognized as a gene symbol, alias, previous symbol, or anything at all.
+                // Reject the match entirely; this is not a gene symbol.
+                return false; // Break out of the entire object.
+
+            } else {
+                // Store the ID in the data.
+                $this->data = [
+                    'hgnc_id' => $nHGNCID,
+                ];
+
+                // Check if we used the correct symbol for this gene.
+                $sSymbol = (self::$genes['IDs'][$nHGNCID] ?? '');
+                if (!$sSymbol) {
+                    // We found an ID, but not the official symbol. This is a bug on our side.
+                    $this->messages['ISYMBOLNOTFOUND'] = 'Although "' . $this->value . '" was recognized as a gene symbol or alias, we could not retrieve the official symbol for this gene.';
+                    // Lower the confidence.
+                    $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.75]);
+
+                } else {
+                    // Check our input.
+                    if (strtolower($this->value) != strtolower($sSymbol)) {
+                        // The user used an alias or so.
+                        $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                    } else {
+                        $this->caseOK = ($this->value == $sSymbol);
+                    }
+
+                    // Store the corrected value, full confidence.
+                    $this->setCorrectedValue($sSymbol);
+                }
+            }
+        }
         parent::validate(); // Do a case-check.
     }
 }
