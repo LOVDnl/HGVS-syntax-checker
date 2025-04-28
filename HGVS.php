@@ -4283,10 +4283,30 @@ class HGVS_Dot extends HGVS
 
 class HGVS_Gene extends HGVS
 {
-    // NOTE: This will be extended later on. For now, we just need a pattern to match gene symbols.
     public array $patterns = [
         ['/([A-Z][A-Za-z0-9#@-]*)/', []],
     ];
+    public static array $genes = [];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        // If the gene data is present, we can validate a gene symbol properly.
+        if (empty(self::$genes)) {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/genes.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['genes', 'IDs']) {
+                        self::$genes = $aJSON;
+                    }
+                }
+            }
+        }
+        parent::validate(); // Do a case-check.
+    }
 }
 
 
