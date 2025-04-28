@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-04-24   // When modified, also change the library_version.
+ * Modified    : 2025-04-28   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,8 +753,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-04-24',
-            'library_version' => '0.4.3',
+            'library_date' => '2025-04-28',
+            'library_version' => '0.4.4',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',

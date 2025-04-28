@@ -318,3 +318,23 @@ var_dump(HGVS::check('NM_004006.3')->isPossiblyIncomplete());
 // Turn on output buffering if you wish to collect this output into a variable.
 $HGVS = HGVS::debug('c.157C>T');
 ```
+
+
+
+
+
+## Features that require configuration
+### Gene symbol recognition
+The LOVD HGVS library contains a feature that recognizes and corrects gene symbols.
+In order for this to work, the library relies on a local copy of the official gene symbol list
+ from the HUGO Gene Nomenclature Committee (HGNC).
+To obtain this copy, an update script needs to be run on a regular basis; for instance, once a month.
+The update script is located in the `cache` directory.
+You can invoke it like:
+
+```bash
+php -f cache/update.php
+```
+
+This can be automated by using, for instance, cron jobs.
+Make sure that the user who runs the script has write access to the `cache` directory.
