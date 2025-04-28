@@ -924,7 +924,12 @@ class HGVS
         if (!$this->parent) {
             // Top-level validation.
             if (!$this->caseOK) {
-                $this->messages['WWRONGCASE'] = 'This is not a valid HGVS description, due to characters being in the wrong case.';
+                if ($this->isAVariant()) {
+                    $sObject = 'HGVS description';
+                } else {
+                    $sObject = $this->getIdentifiedAsFormatted();
+                }
+                $this->messages['WWRONGCASE'] = 'This is not a valid ' . $sObject . ', due to characters being in the wrong case.';
             }
 
             if (get_class($this) == 'HGVS') {
@@ -4865,6 +4870,7 @@ class HGVS_ReferenceSequence extends HGVS
                 }
                 break;
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
