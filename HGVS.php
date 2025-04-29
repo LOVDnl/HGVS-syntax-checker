@@ -23,6 +23,7 @@ class HGVS
         'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
         'reference_sequence' => ['HGVS_ReferenceSequence', []],
+        'gene'               => ['HGVS_Gene', []],
         'genome_build'       => ['HGVS_Genome', []],
         'variant_identifier' => ['HGVS_VariantIdentifier', []],
     ];
