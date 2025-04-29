@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-04-24   // When modified, also change the library_version.
+ * Modified    : 2025-04-28   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -753,8 +753,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-04-24',
-            'library_version' => '0.4.3',
+            'library_date' => '2025-04-28',
+            'library_version' => '0.4.4',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -924,7 +924,12 @@ class HGVS
         if (!$this->parent) {
             // Top-level validation.
             if (!$this->caseOK) {
-                $this->messages['WWRONGCASE'] = 'This is not a valid HGVS description, due to characters being in the wrong case.';
+                if ($this->isAVariant()) {
+                    $sObject = 'HGVS description';
+                } else {
+                    $sObject = $this->getIdentifiedAsFormatted();
+                }
+                $this->messages['WWRONGCASE'] = 'This is not a valid ' . $sObject . ', due to characters being in the wrong case.';
             }
 
             if (get_class($this) == 'HGVS') {
@@ -1357,6 +1362,7 @@ class HGVS_DNAAlts extends HGVS
                 $this->setCorrectedValue(str_replace('U', 'T', $this->getCorrectedValue()));
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -1467,6 +1473,7 @@ class HGVS_DNADel extends HGVS
         $this->setCorrectedValue(strtolower($this->value));
         $this->data['type'] = $this->getCorrectedValue();
         $this->caseOK = ($this->value == $this->getCorrectedValue());
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -1719,6 +1726,7 @@ class HGVS_DNAIns extends HGVS
                 $Positions->makeCertain();
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2042,6 +2050,7 @@ class HGVS_DNAInv extends HGVS
                 ' Please remove the parentheses if the positions are certain.';
             $Positions->makeCertain();
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2184,6 +2193,7 @@ class HGVS_DNAPipeSuffix extends HGVS
                 $this->messages['WMETFORMAT'] = 'To report normal methylation, use "met=".';
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -2319,6 +2329,7 @@ class HGVS_DNAPosition extends HGVS
                 $this->position_limits[3] = $this->offset;
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3251,6 +3262,7 @@ class HGVS_DNAPrefix extends HGVS
             unset($this->messages['WPREFIXFORMAT']); // Remove the warning in case HGVS_Dot is missing, too.
             $this->messages['EPREFIXMISSING'] = 'This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., "' . $this->getCorrectedValue() . '.").';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3289,6 +3301,7 @@ class HGVS_DNARefs extends HGVS
                 $this->setCorrectedValue(str_replace('U', 'T', $this->getCorrectedValue()));
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -3624,6 +3637,7 @@ class HGVS_DNASup extends HGVS
             $this->messages['EWRONGREFERENCE'] =
                 'A chromosomal reference sequence is required to report supernumerary chromosomes.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4228,6 +4242,7 @@ class HGVS_DNAVariantType extends HGVS
                 $this->possibly_incomplete = true;
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4283,10 +4298,87 @@ class HGVS_Dot extends HGVS
 
 class HGVS_Gene extends HGVS
 {
-    // NOTE: This will be extended later on. For now, we just need a pattern to match gene symbols.
     public array $patterns = [
-        ['/([A-Z][A-Za-z0-9#@-]*)/', []],
+        'HGNC_ID' => ['/HGNC:([0-9]+)/', []],
+        'symbol'  => ['/([A-Z][A-Za-z0-9#@-]*)/', []],
     ];
+    public static array $genes = [];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        // If the gene data is present, we can validate a gene symbol properly.
+        if (empty(self::$genes)) {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/genes.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['genes', 'IDs']) {
+                        self::$genes = $aJSON;
+                    }
+                }
+            }
+        }
+
+        if (self::$genes) {
+            // Validate the gene symbol.
+            if ($this->matched_pattern == 'symbol') {
+                $nHGNCID = (self::$genes['genes'][strtolower($this->value)] ?? 0);
+            } else {
+                $nHGNCID = $this->regex[1];
+            }
+            if (!$nHGNCID) {
+                // This is not recognized as a gene symbol, alias, previous symbol, or anything at all.
+                // Reject the match entirely; this is not a gene symbol.
+                return false; // Break out of the entire object.
+
+            } else {
+                // Store the ID in the data.
+                $this->data = [
+                    'hgnc_id' => $nHGNCID,
+                ];
+
+                // Check if we used the correct symbol for this gene.
+                $sSymbol = (self::$genes['IDs'][$nHGNCID] ?? '');
+                if (!$sSymbol) {
+                    // We found an ID, but not the official symbol. This is a bug on our side, when a symbol was passed.
+                    // When an HGNC ID was passed, it's most likely their fault.
+                    if ($this->matched_pattern == 'symbol') {
+                        $this->messages['ISYMBOLNOTFOUND'] = 'Although "' . $this->value . '" was recognized as a gene symbol or alias, we could not retrieve the official symbol for this gene.';
+                    } else {
+                        $this->messages['EINVALIDHGNCID'] = 'Invalid or withdrawn HGNC ID: ' . $this->value . '.';
+                    }
+                    // Lower the confidence.
+                    $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.75]);
+
+                } else {
+                    if ($this->matched_pattern == 'HGNC_ID') {
+                        $this->messages['WSYMBOLCORRECTED'] = 'The HGNC ID ' . $nHGNCID . ' has been replaced by "' . $sSymbol . '".';
+                    } else {
+                        // Check our input.
+                        if (strtolower($this->value) != strtolower($sSymbol)) {
+                            // The user used an alias or so.
+                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                        } else {
+                            $this->caseOK = ($this->value == $sSymbol);
+                        }
+                    }
+
+                    // Store the corrected value, full confidence.
+                    $this->setCorrectedValue($sSymbol);
+                }
+            }
+
+        } else {
+            // Just warn the user that we can't validate gene symbols at the moment.
+            $this->messages['INOSYMBOLVALIDATION'] = 'We currently can not validate gene symbols because the gene list has not been downloaded. See the documentation on how to download the gene symbol list.';
+            // Lower the confidence.
+            $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.5]);
+        }
+        parent::validate(); // Do a case-check.
+    }
 }
 
 
@@ -4773,7 +4865,7 @@ class HGVS_ReferenceSequence extends HGVS
                 $this->allowed_prefixes = [];
 
                 // Some black listing is needed, though.
-                if (in_array(strtolower($this->value), ['doi', 'http', 'https'])) {
+                if (in_array(strtolower($this->value), ['doi', 'hgnc', 'http', 'https'])) {
                     return 0; // Break out of this pattern only.
                 } else {
                     // We also want to be absolutely certain that we are not matching a variant description that has a
@@ -4788,6 +4880,7 @@ class HGVS_ReferenceSequence extends HGVS
                 }
                 break;
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4834,6 +4927,7 @@ class HGVS_RNAPrefix extends HGVS
                 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the RNA type (' . $this->getCorrectedValue() . ').' .
                 ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->molecule_type . ' reference sequence.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -4960,6 +5054,7 @@ class HGVS_ProteinPrefix extends HGVS
                 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the protein type (' . $this->getCorrectedValue() . ').' .
                 ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->molecule_type . ' reference sequence.';
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -5010,6 +5105,7 @@ class HGVS_ProteinRef extends HGVS
                 $this->messages['EINVALIDAMINOACIDS'] = 'This variant description contains invalid amino acids: "' . $this->value . '".';
             }
         }
+        parent::validate(); // Do a case-check.
     }
 }
 
@@ -5072,6 +5168,7 @@ class HGVS_VariantIdentifier extends HGVS
             $this->setCorrectedValue(strtolower($this->value));
         }
         $this->caseOK = ($this->value == $this->getCorrectedValue());
+        parent::validate(); // Do a case-check.
     }
 }
 
