@@ -2297,7 +2297,7 @@ class HGVS_DNAPosition extends HGVS
                 $RefSeq = $this->getParentProperty('ReferenceSequence');
                 if ($RefSeq && $RefSeq->molecule_type != 'genome_transcript') {
                     $this->messages['EWRONGREFERENCE'] =
-                        'A genomic transcript reference sequence is required to verify intronic positions.';
+                        'To verify intronic positions, add a genomic context to the transcript reference sequence.';
                 }
             }
 
