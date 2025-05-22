@@ -2424,7 +2424,7 @@ class HGVS_DNAPositionOffset extends HGVS
 class HGVS_DNAPositionNumber extends HGVS
 {
     public array $patterns = [
-        ['/[0-9,]+(?![0-9,]*\s*bp)/', []],
+        ['/[0-9,]*[0-9]+(?![0-9,]*\s*bp)/', []],
     ];
 
     public function validate ()
