@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-04-28   // When modified, also change the library_version.
+ * Modified    : 2025-05-22   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -754,8 +754,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-04-28',
-            'library_version' => '0.4.4',
+            'library_date' => '2025-05-22',
+            'library_version' => '0.4.5',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -2180,7 +2180,7 @@ class HGVS_DNAPipeSuffix extends HGVS
         if ($this->matched_pattern == 'invalid') {
             // We don't recognize this, but also don't want to make statements about what case would be right.
             $this->setCorrectedValue($this->value);
-            $this->messages['ENOTSUPPORTED'] = 'This is not a valid HGVS description, please verify your input after "|".';
+            $this->messages['EINVALID'] = 'This is not a valid HGVS description, please verify your input after "|".';
 
         } elseif ($this->matched_pattern == '=') {
             $this->setCorrectedValue('met=');
@@ -2297,7 +2297,7 @@ class HGVS_DNAPosition extends HGVS
                 $RefSeq = $this->getParentProperty('ReferenceSequence');
                 if ($RefSeq && $RefSeq->molecule_type != 'genome_transcript') {
                     $this->messages['EWRONGREFERENCE'] =
-                        'A genomic transcript reference sequence is required to verify intronic positions.';
+                        'To verify intronic positions, add a genomic context to the transcript reference sequence.';
                 }
             }
 
@@ -2424,7 +2424,7 @@ class HGVS_DNAPositionOffset extends HGVS
 class HGVS_DNAPositionNumber extends HGVS
 {
     public array $patterns = [
-        ['/[0-9,]+(?![0-9,]*\s*bp)/', []],
+        ['/[0-9,]*[0-9]+(?![0-9,]*\s*bp)/', []],
     ];
 
     public function validate ()
