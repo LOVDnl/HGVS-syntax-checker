@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-03-14
+ * Modified    : 2025-05-28
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -565,6 +565,15 @@ class LOVD_VV
 
         ksort($aData['data'], SORT_NATURAL);
         return $aData;
+    }
+
+
+
+
+
+    public function getVersions ()
+    {
+        return ($this->callVV('hello')['metadata'] ?? []);
     }
 
 
