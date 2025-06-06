@@ -1112,6 +1112,7 @@ class LOVD_VV
         } else {
             $aData['data']['RNA'] = '';
             $aData['data']['protein'] = '';
+            $aData['data']['NP'] = '';
             $aData['data']['genomic_mappings'] = array();
         }
 
@@ -1145,9 +1146,10 @@ class LOVD_VV
                     'DNA' => substr(strstr($sDNA, ':'), 1), // Mappings don't have the transcript included.
                     'RNA' => 'r.(?)',
                     'protein' => '',
+                    'NP' => '',
                 );
                 if ($aTranscript['hgvs_predicted_protein_consequence']['tlr']) {
-                    $aMapping['protein'] = substr(strstr($aTranscript['hgvs_predicted_protein_consequence']['tlr'], ':'), 1);
+                    list($aMapping['NP'], $aMapping['protein']) = explode(':', $aTranscript['hgvs_predicted_protein_consequence']['tlr'], 2);
                 }
 
                 // Try to improve VV's predictions.
@@ -1160,6 +1162,7 @@ class LOVD_VV
                     // We had already collected the DNA value with the reference sequence, so don't overwrite that.
                     $aData['data']['RNA'] = $aMapping['RNA'];
                     $aData['data']['protein'] = $aMapping['protein'];
+                    $aData['data']['NP'] = $aMapping['NP'];
                 }
             }
 
