@@ -17,6 +17,20 @@ class caches
     private static array $NC_cache = [];
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
 
+    public static function getCorrectedNC ($sNC)
+    {
+        // Gets the corrected NC for a certain input.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        return (self::$NC_cache[$sNC] ?? false);
+    }
+
+
+
+
+
     public static function hasCorrectedNC ($sNC)
     {
         // Checks if we have the corrected NC for a certain input.
