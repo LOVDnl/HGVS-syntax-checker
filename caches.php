@@ -61,4 +61,19 @@ class caches
 
         return false;
     }
+
+
+
+
+
+    public static function setCorrectedNC ($sInput, $sCorrected)
+    {
+        // Adds data to the NC cache.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        self::$NC_cache[$sInput] = $sCorrected;
+        return true;
+    }
 }
