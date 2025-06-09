@@ -76,4 +76,33 @@ class caches
         self::$NC_cache[$sInput] = $sCorrected;
         return true;
     }
+
+
+
+
+
+    public static function writeCorrectedNCs ()
+    {
+        // Writes the data to the cache file.
+        if (!self::$NC_cache) {
+            return false;
+        }
+
+        ksort(self::$NC_cache, SORT_NATURAL);
+        $b = @file_put_contents(
+            self::$sFileNC,
+            implode(
+                "\n",
+                array_map(
+                    function ($sInput, $sCorrected)
+                    {
+                        return $sInput . "\t" . $sCorrected;
+                    },
+                    array_keys(self::$NC_cache),
+                    array_values(self::$NC_cache)
+                )
+            )
+        );
+        return ($b !== false);
+    }
 }
