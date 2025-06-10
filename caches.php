@@ -65,6 +65,29 @@ class caches
 
 
 
+    public static function hasMapping ($sNC, $sBuild = false)
+    {
+        // Checks if we have the mapping for a certain input.
+        if (!self::$mapping_cache && !self::loadMappings()) {
+            return null;
+        }
+
+        if (!$sBuild) {
+            // If no build is given, we should be able to find it.
+            $sBuild = self::getBuildByNC($sNC);
+        }
+
+        if ($sBuild && isset(self::$mapping_cache[$sBuild])) {
+            return isset(self::$mapping_cache[$sBuild][$sNC]);
+        }
+
+        return false;
+    }
+
+
+
+
+
     private static function loadCorrectedNCs ()
     {
         // Loads the NC cache when the data is requested.
