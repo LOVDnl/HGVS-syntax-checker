@@ -130,6 +130,60 @@ class caches
 
 
 
+    public static function setMapping ($sDNA19, $sDNA38, $sMethod, $aMappings)
+    {
+        // Adds data to the mapping cache.
+        if (!self::$mapping_cache && !self::loadMappings()) {
+            return null;
+        }
+
+        // Does the variant already exist?
+        if (isset(self::$mapping_cache['hg19'][$sDNA19])) {
+            $nKey = self::$mapping_cache['hg19'][$sDNA19];
+        } elseif (isset(self::$mapping_cache['hg38'][$sDNA38])) {
+            $nKey = self::$mapping_cache['hg38'][$sDNA38];
+        } else {
+            $nKey = array_key_last(self::$mapping_cache['mappings']) + 1;
+        }
+
+        // Just overwrite it all.
+        self::$mapping_cache['hg19'][$sDNA19] = $nKey;
+        self::$mapping_cache['hg38'][$sDNA38] = $nKey;
+
+        // If we have no mappings, just store that.
+        if (!$aMappings && !isset(self::$mapping_cache['mappings'][$nKey][$sMethod])) {
+            self::$mapping_cache['mappings'][$nKey][$sMethod] = [];
+            return true;
+        }
+
+        // If we did receive data, double-check if we already have this mapping.
+        // If so, we need to overwrite the mapping, not merge the data, duplicating everything.
+        foreach ($aMappings as $sTranscript => $aMapping) {
+            if (isset(self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript])) {
+                // Overwrite.
+                self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript] = $aMapping;
+            } else {
+                // Append.
+                self::$mapping_cache['mappings'][$nKey] = array_merge_recursive(
+                    (self::$mapping_cache['mappings'][$nKey] ?? []),
+                    [
+                        $sMethod => [
+                            $sTranscript => $aMapping,
+                        ]
+                    ]
+                );
+            }
+        }
+        ksort(self::$mapping_cache['mappings'][$nKey][$sMethod], SORT_NATURAL);
+        ksort(self::$mapping_cache['mappings'][$nKey]);
+
+        return true;
+    }
+
+
+
+
+
     public static function writeCorrectedNCs ()
     {
         // Writes the data to the cache file.
