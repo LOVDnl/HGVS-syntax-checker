@@ -250,4 +250,45 @@ class caches
         );
         return ($b !== false);
     }
+
+
+
+
+
+    public static function writeMappings ()
+    {
+        // Writes the data to the cache file.
+        if (!self::$mapping_cache) {
+            return false;
+        }
+
+        // To speed things up...
+        $aDNA19 = array_flip(self::$mapping_cache['hg19']);
+        $aDNA38 = array_flip(self::$mapping_cache['hg38']);
+
+        // Collect and then sort the data.
+        $aData = array_map(
+            function ($nKey, $aMapping) use ($aDNA19, $aDNA38)
+            {
+                return implode(
+                    "\t",
+                    [
+                        ($aDNA19[$nKey] ?? ''),
+                        ($aDNA38[$nKey] ?? ''),
+                        json_encode($aMapping)
+                    ]
+                );
+            },
+            array_keys(self::$mapping_cache['mappings']),
+            array_values(self::$mapping_cache['mappings'])
+        );
+        sort($aData, SORT_NATURAL);
+
+        // Store the file.
+        $b = @file_put_contents(
+            self::$sFileMapping,
+            implode("\n", $aData)
+        );
+        return ($b !== false);
+    }
 }
