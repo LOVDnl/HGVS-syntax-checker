@@ -16,7 +16,9 @@ require_once 'HGVS.php';
 class caches
 {
     // Class that handles the caches. Should be used statically.
+    private static array $mapping_cache = [];
     private static array $NC_cache = [];
+    private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
 
     public static function getBuildByNC ($sNC)
@@ -74,6 +76,35 @@ class caches
                 $aCache[$aLine[0]] = $aLine[1];
             }
             self::$NC_cache = $aCache;
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+    private static function loadMappings ()
+    {
+        // Loads the mapping cache when the data is requested.
+        $aFile = @file(self::$sFileMapping, FILE_IGNORE_NEW_LINES);
+        if ($aFile !== false) {
+            $aCache = [
+                'hg19' => [], // Variant to key.
+                'hg38' => [], // Variant to key.
+                'mappings' => [], // Key to mapping info.
+            ];
+            $iMapping = 0;
+            foreach ($aFile as $sLine) {
+                $aLine = explode("\t", $sLine, 3);
+                $aCache['hg19'][$aLine[0]] = $iMapping;
+                $aCache['hg38'][$aLine[1]] = $iMapping;
+                $aCache['mappings'][$iMapping] = json_decode($aLine[2], true);
+                $iMapping++;
+            }
+            self::$mapping_cache = $aCache;
             return true;
         }
 
