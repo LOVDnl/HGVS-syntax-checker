@@ -4,18 +4,36 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2025-06-09
+ * Modified    : 2025-06-10
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
 
+require_once 'HGVS.php';
+
 class caches
 {
     // Class that handles the caches. Should be used statically.
     private static array $NC_cache = [];
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
+
+    public static function getBuildByNC ($sNC)
+    {
+        // Gets the genome build for a certain input if we can.
+        $HGVS = HGVS_ReferenceSequence::check($sNC);
+        if ($HGVS->getIdentifiedAs() == 'refseq_genomic') {
+            $aInfo = HGVS_Chromosome::getInfoByNC($HGVS->getValue());
+            return ($aInfo['build'] ?? false);
+        }
+
+        return false;
+    }
+
+
+
+
 
     public static function getCorrectedNC ($sNC)
     {
