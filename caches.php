@@ -74,6 +74,18 @@ class caches
         // Also store the fix itself as valid input, in case we don't have it.
         self::setCorrectedNC($sVariantCorrected, $sVariantCorrected);
 
+        // If we didn't get transcript mappings, try again with broader transcript settings.
+        while (!count($aVV['data']['transcript_mappings']) && count($aVVTranscriptOptions)) {
+            $aVVOptions['select_transcripts'] = array_shift($aVVTranscriptOptions);
+            $aVV = self::$oVV->verifyGenomic($sVariant, $aVVOptions);
+        }
+
+        // Check the returned data.
+        if ((empty($aVV['data']['genomic_mappings']['hg19']) || count($aVV['data']['genomic_mappings']['hg19']) != 1)
+            || (empty($aVV['data']['genomic_mappings']['hg38']) || count($aVV['data']['genomic_mappings']['hg38']) != 1)) {
+            return 0; // Evaluates to false, indicates a VV error.
+        }
+
         // Rewrite the keys for more efficient storage.
         foreach ($aVV['data']['transcript_mappings'] as $sTranscript => $aMapping) {
             $aVV['data']['transcript_mappings'][$sTranscript] = [
@@ -84,6 +96,7 @@ class caches
             ];
         }
 
+        // We have at least one transcript mapping, and the liftover worked.
         $b = self::setMapping(
             $aVV['data']['genomic_mappings']['hg19'][0],
             $aVV['data']['genomic_mappings']['hg38'][0],
