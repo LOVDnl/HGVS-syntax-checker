@@ -111,7 +111,7 @@ class caches
 
 
 
-    private static function loadCorrectedNCs ()
+    public static function loadCorrectedNCs ()
     {
         // Loads the NC cache when the data is requested.
         $aFile = @file(self::$sFileNC, FILE_IGNORE_NEW_LINES);
@@ -132,7 +132,7 @@ class caches
 
 
 
-    private static function loadMappings ()
+    public static function loadMappings ()
     {
         // Loads the mapping cache when the data is requested.
         $aFile = @file(self::$sFileMapping, FILE_IGNORE_NEW_LINES);
