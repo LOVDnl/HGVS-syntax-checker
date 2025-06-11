@@ -12,6 +12,7 @@
  *************/
 
 require_once 'HGVS.php';
+require_once 'variant_validator.php';
 
 class caches
 {
@@ -22,6 +23,80 @@ class caches
     private static int $nNewNCsSinceWrite = 0;
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
+    private static $oVV;
+
+    public static function buildCaches ($sVariant, $sBuild = false)
+    {
+        // Adds the given NC variant to both the NC and the mapping caches.
+        if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
+            return null;
+        }
+
+        if (!$sBuild) {
+            // If no build is given, we should be able to find it.
+            $sBuild = self::getBuildByNC($sVariant);
+        }
+
+        $aVVTranscriptOptions = ['mane_select', 'mane', 'select', 'all', 'raw'];
+        $aVVOptions = [
+            'map_to_transcripts' => true, // Get the mapping data.
+            'predict_protein' => true,    // Also predict the protein changes.
+            'lift_over' => true,          // And, the lift-over, please.
+            'select_transcripts' => array_shift($aVVTranscriptOptions), // Start by just checking the MANE Select transcript.
+        ];
+
+        // We assume that the variant is valid. If we validate it here and change it,
+        //  the input of this function won't be usable for getCorrectedNC().
+        // Check if we need to call VV.
+        if (self::hasCorrectedNC($sVariant)) {
+            $sVariantCorrected = self::getCorrectedNC($sVariant);
+            if (self::hasMapping($sVariantCorrected, $sBuild)) {
+                // Nothing to do.
+                return 1; // Evaluates to true, indicates that addition was not needed.
+            }
+        }
+        // Initiate VV if not already done so.
+        if (!self::$oVV) {
+            self::$oVV = new LOVD_VV();
+        }
+
+        // Call VV with the defaults and collect all information.
+        $aVV = self::$oVV->verifyGenomic($sVariant, $aVVOptions);
+        if (!$aVV) {
+            return 0; // Evaluates to false, indicates a VV error.
+        }
+
+        // Store the data in the caches.
+        $sVariantCorrected = $aVV['data']['DNA'];
+        if (!self::setCorrectedNC($sVariant, $sVariantCorrected)) {
+            return false;
+        }
+        // Also store the fix itself as valid input, in case we don't have it.
+        self::setCorrectedNC($sVariantCorrected, $sVariantCorrected);
+
+        // Rewrite the keys for more efficient storage.
+        foreach ($aVV['data']['transcript_mappings'] as $sTranscript => $aMapping) {
+            $aVV['data']['transcript_mappings'][$sTranscript] = [
+                'c' => $aMapping['DNA'],
+                'r' => $aMapping['RNA'],
+                'p' => $aMapping['protein'],
+                'NP' => $aMapping['NP'], // FIXME: I think we should later remove the NP data; it is transcript-specific so it should go to our transcript information cache.
+            ];
+        }
+
+        $b = self::setMapping(
+            $aVV['data']['genomic_mappings']['hg19'][0],
+            $aVV['data']['genomic_mappings']['hg38'][0],
+            'VV',
+            $aVV['data']['transcript_mappings']
+        );
+
+        return $b;
+    }
+
+
+
+
 
     public static function getBuildByNC ($sNC)
     {
