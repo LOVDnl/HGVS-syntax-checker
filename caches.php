@@ -62,8 +62,8 @@ class caches
 
         // Call VV with the defaults and collect all information.
         $aVV = self::$oVV->verifyGenomic($sVariant, $aVVOptions);
-        if (!$aVV) {
-            return 0; // Evaluates to false, indicates a VV error.
+        if (!$aVV || empty($aVV['data']['DNA'])) {
+            return 0; // Evaluates to false, indicates a VV or input error.
         }
 
         // Store the data in the caches.
