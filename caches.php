@@ -230,6 +230,17 @@ class caches
 
 
 
+    public static function shutdown ()
+    {
+        // Make sure the data gets written when the script ends for whatever reason.
+        self::writeCorrectedNCs();
+        self::writeMappings();
+    }
+
+
+
+
+
     public static function writeCorrectedNCs ()
     {
         // Writes the data to the cache file.
@@ -296,3 +307,5 @@ class caches
         return ($b !== false);
     }
 }
+
+register_shutdown_function(['caches', 'shutdown']);
