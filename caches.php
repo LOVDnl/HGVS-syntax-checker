@@ -18,6 +18,8 @@ class caches
     // Class that handles the caches. Should be used statically.
     private static array $mapping_cache = [];
     private static array $NC_cache = [];
+    private static int $nNewMappingsSinceWrite = 0;
+    private static int $nNewNCsSinceWrite = 0;
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
 
@@ -169,6 +171,11 @@ class caches
         }
 
         self::$NC_cache[$sInput] = $sCorrected;
+        self::$nNewNCsSinceWrite ++;
+
+        if (self::$nNewNCsSinceWrite >= 25) {
+            self::writeCorrectedNCs();
+        }
         return true;
     }
 
@@ -222,6 +229,11 @@ class caches
         }
         ksort(self::$mapping_cache['mappings'][$nKey][$sMethod], SORT_NATURAL);
         ksort(self::$mapping_cache['mappings'][$nKey]);
+        self::$nNewMappingsSinceWrite ++;
+
+        if (self::$nNewMappingsSinceWrite >= 25) {
+            self::writeMappings();
+        }
 
         return true;
     }
@@ -263,7 +275,12 @@ class caches
                 )
             )
         );
-        return ($b !== false);
+        if ($b !== false) {
+            self::$nNewNCsSinceWrite = 0;
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -304,7 +321,12 @@ class caches
             self::$sFileMapping,
             implode("\n", $aData)
         );
-        return ($b !== false);
+        if ($b !== false) {
+            self::$nNewMappingsSinceWrite = 0;
+            return true;
+        }
+
+        return false;
     }
 }
 
