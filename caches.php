@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2025-06-10
+ * Modified    : 2025-06-11
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -63,7 +63,11 @@ class caches
             $sBuild = self::getBuildByNC($sNC);
         }
 
-        return (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        if ($nKey !== false) {
+            return (self::$mapping_cache['mappings'][$nKey] ?? false);
+        }
+        return false;
     }
 
 
