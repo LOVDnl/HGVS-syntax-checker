@@ -135,7 +135,7 @@ class LOVD_VV
             || strpos($sFault, 'is outside the boundaries of reference sequence') !== false // LRG:g with a coordinate that is too large.
             || strpos($sFault, 'The given coordinate is outside the bounds of the reference sequence') !== false // NC(NM) or LRGt with a c outside the NM.
             || strpos($sFault, ' variant position that lies outside of the reference sequence') !== false // LRGt or NM with a c* outside the NM.
-            || $sFault == 'start or end or both are beyond the bounds of transcript record.' // NC(NM), LRGt, or NM with an invalid intronic position.
+            || $sFault == 'OutOfBoundsError: start or end or both are beyond the bounds of transcript record.' // NC(NM), LRGt, or NM with an invalid intronic position.
             || strpos($sFault, 'Variant coordinate is out of the bound of CDS region') !== false) { // NC(NM), LRGt, or NM with a c that should be a c*.
             // ERANGE error. VV throws a range of different messages, depending on using NC-notation or not,
             //  sending variants 5' or 3' of the transcript, or sending a CDS position that should be in the 3' UTR.
@@ -158,7 +158,7 @@ class LOVD_VV
             $aData['errors']['EINVALIDBOUNDARY'] = $sFault;
 
         } elseif (substr($sFault, 0, 5) == 'char '
-            || $sFault == 'insertion length must be 1'
+            || strpos($sFault, 'Insertion length must be 1') !== false // NC_000017.10:g.1_1insA.
             || strpos($sFault, ' must be provided ') !== false) {
             // ESYNTAX error. That is odd, because we should have filtered out variants that are not supported by VV.
             // Double-check if maybe somebody forced us to send an invalid syntax over.
@@ -198,7 +198,7 @@ class LOVD_VV
             // E.g., NC_000017.10:g.2000_1000del.
             $aData['warnings']['WPOSITIONFORMAT'] = 'The positions are not given in the correct order. Please verify your description and try again.';
 
-        } elseif ($sFault == 'Removing redundant reference bases from variant description.') {
+        } elseif ($sFault == 'VariantSyntaxError: Removing redundant reference bases from variant description.') {
             // verifyGenomic() returns this only when combined with something else, like: NC_000017.10:g.100_200delAAAA.
             // verifyVariant() also returns this for, e.g., NM_000088.3:c.589delG.
             // Use our own warning if we have that, since it's better.
