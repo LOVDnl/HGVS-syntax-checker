@@ -160,7 +160,7 @@ class LOVD_VV
             if ($HGVS && $HGVS->isValid()) {
                 // Nope, I guess it's our fault. We're missing a WNOTSUPPORTED.
                 $aData['warnings']['WNOTSUPPORTED'] =
-                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation by VariantValidator.';
             } else {
                 // We deliberately sent an invalid variant to VV.
                 // OK, fine, forward the VV error.
@@ -1074,7 +1074,7 @@ class LOVD_VV
             if ($HGVS->isValid()) {
                 // I guess it's our fault. We're missing a WNOTSUPPORTED.
                 $aData['warnings']['WNOTSUPPORTED'] =
-                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation by VariantValidator.';
             } else {
                 // We deliberately sent an invalid variant to VV.
                 $aData = array_merge_recursive(
