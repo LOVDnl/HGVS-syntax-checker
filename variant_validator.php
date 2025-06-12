@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-06-06
+ * Modified    : 2025-06-12
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -26,6 +26,8 @@ class LOVD_VV
         'warnings' => array(),
         'errors' => array(),
     );
+    private $nMicroSecondsToSleep = 250000;
+    private $tLastCall = 0;
 
 
 
@@ -218,6 +220,13 @@ class LOVD_VV
         // Wrapper function to call VV's JSON webservice.
         // Because we have a wrapper, we can implement CURL, which is much faster on repeated calls.
         global $_CONF;
+
+        // Don't overload VV. Make sure we wait at least 0.25 seconds between calls.
+        $nTimeDiff = (microtime(true) - $this->tLastCall) * 1000000;
+        if ($nTimeDiff < $this->nMicroSecondsToSleep) {
+            usleep($this->nMicroSecondsToSleep - $nTimeDiff);
+        }
+        $this->tLastCall = microtime(true);
 
         // Build URL, regardless of how we'll connect to it.
         $sURL = $this->sURL . $sMethod . '/' . implode('/', array_map('rawurlencode', $aArgs)) . '?content-type=application%2Fjson';
