@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-06-06
+ * Modified    : 2025-06-12
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -26,6 +26,8 @@ class LOVD_VV
         'warnings' => array(),
         'errors' => array(),
     );
+    private $nMicroSecondsToSleep = 250000;
+    private $tLastCall = 0;
 
 
 
@@ -85,7 +87,12 @@ class LOVD_VV
         // VV has declared their error messages are stable.
         // This means we can parse them and rely on them not to change.
         // Add error code if possible, so we won't have to parse the error message again somewhere.
-        if (strpos($sFault, ' automapped to ') !== false // LRG and LRGt descriptions being mapped to refseq sequences.
+        if (strtolower(substr($sFault, 0, 4)) == 'lovd') {
+            // These are our own warnings fed back to us. VV uses the HGVS syntax checker now.
+            // Ignore this error.
+            return true;
+
+        } elseif (strpos($sFault, ' automapped to ') !== false // LRG and LRGt descriptions being mapped to refseq sequences.
             || strpos($sFault, ' updated to ') !== false) {
             // E.g.: NC_000017.10:g.48275363delC && NM_000088.3:c.589delG.
             // Toss this error. These are several corrections, and we handle those elsewhere.
@@ -128,7 +135,7 @@ class LOVD_VV
             || strpos($sFault, 'is outside the boundaries of reference sequence') !== false // LRG:g with a coordinate that is too large.
             || strpos($sFault, 'The given coordinate is outside the bounds of the reference sequence') !== false // NC(NM) or LRGt with a c outside the NM.
             || strpos($sFault, ' variant position that lies outside of the reference sequence') !== false // LRGt or NM with a c* outside the NM.
-            || $sFault == 'start or end or both are beyond the bounds of transcript record.' // NC(NM), LRGt, or NM with an invalid intronic position.
+            || $sFault == 'OutOfBoundsError: start or end or both are beyond the bounds of transcript record.' // NC(NM), LRGt, or NM with an invalid intronic position.
             || strpos($sFault, 'Variant coordinate is out of the bound of CDS region') !== false) { // NC(NM), LRGt, or NM with a c that should be a c*.
             // ERANGE error. VV throws a range of different messages, depending on using NC-notation or not,
             //  sending variants 5' or 3' of the transcript, or sending a CDS position that should be in the 3' UTR.
@@ -151,14 +158,14 @@ class LOVD_VV
             $aData['errors']['EINVALIDBOUNDARY'] = $sFault;
 
         } elseif (substr($sFault, 0, 5) == 'char '
-            || $sFault == 'insertion length must be 1'
+            || strpos($sFault, 'Insertion length must be 1') !== false // NC_000017.10:g.1_1insA.
             || strpos($sFault, ' must be provided ') !== false) {
             // ESYNTAX error. That is odd, because we should have filtered out variants that are not supported by VV.
             // Double-check if maybe somebody forced us to send an invalid syntax over.
             if ($HGVS && $HGVS->isValid()) {
                 // Nope, I guess it's our fault. We're missing a WNOTSUPPORTED.
                 $aData['warnings']['WNOTSUPPORTED'] =
-                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation by VariantValidator.';
             } else {
                 // We deliberately sent an invalid variant to VV.
                 // OK, fine, forward the VV error.
@@ -191,7 +198,7 @@ class LOVD_VV
             // E.g., NC_000017.10:g.2000_1000del.
             $aData['warnings']['WPOSITIONFORMAT'] = 'The positions are not given in the correct order. Please verify your description and try again.';
 
-        } elseif ($sFault == 'Removing redundant reference bases from variant description.') {
+        } elseif ($sFault == 'VariantSyntaxError: Removing redundant reference bases from variant description.') {
             // verifyGenomic() returns this only when combined with something else, like: NC_000017.10:g.100_200delAAAA.
             // verifyVariant() also returns this for, e.g., NM_000088.3:c.589delG.
             // Use our own warning if we have that, since it's better.
@@ -218,6 +225,13 @@ class LOVD_VV
         // Wrapper function to call VV's JSON webservice.
         // Because we have a wrapper, we can implement CURL, which is much faster on repeated calls.
         global $_CONF;
+
+        // Don't overload VV. Make sure we wait at least 0.25 seconds between calls.
+        $nTimeDiff = (microtime(true) - $this->tLastCall) * 1000000;
+        if ($nTimeDiff < $this->nMicroSecondsToSleep) {
+            usleep($this->nMicroSecondsToSleep - $nTimeDiff);
+        }
+        $this->tLastCall = microtime(true);
 
         // Build URL, regardless of how we'll connect to it.
         $sURL = $this->sURL . $sMethod . '/' . implode('/', array_map('rawurlencode', $aArgs)) . '?content-type=application%2Fjson';
@@ -973,7 +987,8 @@ class LOVD_VV
         // Also, the NC(NM) can cause issues.
         // See https://github.com/openvar/variantValidator/issues/218.
         $bRefSeqWasCleaned = false;
-        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript') {
+        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript'
+            && $HGVS->ReferenceSequence->getIdentifiedAs() != 'LRG_transcript') {
             // This is an NC(NM) or NG(NM). Discard the genomic component. We'll put it back later.
             $bRefSeqWasCleaned = true;
             $sVariant = substr(strstr($HGVS->ReferenceSequence->getCorrectedValue(), '('), 1, -1)
@@ -1065,7 +1080,7 @@ class LOVD_VV
             if ($HGVS->isValid()) {
                 // I guess it's our fault. We're missing a WNOTSUPPORTED.
                 $aData['warnings']['WNOTSUPPORTED'] =
-                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+                    'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation by VariantValidator.';
             } else {
                 // We deliberately sent an invalid variant to VV.
                 $aData = array_merge_recursive(

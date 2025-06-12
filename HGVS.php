@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-05-22   // When modified, also change the library_version.
+ * Modified    : 2025-06-12   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -754,8 +754,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-05-22',
-            'library_version' => '0.4.5',
+            'library_date' => '2025-06-12',
+            'library_version' => '0.4.6',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1772,7 +1772,7 @@ class HGVS_DNAInsSuffix extends HGVS
         if (in_array(strstr($this->getMatchedPattern() . '_', '_', true), ['refseq', 'complex', 'positions'])) {
             // VV does not support this. At this point, we don't know if this variant description is valid or not.
             // Keep it simple and don't make any assumptions.
-            $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
+            $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation by VariantValidator.';
         }
 
         // A deletion-insertion of one base to one base, is a substitution.
@@ -2980,7 +2980,7 @@ class HGVS_DNAPositions extends HGVS
                     // We don't really have a good way of having the main class report this, because how would it know
                     //  this very specific case popped up? Since we don't know if the rest of the variant is valid, just
                     //  don't mention anything about the validity.
-                    $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
+                    $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation by VariantValidator.';
 
                 } elseif (!$this->arePositionsSorted($PositionA, $PositionD)) {
                     $this->messages['WPOSITIONORDER'] = "This variant description contains positions not given in the correct order.";
@@ -5136,9 +5136,9 @@ class HGVS_Variant extends HGVS
             || in_array($this->data['type'] ?? '', ['0', '?', ';', 'met', 'repeat', 'sup'])
             || $this->DNAVariantBody->getCorrectedValue() == '=') {
             if ($this->caseOK && !$this->getMessagesByGroup('errors') && !$this->getMessagesByGroup('warnings')) {
-                $this->messages['WNOTSUPPORTED'] = 'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation.';
+                $this->messages['WNOTSUPPORTED'] = 'Although this variant is a valid HGVS description, this syntax is currently not supported for mapping and validation by VariantValidator.';
             } else {
-                $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation.';
+                $this->messages['WNOTSUPPORTED'] = 'This syntax is currently not supported for mapping and validation by VariantValidator.';
             }
             if (($this->data['type'] ?? '') == ';') {
                 $this->messages['WNOTSUPPORTED'] .= ' Please submit your variants separately.';
