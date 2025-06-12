@@ -87,7 +87,12 @@ class LOVD_VV
         // VV has declared their error messages are stable.
         // This means we can parse them and rely on them not to change.
         // Add error code if possible, so we won't have to parse the error message again somewhere.
-        if (strpos($sFault, ' automapped to ') !== false // LRG and LRGt descriptions being mapped to refseq sequences.
+        if (strtolower(substr($sFault, 0, 4)) == 'lovd') {
+            // These are our own warnings fed back to us. VV uses the HGVS syntax checker now.
+            // Ignore this error.
+            return true;
+
+        } elseif (strpos($sFault, ' automapped to ') !== false // LRG and LRGt descriptions being mapped to refseq sequences.
             || strpos($sFault, ' updated to ') !== false) {
             // E.g.: NC_000017.10:g.48275363delC && NM_000088.3:c.589delG.
             // Toss this error. These are several corrections, and we handle those elsewhere.
