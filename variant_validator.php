@@ -987,7 +987,8 @@ class LOVD_VV
         // Also, the NC(NM) can cause issues.
         // See https://github.com/openvar/variantValidator/issues/218.
         $bRefSeqWasCleaned = false;
-        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript') {
+        if ($HGVS->ReferenceSequence->molecule_type == 'genome_transcript'
+            && $HGVS->ReferenceSequence->getIdentifiedAs() != 'LRG_transcript') {
             // This is an NC(NM) or NG(NM). Discard the genomic component. We'll put it back later.
             $bRefSeqWasCleaned = true;
             $sVariant = substr(strstr($HGVS->ReferenceSequence->getCorrectedValue(), '('), 1, -1)
