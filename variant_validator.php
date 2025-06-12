@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-05-28
+ * Modified    : 2025-06-06
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -809,6 +809,7 @@ class LOVD_VV
                     'DNA' => '',
                     'RNA' => (!$aOptions['predict_protein']? '' : 'r.(?)'),
                     'protein' => '',
+                    'NP' => '',
                 );
                 if ($aTranscript['gap_statement'] || $aTranscript['gapped_alignment_warning']) {
                     // This message might be repeated for multiple transcripts when there are gapped alignments,
@@ -822,7 +823,7 @@ class LOVD_VV
                 }
                 if ($aTranscript['p_hgvs_tlc']) {
                     // Collect the protein change and remove the reference sequence.
-                    $aMapping['protein'] = substr(strstr($aTranscript['p_hgvs_tlc'], ':'), 1);
+                    list($aMapping['NP'], $aMapping['protein']) = explode(':', $aTranscript['p_hgvs_tlc'], 2);
                 }
 
                 if ($aOptions['predict_protein']) {
@@ -1111,6 +1112,7 @@ class LOVD_VV
         } else {
             $aData['data']['RNA'] = '';
             $aData['data']['protein'] = '';
+            $aData['data']['NP'] = '';
             $aData['data']['genomic_mappings'] = array();
         }
 
@@ -1144,9 +1146,10 @@ class LOVD_VV
                     'DNA' => substr(strstr($sDNA, ':'), 1), // Mappings don't have the transcript included.
                     'RNA' => 'r.(?)',
                     'protein' => '',
+                    'NP' => '',
                 );
                 if ($aTranscript['hgvs_predicted_protein_consequence']['tlr']) {
-                    $aMapping['protein'] = substr(strstr($aTranscript['hgvs_predicted_protein_consequence']['tlr'], ':'), 1);
+                    list($aMapping['NP'], $aMapping['protein']) = explode(':', $aTranscript['hgvs_predicted_protein_consequence']['tlr'], 2);
                 }
 
                 // Try to improve VV's predictions.
@@ -1159,6 +1162,7 @@ class LOVD_VV
                     // We had already collected the DNA value with the reference sequence, so don't overwrite that.
                     $aData['data']['RNA'] = $aMapping['RNA'];
                     $aData['data']['protein'] = $aMapping['protein'];
+                    $aData['data']['NP'] = $aMapping['NP'];
                 }
             }
 
