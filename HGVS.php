@@ -597,7 +597,7 @@ class HGVS
         } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
         }
-        return $sReturn;
+        return ($sReturn ?: false);
     }
 
 
