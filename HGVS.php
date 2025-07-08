@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-06-12   // When modified, also change the library_version.
+ * Modified    : 2025-07-08   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -754,8 +754,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-06-12',
-            'library_version' => '0.4.6',
+            'library_date' => '2025-07-08',
+            'library_version' => '0.5.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -5630,6 +5630,14 @@ if (!empty($_SERVER['argc']) && __FILE__ == realpath($_SERVER['argv'][0])) {
                 // Same with anything with two hyphens, like "--versions".
                 // "php -f HGVS.php -- --versions" could work, but maybe that's a bit much.
                 $aData[] = HGVS::getVersions();
+            } elseif (strtolower(strstr($sVariant, ':', true)) == 'gene') {
+                // Force a gene-check.
+                $sGene = substr(strstr($sVariant, ':'), 1);
+                $aData[] = HGVS_Gene::check($sGene)->getInfo();
+            } elseif (strtolower(strstr($sVariant, ':', true)) == 'refseq') {
+                // Force a refseq-check.
+                $sRefSeq = substr(strstr($sVariant, ':'), 1);
+                $aData[] = HGVS_ReferenceSequence::check($sRefSeq)->getInfo();
             } else {
                 $aData[] = HGVS::check($sVariant)->getInfo();
             }
