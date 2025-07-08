@@ -575,7 +575,9 @@ class HGVS
         // Return some kind of description of what we are, based on matched patterns.
         // Example outputs: "reference_sequence", "full_variant", "variant_DNA_predicted", etc.
         $sReturn = $this->getMatchedPattern();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
+            $sReturn = $this->Gene->getIdentifiedAs();
+        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= '_' . $this->Variant->getMatchedPattern();
         } elseif ($sReturn == 'variant_identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= '_' . $this->VariantIdentifier->getMatchedPattern();
@@ -592,7 +594,9 @@ class HGVS
         // Return some kind of description of what we are, based on matched patterns, formatted for humans.
         // Example outputs: "reference sequence", "full variant", "variant (DNA, predicted)", etc.
         $sReturn = $this->getMatchedPatternFormatted();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
+            $sReturn = $this->Gene->getIdentifiedAsFormatted();
+        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
         } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
@@ -4329,6 +4333,32 @@ class HGVS_Gene extends HGVS
         'symbol'  => ['/([A-Z][A-Za-z0-9#@-]*)/', []],
     ];
     public static array $genes = [];
+
+    public function getIdentifiedAs ()
+    {
+        $sReturn = $this->getMatchedPattern();
+        if ($sReturn && $sReturn != 'HGNC_ID') {
+            $sReturn = 'gene_' . $sReturn;
+        }
+        return $sReturn;
+    }
+
+
+
+
+
+    public function getIdentifiedAsFormatted ()
+    {
+        $sReturn = $this->getMatchedPatternFormatted();
+        if ($sReturn && $sReturn != 'HGNC ID') {
+            $sReturn = 'gene ' . $sReturn;
+        }
+        return ($sReturn ?: false);
+    }
+
+
+
+
 
     public function validate ()
     {
