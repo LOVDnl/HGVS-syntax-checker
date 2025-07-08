@@ -278,7 +278,32 @@ class HGVS
 
         // If we have not matched, fail completely.
         if (!$this->matched) {
-            $this->messages = ['EFAIL' => 'Failed to recognize a HGVS nomenclature-compliant variant description in your input.'];
+            // What are we?
+            $sThis = 'anything';
+            switch (get_class($this)) {
+                case 'HGVS_ANNOVAR':
+                    $sThis = 'the ANNOVAR format';
+                    break;
+                case 'HGVS_Gene':
+                    $sThis = 'a gene symbol or identifier';
+                    break;
+                case 'HGVS_Genome':
+                    $sThis = 'a genome build identifier';
+                    break;
+                case 'HGVS_ReferenceSequence':
+                    $sThis = 'a reference sequence';
+                    break;
+                case 'HGVS_Variant':
+                    $sThis = 'a HGVS nomenclature-compliant variant description';
+                    break;
+                case 'HGVS_VariantIdentifier':
+                    $sThis = 'a variant identifier';
+                    break;
+                case 'HGVS_VCF':
+                    $sThis = 'the VCF format';
+                    break;
+            }
+            $this->messages = ['EFAIL' => 'Failed to recognize ' . $sThis . ' in your input.'];
         }
     }
 
