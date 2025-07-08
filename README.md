@@ -134,14 +134,17 @@ This returns:
 ```json
 [
     {
-        "library_date": "2025-03-26",
-        "library_version": "0.4.2",
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.2"
+                "maximum": "21.1.3"
             },
-            "output": "21.1.2"
+            "output": "21.1.3"
+        },
+        "caches": {
+          "genes": "2025-05-01"
         }
     }
 ]
@@ -149,8 +152,42 @@ This returns:
 
 Note that, unlike the API, the defaults apply.
 The HGVS class will also successfully validate reference sequences,
- VCF descriptions, genome builds, and variant identifiers.
+ VCF descriptions, genes, genome builds, and variant identifiers.
 If you only wish to consider variants as valid input, check the `identified_as` field, or use a PHP wrapper (see below).
+
+If you wish to enforce a gene or reference sequence check,
+ use `gene:` or `refseq:` as prefixes to your input, respectively, like:
+
+```bash
+php -f HGVS.php gene:IVD
+```
+
+This returns:
+
+```json
+[
+    {
+        "input": "IVD",
+        "identified_as": "gene_symbol",
+        "identified_as_formatted": "gene symbol",
+        "valid": true,
+        "messages": [],
+        "warnings": [],
+        "errors": [],
+        "data": {
+            "hgnc_id": 6186
+        },
+        "corrected_values": {
+            "IVD": 1
+        }
+    }
+]
+```
+
+This speeds up the check since only some of the valid patterns are checked.
+Also, it improves the output when the input is invalid.
+E.g., when enforcing a gene check,
+ invalid input will provide an error mentioning that no gene symbol or identifier could be recognized.
 
 #### From within a PHP application
 When already coding in PHP, it's easy to just include the `HGVS.php` library file and start using it.

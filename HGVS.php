@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-06-12   // When modified, also change the library_version.
+ * Modified    : 2025-07-08   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -278,7 +278,32 @@ class HGVS
 
         // If we have not matched, fail completely.
         if (!$this->matched) {
-            $this->messages = ['EFAIL' => 'Failed to recognize a HGVS nomenclature-compliant variant description in your input.'];
+            // What are we?
+            $sThis = 'anything';
+            switch (get_class($this)) {
+                case 'HGVS_ANNOVAR':
+                    $sThis = 'the ANNOVAR format';
+                    break;
+                case 'HGVS_Gene':
+                    $sThis = 'a gene symbol or identifier';
+                    break;
+                case 'HGVS_Genome':
+                    $sThis = 'a genome build identifier';
+                    break;
+                case 'HGVS_ReferenceSequence':
+                    $sThis = 'a reference sequence';
+                    break;
+                case 'HGVS_Variant':
+                    $sThis = 'a HGVS nomenclature-compliant variant description';
+                    break;
+                case 'HGVS_VariantIdentifier':
+                    $sThis = 'a variant identifier';
+                    break;
+                case 'HGVS_VCF':
+                    $sThis = 'the VCF format';
+                    break;
+            }
+            $this->messages = ['EFAIL' => 'Failed to recognize ' . $sThis . ' in your input.'];
         }
     }
 
@@ -550,7 +575,9 @@ class HGVS
         // Return some kind of description of what we are, based on matched patterns.
         // Example outputs: "reference_sequence", "full_variant", "variant_DNA_predicted", etc.
         $sReturn = $this->getMatchedPattern();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
+            $sReturn = $this->Gene->getIdentifiedAs();
+        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= '_' . $this->Variant->getMatchedPattern();
         } elseif ($sReturn == 'variant_identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= '_' . $this->VariantIdentifier->getMatchedPattern();
@@ -567,12 +594,14 @@ class HGVS
         // Return some kind of description of what we are, based on matched patterns, formatted for humans.
         // Example outputs: "reference sequence", "full variant", "variant (DNA, predicted)", etc.
         $sReturn = $this->getMatchedPatternFormatted();
-        if (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
+            $sReturn = $this->Gene->getIdentifiedAsFormatted();
+        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
         } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
         }
-        return $sReturn;
+        return ($sReturn ?: false);
     }
 
 
@@ -754,14 +783,17 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-06-12',
-            'library_version' => '0.4.6',
+            'library_date' => '2025-07-08',
+            'library_version' => '0.5.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
-                    'maximum' => '21.1.2',
+                    'maximum' => '21.1.3',
                 ],
-                'output' => '21.1.2',
+                'output' => '21.1.3',
+            ],
+            'caches' => [
+                'genes' => (file_exists(__DIR__ . '/cache/genes.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/genes.json')) : null),
             ],
         ];
     }
@@ -4305,6 +4337,32 @@ class HGVS_Gene extends HGVS
     ];
     public static array $genes = [];
 
+    public function getIdentifiedAs ()
+    {
+        $sReturn = $this->getMatchedPattern();
+        if ($sReturn && $sReturn != 'HGNC_ID') {
+            $sReturn = 'gene_' . $sReturn;
+        }
+        return $sReturn;
+    }
+
+
+
+
+
+    public function getIdentifiedAsFormatted ()
+    {
+        $sReturn = $this->getMatchedPatternFormatted();
+        if ($sReturn && $sReturn != 'HGNC ID') {
+            $sReturn = 'gene ' . $sReturn;
+        }
+        return ($sReturn ?: false);
+    }
+
+
+
+
+
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
@@ -4356,7 +4414,7 @@ class HGVS_Gene extends HGVS
 
                 } else {
                     if ($this->matched_pattern == 'HGNC_ID') {
-                        $this->messages['WSYMBOLCORRECTED'] = 'The HGNC ID ' . $nHGNCID . ' has been replaced by "' . $sSymbol . '".';
+                        $this->messages['ISYMBOLFOUND'] = 'The HGNC ID ' . $nHGNCID . ' points to gene symbol "' . $sSymbol . '".';
                     } else {
                         // Check our input.
                         if (strtolower($this->value) != strtolower($sSymbol)) {
@@ -5630,6 +5688,14 @@ if (!empty($_SERVER['argc']) && __FILE__ == realpath($_SERVER['argv'][0])) {
                 // Same with anything with two hyphens, like "--versions".
                 // "php -f HGVS.php -- --versions" could work, but maybe that's a bit much.
                 $aData[] = HGVS::getVersions();
+            } elseif (strtolower(strstr($sVariant, ':', true)) == 'gene') {
+                // Force a gene-check.
+                $sGene = substr(strstr($sVariant, ':'), 1);
+                $aData[] = HGVS_Gene::check($sGene)->getInfo();
+            } elseif (strtolower(strstr($sVariant, ':', true)) == 'refseq') {
+                // Force a refseq-check.
+                $sRefSeq = substr(strstr($sVariant, ':'), 1);
+                $aData[] = HGVS_ReferenceSequence::check($sRefSeq)->getInfo();
             } else {
                 $aData[] = HGVS::check($sVariant)->getInfo();
             }
