@@ -788,9 +788,9 @@ class HGVS
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
-                    'maximum' => '21.1.2',
+                    'maximum' => '21.1.3',
                 ],
-                'output' => '21.1.2',
+                'output' => '21.1.3',
             ],
             'caches' => [
                 'genes' => (file_exists(__DIR__ . '/cache/genes.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/genes.json')) : null),
