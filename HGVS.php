@@ -792,6 +792,9 @@ class HGVS
                 ],
                 'output' => '21.1.2',
             ],
+            'caches' => [
+                'genes' => (file_exists(__DIR__ . '/cache/genes.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/genes.json')) : null),
+            ],
         ];
     }
 
