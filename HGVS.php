@@ -4411,7 +4411,7 @@ class HGVS_Gene extends HGVS
 
                 } else {
                     if ($this->matched_pattern == 'HGNC_ID') {
-                        $this->messages['WSYMBOLCORRECTED'] = 'The HGNC ID ' . $nHGNCID . ' has been replaced by "' . $sSymbol . '".';
+                        $this->messages['ISYMBOLFOUND'] = 'The HGNC ID ' . $nHGNCID . ' points to gene symbol "' . $sSymbol . '".';
                     } else {
                         // Check our input.
                         if (strtolower($this->value) != strtolower($sSymbol)) {
