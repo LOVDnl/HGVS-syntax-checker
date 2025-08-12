@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-06-12
+ * Modified    : 2025-08-12
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -229,7 +229,7 @@ class LOVD_VV
         // Don't overload VV. Make sure we wait at least 0.25 seconds between calls.
         $nTimeDiff = (microtime(true) - $this->tLastCall) * 1000000;
         if ($nTimeDiff < $this->nMicroSecondsToSleep) {
-            usleep($this->nMicroSecondsToSleep - $nTimeDiff);
+            usleep(round($this->nMicroSecondsToSleep - $nTimeDiff));
         }
         $this->tLastCall = microtime(true);
 
