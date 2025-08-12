@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-06-12
+ * Modified    : 2025-08-12
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -229,7 +229,7 @@ class LOVD_VV
         // Don't overload VV. Make sure we wait at least 0.25 seconds between calls.
         $nTimeDiff = (microtime(true) - $this->tLastCall) * 1000000;
         if ($nTimeDiff < $this->nMicroSecondsToSleep) {
-            usleep($this->nMicroSecondsToSleep - $nTimeDiff);
+            usleep(round($this->nMicroSecondsToSleep - $nTimeDiff));
         }
         $this->tLastCall = microtime(true);
 
@@ -452,7 +452,7 @@ class LOVD_VV
 
 
 
-    public function getTranscriptsByID ($sSymbol)
+    public function getTranscriptsByID ($sSymbol, $aOptions = [])
     {
         // Returns the available transcripts for the given gene or transcript.
         // When a transcript has been passed, it returns only that transcript (any version).
@@ -525,7 +525,22 @@ class LOVD_VV
                     ]
                 );
             }
-            return array_merge($this->aResponse, ['errors' => 'No transcripts found.']);
+
+            // We get this quite a bit in LOVD+. Perhaps we need a longer wait.
+            if (empty($aOptions['repeated_call'])) {
+                $aOptions['repeated_call'] = 0;
+            }
+
+            // Repeat a few times, if needed.
+            if ($aOptions['repeated_call'] < 4) {
+                // This adds some overhead (re-processing of input and a recursive function call),
+                //  but it's the simplest method.
+                $aOptions['repeated_call'] ++;
+                usleep($this->nMicroSecondsToSleep * ($aOptions['repeated_call'] + 1));
+                return $this->getTranscriptsByID($sSymbol, $aOptions);
+            } else {
+                return array_merge($this->aResponse, ['errors' => ['No transcripts found.']]);
+            }
         }
 
         $aData = $this->aResponse;
