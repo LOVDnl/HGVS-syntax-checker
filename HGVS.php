@@ -18,7 +18,7 @@ class HGVS
     //        you should create an object. The reason for this is that we can't deduce from a regular expression what it
     //        matched. An object holds its value, a string has a fixed value by itself, but a regex can't store a value.
     public array $patterns = [
-        'full_variant'       => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
+        'full_variant'       => ['HGVS_ReferenceSequence', 'HGVS_Colon', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
         'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
@@ -1095,6 +1095,36 @@ class HGVS_Caret extends HGVS
         }
 
         $this->setCorrectedValue($this->value);
+    }
+}
+
+
+
+
+
+class HGVS_Colon extends HGVS
+{
+    public array $patterns = [
+        'something' => [':', []],
+        'nothing'   => ['/(?=[A-Z])/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue(':');
+        if ($this->matched_pattern == 'nothing') {
+            // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
+            $Variant = new HGVS_Variant($this->input, null, $this->debugging);
+            if ($Variant->hasMatched()) {
+                // That doesn't mean that it's valid, but it's more likely to be a variant description
+                //  than nonsense, so tell the user to use a colon and accept the match.
+                $this->messages['WCOLONMISSING'] = 'Please place a ":" between the reference sequence and the variant.';
+            } else {
+                // Reject the match.
+                return false; // Break out of the entire object.
+            }
+        }
     }
 }
 
