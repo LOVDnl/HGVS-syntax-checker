@@ -1102,98 +1102,6 @@ class HGVS_Caret extends HGVS
 
 
 
-class HGVS_Colon extends HGVS
-{
-    public array $patterns = [
-        'something' => [':', []],
-        'nothing'   => ['/(?=[A-Z])/', []],
-    ];
-
-    public function validate ()
-    {
-        // Provide additional rules for validation, and stores values for the variant info if needed.
-        $this->setCorrectedValue(':');
-        if ($this->matched_pattern == 'nothing') {
-            // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
-            $Variant = new HGVS_Variant($this->input, null, $this->debugging);
-            if ($Variant->hasMatched()) {
-                // That doesn't mean that it's valid, but it's more likely to be a variant description
-                //  than nonsense, so tell the user to use a colon and accept the match.
-                $this->messages['WCOLONMISSING'] = 'Please place a ":" between the reference sequence and the variant.';
-            } else {
-                // Reject the match.
-                return false; // Break out of the entire object.
-            }
-        }
-    }
-}
-
-
-
-
-
-class HGVS_DNAAllele extends HGVS
-{
-    public array $components = [];
-    public array $patterns = [
-        'multiple_cis'     => ['HGVS_DNAVariantBody', ';', 'HGVS_DNAAllele', []],
-        'multiple_comma'   => ['HGVS_DNAVariantBody', ',', 'HGVS_DNAAllele', ['WALLELEFORMAT' => 'The allele syntax uses semicolons (;) to separate variants, not commas.']],
-        'single'           => ['HGVS_DNAVariantBody', []],
-    ];
-
-    public function getComponents ()
-    {
-        // This function collects all components stored in this class and puts them in an array.
-        if (count($this->components) > 0) {
-            return $this->components;
-        }
-
-        foreach ($this->patterns[$this->matched_pattern] as $Pattern) {
-            if (is_object($Pattern)) {
-                if (get_class($Pattern) == 'HGVS_DNAVariantBody') {
-                    $this->components[] = $Pattern;
-                } else {
-                    // Another complex with one or more components.
-                    $this->components = array_merge(
-                        $this->components,
-                        $Pattern->getComponents()
-                    );
-                }
-            }
-        }
-
-        return $this->components;
-    }
-
-
-
-
-
-    public function validate ()
-    {
-        // Provide additional rules for validation, and stores values for the variant info if needed.
-        if ($this->matched_pattern == 'multiple_comma') {
-            // Fix the separator. Set a slightly lower confidence, because we don't know if this is cis or unknown.
-            $this->corrected_values = $this->buildCorrectedValues(
-                ['' => 0.9],
-                $this->DNAVariantBody->getCorrectedValues(),
-                ';',
-                $this->DNAAllele->getCorrectedValues()
-            );
-
-        } elseif ($this->matched_pattern == 'multiple_cis') {
-            // We don't allow everything in cis. A "null" value (c.0) is not something that can go in cis.
-            if ($this->DNAVariantBody->getData()['type'] == '0' || $this->DNAAllele->getData()['type'] == '0') {
-                $this->messages['EALLELEINVALIDCIS'] = 'This is not a possible combination of variants in cis. Did you mean to report them in trans?';
-            }
-        }
-    }
-}
-
-
-
-
-
 class HGVS_Chr extends HGVS
 {
     public array $patterns = [
@@ -1386,6 +1294,98 @@ class HGVS_ChromosomeNumber extends HGVS
             $this->setCorrectedValue((int) $this->value);
             if (!$this->getCorrectedValue() || $this->getCorrectedValue() > 22) {
                 $this->messages['EINVALIDCHROMOSOME'] = 'This variant description contains an invalid chromosome number: "' . $this->value . '".';
+            }
+        }
+    }
+}
+
+
+
+
+
+class HGVS_Colon extends HGVS
+{
+    public array $patterns = [
+        'something' => [':', []],
+        'nothing'   => ['/(?=[A-Z])/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue(':');
+        if ($this->matched_pattern == 'nothing') {
+            // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
+            $Variant = new HGVS_Variant($this->input, null, $this->debugging);
+            if ($Variant->hasMatched()) {
+                // That doesn't mean that it's valid, but it's more likely to be a variant description
+                //  than nonsense, so tell the user to use a colon and accept the match.
+                $this->messages['WCOLONMISSING'] = 'Please place a ":" between the reference sequence and the variant.';
+            } else {
+                // Reject the match.
+                return false; // Break out of the entire object.
+            }
+        }
+    }
+}
+
+
+
+
+
+class HGVS_DNAAllele extends HGVS
+{
+    public array $components = [];
+    public array $patterns = [
+        'multiple_cis'     => ['HGVS_DNAVariantBody', ';', 'HGVS_DNAAllele', []],
+        'multiple_comma'   => ['HGVS_DNAVariantBody', ',', 'HGVS_DNAAllele', ['WALLELEFORMAT' => 'The allele syntax uses semicolons (;) to separate variants, not commas.']],
+        'single'           => ['HGVS_DNAVariantBody', []],
+    ];
+
+    public function getComponents ()
+    {
+        // This function collects all components stored in this class and puts them in an array.
+        if (count($this->components) > 0) {
+            return $this->components;
+        }
+
+        foreach ($this->patterns[$this->matched_pattern] as $Pattern) {
+            if (is_object($Pattern)) {
+                if (get_class($Pattern) == 'HGVS_DNAVariantBody') {
+                    $this->components[] = $Pattern;
+                } else {
+                    // Another complex with one or more components.
+                    $this->components = array_merge(
+                        $this->components,
+                        $Pattern->getComponents()
+                    );
+                }
+            }
+        }
+
+        return $this->components;
+    }
+
+
+
+
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->matched_pattern == 'multiple_comma') {
+            // Fix the separator. Set a slightly lower confidence, because we don't know if this is cis or unknown.
+            $this->corrected_values = $this->buildCorrectedValues(
+                ['' => 0.9],
+                $this->DNAVariantBody->getCorrectedValues(),
+                ';',
+                $this->DNAAllele->getCorrectedValues()
+            );
+
+        } elseif ($this->matched_pattern == 'multiple_cis') {
+            // We don't allow everything in cis. A "null" value (c.0) is not something that can go in cis.
+            if ($this->DNAVariantBody->getData()['type'] == '0' || $this->DNAAllele->getData()['type'] == '0') {
+                $this->messages['EALLELEINVALIDCIS'] = 'This is not a possible combination of variants in cis. Did you mean to report them in trans?';
             }
         }
     }
