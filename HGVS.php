@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-07-08   // When modified, also change the library_version.
+ * Modified    : 2025-08-18   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -18,7 +18,7 @@ class HGVS
     //        you should create an object. The reason for this is that we can't deduce from a regular expression what it
     //        matched. An object holds its value, a string has a fixed value by itself, but a regex can't store a value.
     public array $patterns = [
-        'full_variant'       => ['HGVS_ReferenceSequence', ':', 'HGVS_Variant', []],
+        'full_variant'       => ['HGVS_ReferenceSequence', 'HGVS_Colon', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
         'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-07-08',
-            'library_version' => '0.5.0',
+            'library_date' => '2025-08-18',
+            'library_version' => '0.5.2',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1102,68 +1102,6 @@ class HGVS_Caret extends HGVS
 
 
 
-class HGVS_DNAAllele extends HGVS
-{
-    public array $components = [];
-    public array $patterns = [
-        'multiple_cis'     => ['HGVS_DNAVariantBody', ';', 'HGVS_DNAAllele', []],
-        'multiple_comma'   => ['HGVS_DNAVariantBody', ',', 'HGVS_DNAAllele', ['WALLELEFORMAT' => 'The allele syntax uses semicolons (;) to separate variants, not commas.']],
-        'single'           => ['HGVS_DNAVariantBody', []],
-    ];
-
-    public function getComponents ()
-    {
-        // This function collects all components stored in this class and puts them in an array.
-        if (count($this->components) > 0) {
-            return $this->components;
-        }
-
-        foreach ($this->patterns[$this->matched_pattern] as $Pattern) {
-            if (is_object($Pattern)) {
-                if (get_class($Pattern) == 'HGVS_DNAVariantBody') {
-                    $this->components[] = $Pattern;
-                } else {
-                    // Another complex with one or more components.
-                    $this->components = array_merge(
-                        $this->components,
-                        $Pattern->getComponents()
-                    );
-                }
-            }
-        }
-
-        return $this->components;
-    }
-
-
-
-
-
-    public function validate ()
-    {
-        // Provide additional rules for validation, and stores values for the variant info if needed.
-        if ($this->matched_pattern == 'multiple_comma') {
-            // Fix the separator. Set a slightly lower confidence, because we don't know if this is cis or unknown.
-            $this->corrected_values = $this->buildCorrectedValues(
-                ['' => 0.9],
-                $this->DNAVariantBody->getCorrectedValues(),
-                ';',
-                $this->DNAAllele->getCorrectedValues()
-            );
-
-        } elseif ($this->matched_pattern == 'multiple_cis') {
-            // We don't allow everything in cis. A "null" value (c.0) is not something that can go in cis.
-            if ($this->DNAVariantBody->getData()['type'] == '0' || $this->DNAAllele->getData()['type'] == '0') {
-                $this->messages['EALLELEINVALIDCIS'] = 'This is not a possible combination of variants in cis. Did you mean to report them in trans?';
-            }
-        }
-    }
-}
-
-
-
-
-
 class HGVS_Chr extends HGVS
 {
     public array $patterns = [
@@ -1356,6 +1294,98 @@ class HGVS_ChromosomeNumber extends HGVS
             $this->setCorrectedValue((int) $this->value);
             if (!$this->getCorrectedValue() || $this->getCorrectedValue() > 22) {
                 $this->messages['EINVALIDCHROMOSOME'] = 'This variant description contains an invalid chromosome number: "' . $this->value . '".';
+            }
+        }
+    }
+}
+
+
+
+
+
+class HGVS_Colon extends HGVS
+{
+    public array $patterns = [
+        'something' => [':', []],
+        'nothing'   => ['/(?=[A-Z])/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue(':');
+        if ($this->matched_pattern == 'nothing') {
+            // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
+            $Variant = new HGVS_Variant($this->input, null, $this->debugging);
+            if ($Variant->hasMatched()) {
+                // That doesn't mean that it's valid, but it's more likely to be a variant description
+                //  than nonsense, so tell the user to use a colon and accept the match.
+                $this->messages['WCOLONMISSING'] = 'Please place a ":" between the reference sequence and the variant.';
+            } else {
+                // Reject the match.
+                return false; // Break out of the entire object.
+            }
+        }
+    }
+}
+
+
+
+
+
+class HGVS_DNAAllele extends HGVS
+{
+    public array $components = [];
+    public array $patterns = [
+        'multiple_cis'     => ['HGVS_DNAVariantBody', ';', 'HGVS_DNAAllele', []],
+        'multiple_comma'   => ['HGVS_DNAVariantBody', ',', 'HGVS_DNAAllele', ['WALLELEFORMAT' => 'The allele syntax uses semicolons (;) to separate variants, not commas.']],
+        'single'           => ['HGVS_DNAVariantBody', []],
+    ];
+
+    public function getComponents ()
+    {
+        // This function collects all components stored in this class and puts them in an array.
+        if (count($this->components) > 0) {
+            return $this->components;
+        }
+
+        foreach ($this->patterns[$this->matched_pattern] as $Pattern) {
+            if (is_object($Pattern)) {
+                if (get_class($Pattern) == 'HGVS_DNAVariantBody') {
+                    $this->components[] = $Pattern;
+                } else {
+                    // Another complex with one or more components.
+                    $this->components = array_merge(
+                        $this->components,
+                        $Pattern->getComponents()
+                    );
+                }
+            }
+        }
+
+        return $this->components;
+    }
+
+
+
+
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        if ($this->matched_pattern == 'multiple_comma') {
+            // Fix the separator. Set a slightly lower confidence, because we don't know if this is cis or unknown.
+            $this->corrected_values = $this->buildCorrectedValues(
+                ['' => 0.9],
+                $this->DNAVariantBody->getCorrectedValues(),
+                ';',
+                $this->DNAAllele->getCorrectedValues()
+            );
+
+        } elseif ($this->matched_pattern == 'multiple_cis') {
+            // We don't allow everything in cis. A "null" value (c.0) is not something that can go in cis.
+            if ($this->DNAVariantBody->getData()['type'] == '0' || $this->DNAAllele->getData()['type'] == '0') {
+                $this->messages['EALLELEINVALIDCIS'] = 'This is not a possible combination of variants in cis. Did you mean to report them in trans?';
             }
         }
     }
@@ -5464,7 +5494,7 @@ class HGVS_VCFBody extends HGVS
 
         } else {
             // Inversion or deletion-insertion. Both REF and ALT are >1.
-            if ($sREF == strrev(str_replace(array('A', 'C', 'G', 'T'), array('T', 'G', 'C', 'A'), strtoupper($sALT)))) {
+            if ($sREF == strtoupper(strrev(str_replace(array('A', 'C', 'G', 'T'), array('t', 'g', 'c', 'a'), $sALT)))) {
                 // Inversion.
                 $this->setCorrectedValue($this->getPositionString($sPosition, $nIntronOffset, $nOffset, $nREF) . 'inv');
                 $this->data['type'] = 'inv';
