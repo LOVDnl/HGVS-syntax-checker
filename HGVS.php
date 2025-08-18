@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-07-08   // When modified, also change the library_version.
+ * Modified    : 2025-08-18   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-07-08',
-            'library_version' => '0.5.0',
+            'library_date' => '2025-08-18',
+            'library_version' => '0.5.2',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -5464,7 +5464,7 @@ class HGVS_VCFBody extends HGVS
 
         } else {
             // Inversion or deletion-insertion. Both REF and ALT are >1.
-            if ($sREF == strrev(str_replace(array('A', 'C', 'G', 'T'), array('T', 'G', 'C', 'A'), strtoupper($sALT)))) {
+            if ($sREF == strtoupper(strrev(str_replace(array('A', 'C', 'G', 'T'), array('t', 'g', 'c', 'a'), $sALT)))) {
                 // Inversion.
                 $this->setCorrectedValue($this->getPositionString($sPosition, $nIntronOffset, $nOffset, $nREF) . 'inv');
                 $this->data['type'] = 'inv';
