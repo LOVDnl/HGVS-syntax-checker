@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-08-12
+ * Modified    : 2025-08-18
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -355,7 +355,7 @@ class LOVD_VV
 
 
 
-    private function getRNAProteinPrediction (&$aMapping, $sTranscript = '')
+    public function getRNAProteinPrediction (&$aMapping, $sTranscript = '')
     {
         // Function to predict the RNA change and to improve VV's protein prediction.
         // $aMapping will be extended with 'RNA' and 'protein' if they don't already exist.
