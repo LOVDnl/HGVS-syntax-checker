@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2025-08-18
+ * Modified    : 2025-08-22
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -414,7 +414,7 @@ class LOVD_VV
 
                     } elseif ($aVariantInfo['position_start'] < 0 && strpos($aMapping['DNA'], '*') !== false) {
                         // Start is upstream, end is downstream.
-                        if ($aMapping['type'] == 'del') {
+                        if ($aVariantInfo['type'] == 'del') {
                             $aMapping['RNA'] = 'r.0?';
                             $aMapping['protein'] = 'p.0?';
                         } else {
