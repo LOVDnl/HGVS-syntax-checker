@@ -410,8 +410,8 @@ class LOVD_VV
                     $aMapping['RNA'] = 'r.(?)';
                     $aMapping['protein'] = 'p.(=)';
 
-                } elseif ($aVariantInfo['position_start'] < 0 && strpos($aMapping['DNA'], '*') !== false) {
-                    // Start is upstream, end is downstream.
+                } elseif ($aVariantInfo['position_start'] < 0) {
+                    // Start is upstream, end is not.
                     if ($aVariantInfo['type'] == 'del') {
                         $aMapping['RNA'] = 'r.0?';
                         $aMapping['protein'] = 'p.0?';
