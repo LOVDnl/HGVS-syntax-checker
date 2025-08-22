@@ -366,7 +366,7 @@ class LOVD_VV
             return false;
         }
 
-        if (!isset($aMapping['RNA'])) {
+        if (empty($aMapping['RNA'])) {
             $aMapping['RNA'] = 'r.(?)';
         }
         if (!isset($aMapping['protein'])) {
@@ -398,7 +398,6 @@ class LOVD_VV
                     $aMapping['protein'] = 'p.?';
 
                 } elseif ($aVariantInfo['position_start_intron'] && $aVariantInfo['position_end_intron']
-                    && abs($aVariantInfo['position_start_intron']) > 5 && abs($aVariantInfo['position_end_intron']) > 5
                     && ($aVariantInfo['position_start'] == $aVariantInfo['position_end']
                         || ($aVariantInfo['position_start'] + 1) == $aVariantInfo['position_end'])) {
                     // Deep intronic in the same intron.
