@@ -439,7 +439,7 @@ class LOVD_VV
                 }
 
                 // But wait, did we just fill in a protein field for a non-coding transcript?
-                if (substr($sTranscript, 1, 1) == 'R') {
+                if (substr($sTranscript, 1, 1) == 'R' || substr($aMapping['DNA'], 0, 2) == 'n.') {
                     $aMapping['protein'] = '';
                 }
             }
