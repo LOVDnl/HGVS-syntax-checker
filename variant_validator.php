@@ -425,8 +425,8 @@ class LOVD_VV
                     $aMapping['RNA'] = 'r.(?)';
                     $aMapping['protein'] = 'p.(=)';
 
-                } elseif ($aVariantInfo['type'] != '>' && $aMapping['protein'] != 'p.(=)') {
-                    // Non-SNVs partially in the transcript, not predicted to do nothing.
+                } elseif (strpos($aMapping['DNA'], '*') !== false && $aMapping['protein'] != 'p.(=)') {
+                    // Variant end is downstream of the CDS, start is not; not predicted to do nothing.
                     $aMapping['RNA'] = 'r.?';
                     $aMapping['protein'] = 'p.?';
 
