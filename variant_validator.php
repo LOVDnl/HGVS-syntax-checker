@@ -431,8 +431,12 @@ class LOVD_VV
                     $aMapping['protein'] = 'p.?';
 
                 } else {
-                    // Substitution on wobble base or so.
+                    // Variants are fully in the CDS, or there is no CDS (non-coding transcripts).
+                    // If introns are involved, it's whole exon deletion or duplication and splicing is not expected to be affected.
                     $aMapping['RNA'] = 'r.(?)';
+                    if ($aMapping['protein'] != 'p.(=)') {
+                        $aMapping['protein'] = 'p.?';
+                    }
                 }
 
                 // But wait, did we just fill in a protein field for a non-coding transcript?
