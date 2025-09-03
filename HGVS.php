@@ -2391,6 +2391,16 @@ class HGVS_DNAPosition extends HGVS
                 // -?, maximum is -1.
                 $this->position_limits[3] = $this->offset;
             }
+
+            // If we're a child of DNAPositionStart, adjust position 0 to 1.
+            // This turns g.0_1del into g.1del, which may not be a desirable side effect,
+            //  but we have received g.0_123456del and even g.(?_0)_(123456_234567)del, and I'd like to fix those.
+            // The check for DNAVariantType makes sure we don't do this for, e.g., insN[(0_10)].
+            if (!$this->position && !$this->intronic
+                && get_class($this->parent) == 'HGVS_DNAPositionStart' && !$this->getParent('DNAVariantType')) {
+                $this->position = 1;
+                $this->setCorrectedValue(1);
+            }
         }
         parent::validate(); // Do a case-check.
     }
