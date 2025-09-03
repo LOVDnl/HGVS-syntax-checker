@@ -2658,7 +2658,10 @@ class HGVS_DNAPositionStart extends HGVS
             // If the positions are the same, warn and remove one.
             if ($this->DNAPosition[0]->position == $this->DNAPosition[1]->position) {
                 if ($this->DNAPosition[0]->getCorrectedValue() == $this->DNAPosition[1]->getCorrectedValue()) {
-                    $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                    // Warn only when also the input was the same. Otherwise, g.0_1del gets this warning, too.
+                    if ($this->DNAPosition[0]->getValue() == $this->DNAPosition[1]->getValue()) {
+                        $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                    }
                     $nCorrectionConfidence *= 0.9;
                     // Discard the other object.
                     $this->DNAPosition = $this->DNAPosition[0];
@@ -3015,10 +3018,13 @@ class HGVS_DNAPositions extends HGVS
             $this->messages = array_merge($this->messages, $aDoubleMessages);
 
             // If the positions are the same, warn and remove one.
+            // Exception: Start and End _can_ be both unknown, e.g., g.?_?ins[...].
             if ($this->DNAPositionStart->getCorrectedValue() == $this->DNAPositionEnd->getCorrectedValue()
                 && !$this->DNAPositionStart->unknown) {
-                // Exception: Start and End _can_ be both unknown, e.g., g.?_?ins[...].
-                $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                // Warn only when also the input was the same. Otherwise, g.0_1del gets this warning, too.
+                if ($this->DNAPositionStart->getValue() == $this->DNAPositionEnd->getValue()) {
+                    $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                }
                 $nCorrectionConfidence *= 0.9;
                 // Discard the other object.
                 $this->DNAPosition = $this->DNAPositionStart;
