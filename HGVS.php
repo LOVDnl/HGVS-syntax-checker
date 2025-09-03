@@ -2369,8 +2369,8 @@ class HGVS_DNAPosition extends HGVS
             } elseif ($this->position_sortable > $this->position_limits[1]) {
                 $this->position_limits[0] = $this->position_limits[1];
             } else {
-                $this->position_limits[0] = $this->position_sortable;
-                $this->position_limits[1] = $this->position_sortable;
+                $this->position_limits[0] = ($this->position_sortable ?: 1);
+                $this->position_limits[1] = ($this->position_sortable ?: 1);
             }
             if (!$this->intronic) {
                 $this->position_limits[2] = 0;
