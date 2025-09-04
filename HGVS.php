@@ -2674,6 +2674,16 @@ class HGVS_DNAPositionStart extends HGVS
                     $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid position: "' . $this->value . '".';
                 }
 
+            } elseif (get_class($this) == 'HGVS_DNAPositionStart' && $this->DNAPosition[0]->unknown
+                && $this->DNAPosition[0]->position_limits[0] == 1 && $this->DNAPosition[1]->position_limits[1] == 1) {
+                // Specifically handle g.(?_1)_(100_200)del. We have seen them (we even got "g.(?_0)_(100_200)del"),
+                //  and we should auto-fix them to g.1_(200_300)del.
+                $this->messages['WTOOMUCHUNKNOWN'] = 'This variant description contains redundant unknown positions.';
+                $this->DNAPosition = $this->DNAPosition[1];
+                $this->DNAPosition->uncertain = false;
+                $this->uncertain = false;
+                $this->unknown = false;
+
             } elseif (get_class($this) == 'HGVS_DNAPositionStart' && $this->DNAPosition[1]->unknown) {
                 // The inner positions cannot be unknown. E.g., g.(100_?)_(?_200) should become g.(100_200).
                 $this->messages['WTOOMUCHUNKNOWN'] = 'This variant description contains redundant unknown positions.';
