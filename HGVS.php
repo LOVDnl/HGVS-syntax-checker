@@ -784,7 +784,7 @@ class HGVS
     {
         return [
             'library_date' => '2025-09-04',
-            'library_version' => '0.5.3',
+            'library_version' => '0.5.4',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
