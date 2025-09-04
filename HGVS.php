@@ -3040,8 +3040,10 @@ class HGVS_DNAPositions extends HGVS
                 $nCorrectionConfidence *= 0.9;
                 // Discard the other object.
                 $this->DNAPosition = $this->DNAPositionStart;
+                unset($this->DNAPositionStart, $this->DNAPositionEnd);
+                $this->properties = ['DNAPosition'];
                 $this->range = false;
-                foreach (['position', 'position_sortable', 'position_limits', 'offset'] as $variable) {
+                foreach (['position', 'position_sortable', 'position_limits', 'offset', 'uncertain'] as $variable) {
                     $this->$variable = $this->DNAPosition->$variable;
                 }
 
