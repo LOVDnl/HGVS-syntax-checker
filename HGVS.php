@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-08-18   // When modified, also change the library_version.
+ * Modified    : 2025-09-04   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-08-18',
-            'library_version' => '0.5.2',
+            'library_date' => '2025-09-04',
+            'library_version' => '0.5.3',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -2165,7 +2165,10 @@ class HGVS_DNANull extends HGVS
         // We're a bit special. We don't allow input to be left that may be a position or a (float) number.
         // The reason for this is that we don't want to match DNAPositions starting with a zero.
         // However, if we would go last in line, the DNAPositions + DNAUnknown would pick c.0? up.
-        if ($this->suffix !== '' && preg_match('/^[.0-9_*+-]/', $this->suffix)) {
+        if ($this->suffix !== ''
+            && (preg_match('/^[.0-9_*+-]/', $this->suffix)
+                || ($this->getParent('Variant') && $this->getParent('Variant')->current_pattern == 'DNA_predicted'
+                    && preg_match('/^\)[.0-9_*+-]/', $this->suffix)))) {
             // There is more left that could be position. We're not an actual DNANull.
             return false; // Break out of the entire object.
         }
@@ -2369,8 +2372,8 @@ class HGVS_DNAPosition extends HGVS
             } elseif ($this->position_sortable > $this->position_limits[1]) {
                 $this->position_limits[0] = $this->position_limits[1];
             } else {
-                $this->position_limits[0] = $this->position_sortable;
-                $this->position_limits[1] = $this->position_sortable;
+                $this->position_limits[0] = ($this->position_sortable ?: 1);
+                $this->position_limits[1] = ($this->position_sortable ?: 1);
             }
             if (!$this->intronic) {
                 $this->position_limits[2] = 0;
@@ -2390,6 +2393,16 @@ class HGVS_DNAPosition extends HGVS
             } else {
                 // -?, maximum is -1.
                 $this->position_limits[3] = $this->offset;
+            }
+
+            // If we're a child of DNAPositionStart, adjust position 0 to 1.
+            // This turns g.0_1del into g.1del, which may not be a desirable side effect,
+            //  but we have received g.0_123456del and even g.(?_0)_(123456_234567)del, and I'd like to fix those.
+            // The check for DNAVariantType makes sure we don't do this for, e.g., insN[(0_10)].
+            if (!$this->position && !$this->intronic
+                && get_class($this->parent) == 'HGVS_DNAPositionStart' && !$this->getParent('DNAVariantType')) {
+                $this->position = 1;
+                $this->setCorrectedValue(1);
             }
         }
         parent::validate(); // Do a case-check.
@@ -2648,7 +2661,10 @@ class HGVS_DNAPositionStart extends HGVS
             // If the positions are the same, warn and remove one.
             if ($this->DNAPosition[0]->position == $this->DNAPosition[1]->position) {
                 if ($this->DNAPosition[0]->getCorrectedValue() == $this->DNAPosition[1]->getCorrectedValue()) {
-                    $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                    // Warn only when also the input was the same. Otherwise, g.0_1del gets this warning, too.
+                    if ($this->DNAPosition[0]->getValue() == $this->DNAPosition[1]->getValue()) {
+                        $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                    }
                     $nCorrectionConfidence *= 0.9;
                     // Discard the other object.
                     $this->DNAPosition = $this->DNAPosition[0];
@@ -2658,6 +2674,16 @@ class HGVS_DNAPositionStart extends HGVS
                     // The offsets are not on the same side of the intron. That is an error.
                     $this->messages['EPOSITIONFORMAT'] = 'This variant description contains an invalid position: "' . $this->value . '".';
                 }
+
+            } elseif (get_class($this) == 'HGVS_DNAPositionStart' && $this->DNAPosition[0]->unknown
+                && $this->DNAPosition[0]->position_limits[0] == 1 && $this->DNAPosition[1]->position_limits[1] == 1) {
+                // Specifically handle g.(?_1)_(100_200)del. We have seen them (we even got "g.(?_0)_(100_200)del"),
+                //  and we should auto-fix them to g.1_(200_300)del.
+                $this->messages['WTOOMUCHUNKNOWN'] = 'This variant description contains redundant unknown positions.';
+                $this->DNAPosition = $this->DNAPosition[1];
+                $this->DNAPosition->uncertain = false;
+                $this->uncertain = false;
+                $this->unknown = false;
 
             } elseif (get_class($this) == 'HGVS_DNAPositionStart' && $this->DNAPosition[1]->unknown) {
                 // The inner positions cannot be unknown. E.g., g.(100_?)_(?_200) should become g.(100_200).
@@ -3005,15 +3031,34 @@ class HGVS_DNAPositions extends HGVS
             $this->messages = array_merge($this->messages, $aDoubleMessages);
 
             // If the positions are the same, warn and remove one.
+            // Exception: Start and End _can_ be both unknown, e.g., g.?_?ins[...].
             if ($this->DNAPositionStart->getCorrectedValue() == $this->DNAPositionEnd->getCorrectedValue()
                 && !$this->DNAPositionStart->unknown) {
-                // Exception: Start and End _can_ be both unknown, e.g., g.?_?ins[...].
-                $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                // Warn only when also the input was the same. Otherwise, g.0_1del gets this warning, too.
+                if ($this->DNAPositionStart->getValue() == $this->DNAPositionEnd->getValue()) {
+                    $this->messages['WSAMEPOSITIONS'] = 'This variant description contains two positions that are the same.';
+                }
                 $nCorrectionConfidence *= 0.9;
                 // Discard the other object.
                 $this->DNAPosition = $this->DNAPositionStart;
+                unset($this->DNAPositionStart, $this->DNAPositionEnd);
+                $this->properties = ['DNAPosition'];
                 $this->range = false;
-                foreach (['position', 'position_sortable', 'position_limits', 'offset'] as $variable) {
+                foreach (['position', 'position_sortable', 'position_limits', 'offset', 'uncertain'] as $variable) {
+                    $this->$variable = $this->DNAPosition->$variable;
+                }
+
+            } elseif (!$this->DNAPositionStart->range && $this->DNAPositionStart->unknown
+                && !$this->DNAPositionEnd->range && array_slice($this->DNAPositionEnd->position_limits, 0, 2) == [1, 1]) {
+                // Specifically handle g.?_1del. Should get auto-fixed to g.1del.
+                $this->messages['WTOOMUCHUNKNOWN'] = 'This variant description contains redundant unknown positions.';
+                $nCorrectionConfidence *= 0.9;
+                // Discard the other object.
+                $this->DNAPosition = $this->DNAPositionEnd;
+                unset($this->DNAPositionStart, $this->DNAPositionEnd);
+                $this->properties = ['DNAPosition'];
+                $this->range = false;
+                foreach (['position', 'position_sortable', 'position_limits', 'offset', 'uncertain', 'unknown'] as $variable) {
                     $this->$variable = $this->DNAPosition->$variable;
                 }
             }
