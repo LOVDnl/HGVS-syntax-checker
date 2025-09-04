@@ -2165,7 +2165,9 @@ class HGVS_DNANull extends HGVS
         // We're a bit special. We don't allow input to be left that may be a position or a (float) number.
         // The reason for this is that we don't want to match DNAPositions starting with a zero.
         // However, if we would go last in line, the DNAPositions + DNAUnknown would pick c.0? up.
-        if ($this->suffix !== '' && preg_match('/^[.0-9_*+-]/', $this->suffix)) {
+        if ($this->suffix !== ''
+            && preg_match('/^[.0-9_*+-]/', $this->suffix)
+            || ($this->getParent('Variant') && $this->getParent('Variant')->current_pattern == 'DNA_predicted' && preg_match('/^\)[.0-9_*+-]/', $this->suffix))) {
             // There is more left that could be position. We're not an actual DNANull.
             return false; // Break out of the entire object.
         }
