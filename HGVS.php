@@ -3044,6 +3044,20 @@ class HGVS_DNAPositions extends HGVS
                 foreach (['position', 'position_sortable', 'position_limits', 'offset'] as $variable) {
                     $this->$variable = $this->DNAPosition->$variable;
                 }
+
+            } elseif (!$this->DNAPositionStart->range && $this->DNAPositionStart->unknown
+                && !$this->DNAPositionEnd->range && array_slice($this->DNAPositionEnd->position_limits, 0, 2) == [1, 1]) {
+                // Specifically handle g.?_1del. Should get auto-fixed to g.1del.
+                $this->messages['WTOOMUCHUNKNOWN'] = 'This variant description contains redundant unknown positions.';
+                $nCorrectionConfidence *= 0.9;
+                // Discard the other object.
+                $this->DNAPosition = $this->DNAPositionEnd;
+                unset($this->DNAPositionStart, $this->DNAPositionEnd);
+                $this->properties = ['DNAPosition'];
+                $this->range = false;
+                foreach (['position', 'position_sortable', 'position_limits', 'offset', 'uncertain', 'unknown'] as $variable) {
+                    $this->$variable = $this->DNAPosition->$variable;
+                }
             }
 
 
