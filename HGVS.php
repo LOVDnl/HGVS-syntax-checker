@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-09-04   // When modified, also change the library_version.
+ * Modified    : 2025-10-08   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -577,7 +577,7 @@ class HGVS
         $sReturn = $this->getMatchedPattern();
         if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
             $sReturn = $this->Gene->getIdentifiedAs();
-        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        } elseif (substr($sReturn, -7) == 'variant' && $this->hasProperty('Variant')) {
             $sReturn .= '_' . $this->Variant->getMatchedPattern();
         } elseif ($sReturn == 'variant_identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= '_' . $this->VariantIdentifier->getMatchedPattern();
@@ -596,7 +596,7 @@ class HGVS
         $sReturn = $this->getMatchedPatternFormatted();
         if ($sReturn == 'gene' && $this->hasProperty('Gene')) {
             $sReturn = $this->Gene->getIdentifiedAsFormatted();
-        } elseif (str_ends_with($sReturn, 'variant') && $this->hasProperty('Variant')) {
+        } elseif (substr($sReturn, -7) == 'variant' && $this->hasProperty('Variant')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->Variant->getMatchedPattern()) . ')';
         } elseif ($sReturn == 'variant identifier' && $this->hasProperty('VariantIdentifier')) {
             $sReturn .= ' (' . str_replace('_', ', ', $this->VariantIdentifier->getMatchedPattern()) . ')';
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-09-04',
-            'library_version' => '0.5.4',
+            'library_date' => '2025-10-08',
+            'library_version' => '0.5.5',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
