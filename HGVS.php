@@ -3683,9 +3683,10 @@ class HGVS_DNASub extends HGVS
         // "." seen in MERTK_19403518_Charbel%20Issa-2009.pdf ("c.2189+1G.T")
         // "4" seen in MERTK_30851773_Bhatia-2019.pdf ("c.1647T4G")
         // "→" seen in NYX_11062472_Pusch-2000.pdf ("1040T→C")
+        // "＞" seen in https://www.sciencedirect.com/science/article/pii/S1525157825001989.
         // Because " " has already been trimmed to "", make pattern optional.
         // Note the "u" modifier to allow for UTF-8 characters.
-        'invalid' => ['/[⬎®?!.4→]?/u', []],
+        'invalid' => ['/[⬎®?!.4→＞]?/u', []],
     ];
 
     public function validate ()
