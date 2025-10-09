@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-10-08   // When modified, also change the library_version.
+ * Modified    : 2025-10-09   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -1307,6 +1307,7 @@ class HGVS_Colon extends HGVS
 {
     public array $patterns = [
         'something' => [':', []],
+        'invalid'   => ['/[꞉ː˸᠄܃܄﹕：]/u', []],
         'nothing'   => ['/(?=[A-Z])/', []],
     ];
 
@@ -1314,7 +1315,12 @@ class HGVS_Colon extends HGVS
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->setCorrectedValue(':');
-        if ($this->matched_pattern == 'nothing') {
+
+        // Taken "alternatives" from: https://www.sciencedirect.com/science/article/pii/S1525157825001989.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WCOLONFORMAT'] = 'Invalid character "' . $this->value . '" found between the reference sequence and the variant; only regular colons are allowed to be used in the HGVS nomenclature.';
+
+        } elseif ($this->matched_pattern == 'nothing') {
             // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
             $Variant = new HGVS_Variant($this->input, null, $this->debugging);
             if ($Variant->hasMatched()) {
