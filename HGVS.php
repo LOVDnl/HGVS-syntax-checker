@@ -3626,14 +3626,21 @@ class HGVS_DNARepeatComponent extends HGVS
 class HGVS_DNASomatic extends HGVS
 {
     public array $patterns = [
-        ['/\/+/', []],
+        'valid'   => ['/\/+/', []],
+        'invalid' => ['/[⧸⁄∕̷]+/u', []],
     ];
 
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
-        $this->setCorrectedValue(substr($this->value, 0, 2)); // Maximum number of slashes: 2.
-        $nLength = strlen($this->value);
+        $nLength = mb_strlen($this->value);
+        $this->setCorrectedValue(str_repeat('/', min($nLength, 2))); // Maximum number of slashes: 2.
+
+        // Taken "alternatives" from: https://www.sciencedirect.com/science/article/pii/S1525157825001989.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WCOLONFORMAT'] = 'Invalid character' . ($nLength == 1? '' : 's') . ' "' . $this->value . '" found in the variant description; only regular slashes are allowed to be used in the HGVS nomenclature.';
+        }
+
         if ($nLength == 1) {
             $this->data['type'] = 'mosaic';
         } elseif ($nLength == 2) {
