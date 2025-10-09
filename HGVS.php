@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-10-08   // When modified, also change the library_version.
+ * Modified    : 2025-10-09   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-10-08',
-            'library_version' => '0.5.5',
+            'library_date' => '2025-10-09',
+            'library_version' => '0.5.6',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1307,6 +1307,7 @@ class HGVS_Colon extends HGVS
 {
     public array $patterns = [
         'something' => [':', []],
+        'invalid'   => ['/[꞉ː˸᠄܃܄﹕：]/u', []],
         'nothing'   => ['/(?=[A-Z])/', []],
     ];
 
@@ -1314,7 +1315,12 @@ class HGVS_Colon extends HGVS
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         $this->setCorrectedValue(':');
-        if ($this->matched_pattern == 'nothing') {
+
+        // Taken "alternatives" from: https://www.sciencedirect.com/science/article/pii/S1525157825001989.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WCOLONFORMAT'] = 'Invalid character "' . $this->value . '" found between the reference sequence and the variant; only regular colons are allowed to be used in the HGVS nomenclature.';
+
+        } elseif ($this->matched_pattern == 'nothing') {
             // Double-check if whatever follows looks like a variant. Otherwise, we should reject the match.
             $Variant = new HGVS_Variant($this->input, null, $this->debugging);
             if ($Variant->hasMatched()) {
@@ -3620,14 +3626,21 @@ class HGVS_DNARepeatComponent extends HGVS
 class HGVS_DNASomatic extends HGVS
 {
     public array $patterns = [
-        ['/\/+/', []],
+        'valid'   => ['/\/+/', []],
+        'invalid' => ['/[⧸⁄∕̷]+/u', []],
     ];
 
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
-        $this->setCorrectedValue(substr($this->value, 0, 2)); // Maximum number of slashes: 2.
-        $nLength = strlen($this->value);
+        $nLength = mb_strlen($this->value);
+        $this->setCorrectedValue(str_repeat('/', min($nLength, 2))); // Maximum number of slashes: 2.
+
+        // Taken "alternatives" from: https://www.sciencedirect.com/science/article/pii/S1525157825001989.
+        if ($this->matched_pattern == 'invalid') {
+            $this->messages['WCOLONFORMAT'] = 'Invalid character' . ($nLength == 1? '' : 's') . ' "' . $this->value . '" found in the variant description; only regular slashes are allowed to be used in the HGVS nomenclature.';
+        }
+
         if ($nLength == 1) {
             $this->data['type'] = 'mosaic';
         } elseif ($nLength == 2) {
@@ -3670,9 +3683,10 @@ class HGVS_DNASub extends HGVS
         // "." seen in MERTK_19403518_Charbel%20Issa-2009.pdf ("c.2189+1G.T")
         // "4" seen in MERTK_30851773_Bhatia-2019.pdf ("c.1647T4G")
         // "→" seen in NYX_11062472_Pusch-2000.pdf ("1040T→C")
+        // "＞" seen in https://www.sciencedirect.com/science/article/pii/S1525157825001989.
         // Because " " has already been trimmed to "", make pattern optional.
         // Note the "u" modifier to allow for UTF-8 characters.
-        'invalid' => ['/[⬎®?!.4→]?/u', []],
+        'invalid' => ['/[⬎®?!.4→＞]?/u', []],
     ];
 
     public function validate ()
