@@ -3673,8 +3673,8 @@ class HGVS_DNASub extends HGVS
         'valid'   => ['>', []],
         'slash'   => ['/', []],
         'curly'   => ['}', []],
-        // A unicode alternative to "＞".
-        'unicode' => ['/[＞]/u', []],
+        // Several unicode alternatives to "＞".
+        'unicode' => ['/[＞ᐳ𝈷›﹥]/u', []],
         // Special characters arising from copying variants from PDFs. Some journals decided to use specialized fonts to
         //  create markup for normal characters, such as the ">" in a substitution. This is a terrible idea, as
         //  text-recognition then completely fails and copying the variant from the PDF results in a broken format.
