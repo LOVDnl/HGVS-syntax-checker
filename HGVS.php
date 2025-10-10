@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-10-09   // When modified, also change the library_version.
+ * Modified    : 2025-10-10   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-10-09',
-            'library_version' => '0.5.6',
+            'library_date' => '2025-10-10',
+            'library_version' => '0.5.7',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -3673,6 +3673,8 @@ class HGVS_DNASub extends HGVS
         'valid'   => ['>', []],
         'slash'   => ['/', []],
         'curly'   => ['}', []],
+        // Several unicode alternatives to "＞".
+        'unicode' => ['/[＞ᐳ𝈷›﹥]/u', []],
         // Special characters arising from copying variants from PDFs. Some journals decided to use specialized fonts to
         //  create markup for normal characters, such as the ">" in a substitution. This is a terrible idea, as
         //  text-recognition then completely fails and copying the variant from the PDF results in a broken format.
@@ -3683,10 +3685,9 @@ class HGVS_DNASub extends HGVS
         // "." seen in MERTK_19403518_Charbel%20Issa-2009.pdf ("c.2189+1G.T")
         // "4" seen in MERTK_30851773_Bhatia-2019.pdf ("c.1647T4G")
         // "→" seen in NYX_11062472_Pusch-2000.pdf ("1040T→C")
-        // "＞" seen in https://www.sciencedirect.com/science/article/pii/S1525157825001989.
         // Because " " has already been trimmed to "", make pattern optional.
         // Note the "u" modifier to allow for UTF-8 characters.
-        'invalid' => ['/[⬎®?!.4→＞]?/u', []],
+        'invalid' => ['/[⬎®?!.4→]?/u', []],
     ];
 
     public function validate ()
@@ -3698,6 +3699,8 @@ class HGVS_DNASub extends HGVS
             $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "/" character.';
         } elseif ($this->matched_pattern == 'curly') {
             $this->messages['WSUBSTFORMAT'] = 'Substitutions are indicated using the ">" character, not the "}" character.';
+        } elseif ($this->matched_pattern == 'unicode') {
+            $this->messages['WSUBSTFORMAT'] = 'Invalid character "' . $this->value . '" found between the nucleotides; only regular greater-than characters are allowed to be used in the HGVS nomenclature.';
         } elseif ($this->matched_pattern == 'invalid') {
             // A bit of a weird hack. We made our match optional, since we need to match a space. But a fully optional
             //  match will match always and mess everything up.
