@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-10-09',
-            'library_version' => '0.5.6',
+            'library_date' => '2025-10-10',
+            'library_version' => '0.5.7',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
