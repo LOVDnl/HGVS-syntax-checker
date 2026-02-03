@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-04-16
- * Modified    : 2025-04-24
+ * Modified    : 2026-02-03
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
@@ -80,5 +80,38 @@ if (!$bUpdateCache) {
         exit(3);
     } else {
         echo 'Successfully stored ' . count($aCache['genes']) . ' symbols, ' . count($aCache['IDs']) . " unique genes.\n";
+    }
+}
+
+
+
+
+
+// 2) Update the transcript cache, if needed.
+$sCacheFile = 'transcripts.json';
+$sSource = 'https://lovd.nl/mirrors/ncbi/transcripts.json';
+$bUpdateCache = (!file_exists($sCacheFile) || filemtime($sCacheFile) < strtotime('-30 days'));
+
+if (!$bUpdateCache) {
+    echo "Transcript cache not yet expired.\n";
+} else {
+    echo "Transcript cache expired, attempting to refresh...\n";
+    $sData = file_get_contents($sSource);
+    if (!$sData) {
+        echo "Could not load the remote data.\n";
+        exit(4);
+    }
+    $aData = json_decode($sData, true);
+    if (!$aData) {
+        echo "Could not parse the remote data.\n";
+        exit(5);
+    }
+
+    // Now store the file.
+    if (!file_put_contents($sCacheFile, $sData)) {
+        echo "Could not save the transcript data.\n";
+        exit(6);
+    } else {
+        echo 'Successfully stored ' . (count($aData) - 1) . " transcripts.\n";
     }
 }
