@@ -794,6 +794,7 @@ class HGVS
             ],
             'caches' => [
                 'genes' => (file_exists(__DIR__ . '/cache/genes.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/genes.json')) : null),
+                'transcripts' => (file_exists(__DIR__ . '/cache/transcripts.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/transcripts.json')) : null),
             ],
         ];
     }

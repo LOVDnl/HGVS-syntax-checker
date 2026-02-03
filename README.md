@@ -144,7 +144,8 @@ This returns:
             "output": "21.1.3"
         },
         "caches": {
-          "genes": "2025-05-01"
+            "genes": "2026-02-03",
+            "transcripts": "2026-02-03"
         }
     }
 ]
@@ -209,6 +210,10 @@ $aVersions = HGVS::getVersions();
 //             "maximum" => "21.1.2"
 //         ],
 //         "output" => "21.1.2"
+//     ],
+//     "caches" => [
+//         "genes" => "2026-02-03",
+//         "transcripts" => "2026-02-03"
 //     ]
 // ]
 
