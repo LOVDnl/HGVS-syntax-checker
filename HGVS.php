@@ -5036,6 +5036,7 @@ class HGVS_RefSeqTranscript extends HGVS
         'coding'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'non-coding' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
     ];
+    public static array $transcripts = [];
 
     public function validate ()
     {
@@ -5063,6 +5064,28 @@ class HGVS_RefSeqTranscript extends HGVS
         } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
             // Something else was wrong.
             $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+        }
+
+        // If the transcript data is present, we can validate transcripts properly.
+        if (empty(self::$transcripts)) {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/transcripts.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['dates', 'transcripts']) {
+                        self::$transcripts = $aJSON;
+                    }
+                }
+            }
+        }
+
+        if (!self::$transcripts) {
+            // Just warn the user that we can't validate transcripts at the moment.
+            $this->messages['INOREFSEQNMVALIDATION'] = 'We currently can not validate RefSeq transcript IDs because the transcript list has not been downloaded. See the documentation on how to download the transcript list.';
+            // Lower the confidence.
+            $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.5]);
         }
         parent::validate(); // Do a case-check.
     }
