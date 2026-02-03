@@ -5086,6 +5086,28 @@ class HGVS_RefSeqTranscript extends HGVS
             $this->messages['INOREFSEQNMVALIDATION'] = 'We currently can not validate RefSeq transcript IDs because the transcript list has not been downloaded. See the documentation on how to download the transcript list.';
             // Lower the confidence.
             $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.5]);
+        } elseif ($this->input[0] == 'N') {
+            // Validate the transcript ID, which we can only do for NMs and NRs, not XMs or XRs (we don't have that data).
+            list($sRefSeq, $nVersion) = array_pad(explode('.', $this->getCorrectedValue()), 2, 0);
+            if (!isset(self::$transcripts['transcripts'][$sRefSeq])) {
+                // This is not recognized as a valid transcript ID.
+                $this->messages['EINVALIDREFSEQID'] = 'Invalid or withdrawn RefSeq ID: ' . $sRefSeq . '.';
+
+            } else {
+                // Store the gene ID in the data, if available.
+                // The gene ID is corrently stored per version. There are differences.
+                // I'm not sure how to solve that, so let's just check the latest data.
+                $aVersions = array_keys(self::$transcripts['transcripts'][$sRefSeq]);
+                rsort($aVersions);
+                foreach ($aVersions as $nVersion) {
+                    if (!empty(self::$transcripts['transcripts'][$sRefSeq][$nVersion]['g'])) {
+                        $this->data = [
+                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$nVersion]['g'],
+                        ];
+                        break;
+                    }
+                }
+            }
         }
         parent::validate(); // Do a case-check.
     }
