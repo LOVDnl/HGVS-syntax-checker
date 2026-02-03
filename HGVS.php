@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-10-10   // When modified, also change the library_version.
+ * Modified    : 2026-02-03   // When modified, also change the library_version.
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
@@ -4725,43 +4725,36 @@ class HGVS_Lengths extends HGVS
 class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
-        'refseq_genomic_coding'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_genomic_non-coding'   => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_genomic_with_gene'    => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_genomic'              => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_coding_genomic'       => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_coding_with_gene'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_coding'               => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_non-coding_genomic'   => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_non-coding_with_gene' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_non-coding'           => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_gene_with_genomic'    => ['/([A-Z][A-Za-z0-9#@-]*)\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_gene_with_coding'     => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_gene_with_non-coding' => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_protein'              => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_other'                => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
-        'ensembl_genomic'             => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'ensembl_transcript'          => ['/(ENST)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'LRG_transcript'              => ['/(LRG)([_-]?)([0-9]+)([({[]?)(t)([0-9]+)([)}\]]?)/', []],
-        'LRG_genomic'                 => ['/(LRG)([_-]?)([0-9]+)/', []],
-        'build_and_chr'               => ['HGVS_Genome', 'HGVS_VCFSeparator', 'HGVS_Chromosome', []],
-        'build(chr)'                  => ['HGVS_Genome', '(', 'HGVS_Chromosome', ')', []],
+        'refseq_genomic_with_transcript' => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
+        'refseq_genomic_with_gene'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic'                 => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', '/[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_transcript_with_gene'    => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
+        'refseq_transcript'              => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'refseq_gene_with_genomic'       => ['HGVS_Gene', '/[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_gene_with_transcript'    => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
+        'refseq_protein'                 => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'refseq_other'                   => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
+        'ensembl_genomic'                => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'ensembl_transcript'             => ['/(ENST)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'LRG_transcript'                 => ['/(LRG)([_-]?)([0-9]+)([({[]?)(t)([0-9]+)([)}\]]?)/', []],
+        'LRG_genomic'                    => ['/(LRG)([_-]?)([0-9]+)/', []],
+        'build_and_chr'                  => ['HGVS_Genome', 'HGVS_VCFSeparator', 'HGVS_Chromosome', []],
+        'build(chr)'                     => ['HGVS_Genome', '(', 'HGVS_Chromosome', ')', []],
         // NOTE: The HGVS_Chromosome class also handles the chr(build) syntax.
-        'chr'                         => ['HGVS_Chromosome', []],
+        'chr'                            => ['HGVS_Chromosome', []],
         // Because I do actually want to match something so we can validate the variant itself, match anything.
-        'other'                       => ['/([A-Z][^:;\[\]\(\)]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
+        'other'                          => ['/([A-Z][^:;\[\]\(\)]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
     ];
 
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         switch ($this->matched_pattern) {
-            case 'refseq_genomic_coding':
-            case 'refseq_genomic_non-coding':
-            case 'refseq_coding_genomic':
-            case 'refseq_non-coding_genomic':
+            case 'refseq_genomic_with_transcript':
+            case 'refseq_transcript_with_genomic':
                 $this->molecule_type = 'genome_transcript';
-                $this->allowed_prefixes = [(strpos($this->matched_pattern, 'non-coding') !== false? 'n' : 'c')];
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
                 // If the transcript and the genomic refseq are switched, fix all of that and log it.
                 if (substr($this->matched_pattern, -7) == 'genomic') {
                     $this->messages['WREFERENCEFORMAT'] =
@@ -4876,15 +4869,12 @@ class HGVS_ReferenceSequence extends HGVS
                 }
                 break;
 
-            case 'refseq_coding_with_gene':
-            case 'refseq_coding':
-            case 'refseq_non-coding_with_gene':
-            case 'refseq_non-coding':
-            case 'refseq_gene_with_coding':
-            case 'refseq_gene_with_non-coding':
+            case 'refseq_transcript_with_gene':
+            case 'refseq_transcript':
+            case 'refseq_gene_with_transcript':
             case 'refseq_protein':
                 $this->molecule_type = ($this->matched_pattern == 'refseq_protein'? 'protein' : 'transcript');
-                $this->allowed_prefixes = [(strpos($this->matched_pattern, 'non-coding') !== false? 'n' : ($this->matched_pattern == 'refseq_protein'? 'p' : 'c'))];
+                $this->allowed_prefixes = ($this->matched_pattern == 'refseq_protein'? ['p'] : $this->RefSeqTranscript->allowed_prefixes);
                 $this->setCorrectedValue(
                     strtoupper($this->regex[1]) .
                     '_' .
@@ -5031,6 +5021,48 @@ class HGVS_ReferenceSequence extends HGVS
                     }
                 }
                 break;
+        }
+        parent::validate(); // Do a case-check.
+    }
+}
+
+
+
+
+
+class HGVS_RefSeqTranscript extends HGVS
+{
+    public array $patterns = [
+        'coding'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'non-coding' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->molecule_type = 'transcript';
+        $this->allowed_prefixes = [($this->matched_pattern == 'non-coding'? 'n' : 'c')];
+        $this->setCorrectedValue(
+            strtoupper($this->regex[1]) .
+            '_' .
+            str_pad((int) $this->regex[3], (strlen((int) $this->regex[3]) > 6? 9 : 6), '0', STR_PAD_LEFT) .
+            (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
+        );
+        $this->caseOK = ($this->regex[1] == strtoupper($this->regex[1]));
+
+        if ($this->regex[2] != '_') {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
+        } elseif (!in_array(strlen($this->regex[3]), [6, 9])) {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
+        } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
+            $this->messages['EREFERENCEFORMAT'] =
+                'The reference sequence ID is missing the required version number.' .
+                ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
+        } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
+            // Something else was wrong.
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
         }
         parent::validate(); // Do a case-check.
     }
