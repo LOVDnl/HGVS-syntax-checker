@@ -5117,6 +5117,44 @@ class HGVS_RefSeqTranscript extends HGVS
                         break;
                     }
                 }
+
+                // Now, check the given version.
+                if (!$nVersion) {
+                    // The user didn't specify a version. Suggest answers based on what I have. They already got a warning.
+                    if (count($aVersions) == 1) {
+                        // Full confidence for the version that we have.
+                        $this->corrected_values = $this->buildCorrectedValues($sRefSeq, '.', current($aVersions));
+                    } else {
+                        // Set the first one at 60% and then just divide the rest.
+                        $aParts = [];
+                        $nConfidenceLeft = 1;
+                        foreach ($aVersions as $nKey => $nVersion) {
+                            if (($nKey + 1) == count($aVersions)) {
+                                // This is our last option.
+                                $nConfidence = round($nConfidenceLeft, 2);
+                            } else {
+                                $nConfidence = round($nConfidenceLeft * 0.6, 2);
+                                $nConfidenceLeft -= $nConfidence;
+                            }
+                            $aParts[$nVersion] = $nConfidence;
+                        }
+                        $this->corrected_values = $this->buildCorrectedValues($sRefSeq, '.', $aParts);
+                    }
+
+                } elseif (!isset(self::$transcripts['transcripts'][$sRefSeq][$nVersion])) {
+                    // The transcript we know, but not the version.
+                    // If the version lower than what we have, it's OK (our history is the problem), but they should update.
+                    // If their version is too high, warn them to double-check, but it could be us.
+                    if ($nVersion < min($aVersions)) {
+                        $sSuggestion = $sRefSeq . '.' . max($aVersions);
+                        $this->messages['IREFSEQVERSION'] = "Consider updating your use of $sRefSeq to a newer version (e.g., $sSuggestion).";
+                    } else {
+                        // In principle, we could be missing a version in between as well.
+                        // Use the same warning for an unknown version or one that seems too high.
+                        $sVersions = implode(', ', array_reverse($aVersions));
+                        $this->messages['IREFSEQVERSION'] = "Unknown version for $sRefSeq. We know of: $sVersions. Possibly, our transcript cache is out of date.";
+                    }
+                }
             }
         }
         parent::validate(); // Do a case-check.
