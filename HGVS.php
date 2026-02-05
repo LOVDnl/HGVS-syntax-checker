@@ -4726,12 +4726,12 @@ class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
         'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
-        'refseq_genomic_with_gene'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
         'refseq_genomic'                 => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_RefSeqGenomic', '/[)}]/', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
         'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
-        'refseq_gene_with_genomic'       => ['HGVS_Gene', '/[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
+        'refseq_gene_with_genomic'       => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqGenomic', '/[)}]/', ['WREFERENCEFORMAT' => 'The gene symbol should be placed after the genomic reference sequence ID.']],
         'refseq_gene_with_transcript'    => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
         'refseq_protein'                 => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'refseq_other'                   => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
@@ -4764,17 +4764,7 @@ class HGVS_ReferenceSequence extends HGVS
                 $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->RefSeqTranscript->isTheCaseOK());
                 break;
 
-            case 'refseq_gene_with_genomic':
-                $this->regex = [
-                    $this->regex[0],
-                    $this->regex[2],
-                    $this->regex[3],
-                    $this->regex[4],
-                    $this->regex[5],
-                    $this->regex[1],
-                ];
             case 'refseq_genomic':
-            case 'refseq_genomic_with_gene':
                 $this->molecule_type = (strtoupper($this->regex[1]) == 'NC'? 'chromosome' : 'genome');
                 $this->allowed_prefixes = [(strtoupper($this->regex[1]) == 'NC' && in_array((int) $this->regex[3], ['1807', '12920'])? 'm' : 'g')];
                 $this->setCorrectedValue(
@@ -4784,39 +4774,34 @@ class HGVS_ReferenceSequence extends HGVS
                     (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
                 );
                 $this->caseOK = ($this->value == strtoupper($this->value));
+                break;
 
-                // Handle the NC(GENE) and GENE(NC) formats, only allowed for the mitochondrial reference sequence.
-                if (in_array($this->matched_pattern, ['refseq_genomic_with_gene', 'refseq_gene_with_genomic'])
-                    && $this->allowed_prefixes == ['m']) {
+            case 'refseq_genomic_with_gene':
+            case 'refseq_gene_with_genomic':
+                if ($this->RefSeqGenomic->allowed_prefixes == ['m']) {
                     // Mitochondrial reference sequence with a gene symbol. Also allow c. and n. prefixes.
                     $this->molecule_type = 'genome_transcript';
+                    // We don't know whether this gene is coding or not.
                     $this->allowed_prefixes[] = 'c';
                     $this->allowed_prefixes[] = 'n';
 
-                    // Obviously, not all gene symbols are uppercase, but the mitochondrial genes all are.
-                    $this->appendCorrectedValue('(' . strtoupper($this->regex[5]) . ')');
-                }
+                    $this->corrected_values = $this->buildCorrectedValues(
+                        $this->RefSeqGenomic->getCorrectedValues(),
+                        '(',
+                        $this->Gene->getCorrectedValues(),
+                        ')'
+                    );
+                    $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->Gene->isTheCaseOK());
 
-                if ($this->regex[2] != '_') {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
-                } elseif (strlen((int) $this->regex[3]) > 6) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (strlen($this->regex[3]) != 6) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (empty($this->regex[4])) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'The reference sequence ID is missing the required version number.' .
-                        ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif ($this->matched_pattern != 'refseq_genomic' && $this->allowed_prefixes == ['g']) {
-                    // Not mitochondrial. The gene has already been removed. We should just complain about it.
+                } else {
+                    $this->molecule_type = $this->RefSeqGenomic->molecule_type;
+                    $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+
+                    // The gene should not be part of the reference sequence.
                     // Note that we won't switch to allow c. or n. prefixes.
+                    $this->corrected_values = $this->RefSeqGenomic->getCorrectedValues();
+                    $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
                     $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
-                } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
-                    // Something else was wrong.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
                 }
                 break;
 
