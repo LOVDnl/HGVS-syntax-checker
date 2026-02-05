@@ -4727,7 +4727,7 @@ class HGVS_ReferenceSequence extends HGVS
     public array $patterns = [
         'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
         'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
-        'refseq_genomic'                 => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'refseq_genomic'                 => ['HGVS_RefSeqGenomic', []],
         'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_RefSeqGenomic', '/[)}]/', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
         'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
@@ -4765,15 +4765,9 @@ class HGVS_ReferenceSequence extends HGVS
                 break;
 
             case 'refseq_genomic':
-                $this->molecule_type = (strtoupper($this->regex[1]) == 'NC'? 'chromosome' : 'genome');
-                $this->allowed_prefixes = [(strtoupper($this->regex[1]) == 'NC' && in_array((int) $this->regex[3], ['1807', '12920'])? 'm' : 'g')];
-                $this->setCorrectedValue(
-                    strtoupper($this->regex[1]) .
-                    '_' .
-                    str_pad((int) $this->regex[3], 6, '0', STR_PAD_LEFT) .
-                    (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
-                );
-                $this->caseOK = ($this->value == strtoupper($this->value));
+                $this->molecule_type = $this->RefSeqGenomic->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+                $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
                 break;
 
             case 'refseq_genomic_with_gene':
