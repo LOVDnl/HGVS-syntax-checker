@@ -4729,8 +4729,8 @@ class HGVS_ReferenceSequence extends HGVS
         'refseq_genomic_with_gene'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
         'refseq_genomic'                 => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', '/[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_transcript_with_gene'    => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_transcript'              => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
+        'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
         'refseq_gene_with_genomic'       => ['HGVS_Gene', '/[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
         'refseq_gene_with_transcript'    => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
         'refseq_protein'                 => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
@@ -4869,12 +4869,25 @@ class HGVS_ReferenceSequence extends HGVS
                 }
                 break;
 
-            case 'refseq_transcript_with_gene':
             case 'refseq_transcript':
+                $this->molecule_type = $this->RefSeqTranscript->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
+                $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
+                break;
+
+            case 'refseq_transcript_with_gene':
             case 'refseq_gene_with_transcript':
+                $this->molecule_type = $this->RefSeqTranscript->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
+                $this->corrected_values = $this->RefSeqTranscript->getCorrectedValues();
+                $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
+                // The gene should not be part of the reference sequence.
+                $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+                break;
+
             case 'refseq_protein':
-                $this->molecule_type = ($this->matched_pattern == 'refseq_protein'? 'protein' : 'transcript');
-                $this->allowed_prefixes = ($this->matched_pattern == 'refseq_protein'? ['p'] : $this->RefSeqTranscript->allowed_prefixes);
+                $this->molecule_type = 'protein';
+                $this->allowed_prefixes = ['p'];
                 $this->setCorrectedValue(
                     strtoupper($this->regex[1]) .
                     '_' .
@@ -4892,13 +4905,10 @@ class HGVS_ReferenceSequence extends HGVS
                 } elseif (!in_array(strlen($this->regex[3]), [6, 9])) {
                     $this->messages['WREFERENCEFORMAT'] =
                         'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
-                } elseif (empty($this->regex[4])) {
+                } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
                     $this->messages['EREFERENCEFORMAT'] =
                         'The reference sequence ID is missing the required version number.' .
                         ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif (!in_array($this->matched_pattern, ['refseq_coding', 'refseq_non-coding', 'refseq_protein'])) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'The reference sequence ID should not include a gene symbol.';
                 } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
                     // Something else was wrong.
                     $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
@@ -4945,7 +4955,7 @@ class HGVS_ReferenceSequence extends HGVS
                 } elseif (strlen($this->regex[3]) != 11) {
                     $this->messages['WREFERENCEFORMAT'] =
                         'Ensembl reference sequence IDs require 11 digits.';
-                } elseif (empty($this->regex[4])) {
+                } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
                     $this->messages['EREFERENCEFORMAT'] =
                         'The reference sequence ID is missing the required version number.' .
                         ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
