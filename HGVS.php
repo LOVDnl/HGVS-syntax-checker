@@ -4541,6 +4541,27 @@ class HGVS_Gene extends HGVS
 
 
 
+class HGVS_GeneVersionSuffix extends HGVS
+{
+    public array $patterns = [
+        // NOTE: This class is optionally matched; it's completely happy not to match anything.
+        //       That way, we can safely include it in patterns without having to define a pattern without it.
+        //       Its origin is mostly older Mutalyzer output where "GENE_v001" was used to define a transcript context.
+        'version' => ['/_v[0-9]+/', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
+        'nothing' => ['/(?=[^_])|$/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue('');
+    }
+}
+
+
+
+
+
 class HGVS_Genome extends HGVS
 {
     public static array $builds = [
@@ -4730,10 +4751,10 @@ class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
         'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
-        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', 'HGVS_GeneVersionSuffix', 'HGVS_RefSeqContextClose', []],
         'refseq_genomic'                 => ['HGVS_RefSeqGenomic', []],
         'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
-        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
+        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', 'HGVS_GeneVersionSuffix', 'HGVS_RefSeqContextClose', []],
         'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
         'refseq_gene_with_genomic'       => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The gene symbol should be placed after the genomic reference sequence ID.']],
         'refseq_gene_with_transcript'    => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
