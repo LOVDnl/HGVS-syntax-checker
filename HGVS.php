@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-02-03   // When modified, also change the library_version.
+ * Modified    : 2026-02-06   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -4725,14 +4725,14 @@ class HGVS_Lengths extends HGVS
 class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
-        'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
-        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
+        'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
+        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', '/(_v[0-9]+)?\s*[)}]/', []],
         'refseq_genomic'                 => ['HGVS_RefSeqGenomic', []],
-        'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_RefSeqGenomic', '/[)}]/', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
-        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', '/[({]/', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
+        'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
+        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', '/(_v[0-9]+)?)\s*[)}]/', []],
         'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
-        'refseq_gene_with_genomic'       => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqGenomic', '/[)}]/', ['WREFERENCEFORMAT' => 'The gene symbol should be placed after the genomic reference sequence ID.']],
-        'refseq_gene_with_transcript'    => ['HGVS_Gene', '/[({]/', 'HGVS_RefSeqTranscript', '/[)}]/', []],
+        'refseq_gene_with_genomic'       => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The gene symbol should be placed after the genomic reference sequence ID.']],
+        'refseq_gene_with_transcript'    => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
         'refseq_protein'                 => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'refseq_other'                   => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
         'ensembl_genomic'                => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
@@ -4964,6 +4964,30 @@ class HGVS_ReferenceSequence extends HGVS
         }
         parent::validate(); // Do a case-check.
     }
+}
+
+
+
+
+
+class HGVS_RefSeqContextClose extends HGVS
+{
+    public array $patterns = [
+        'valid'   => [')', []],
+        'invalid' => ['}', ['WREFERENCEFORMAT' => 'The reference sequence is formatted incorrectly.']],
+    ];
+}
+
+
+
+
+
+class HGVS_RefSeqContextOpen extends HGVS
+{
+    public array $patterns = [
+        'valid'   => ['(', []],
+        'invalid' => ['{', ['WREFERENCEFORMAT' => 'The reference sequence is formatted incorrectly.']],
+    ];
 }
 
 
