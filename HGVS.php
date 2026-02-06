@@ -4780,8 +4780,7 @@ class HGVS_ReferenceSequence extends HGVS
                     // Mitochondrial reference sequence with a gene symbol. Also allow c. and n. prefixes.
                     $this->molecule_type = 'genome_transcript';
                     // We don't know whether this gene is coding or not.
-                    $this->allowed_prefixes[] = 'c';
-                    $this->allowed_prefixes[] = 'n';
+                    $this->allowed_prefixes = ['m', 'c', 'n'];
 
                     $this->corrected_values = $this->buildCorrectedValues(
                         $this->RefSeqGenomic->getCorrectedValues(),
