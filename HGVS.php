@@ -5109,10 +5109,10 @@ class HGVS_RefSeqTranscript extends HGVS
                 // I'm not sure how to solve that, so let's just check the latest data.
                 $aVersions = array_keys(self::$transcripts['transcripts'][$sRefSeq]);
                 rsort($aVersions);
-                foreach ($aVersions as $nVersion) {
-                    if (!empty(self::$transcripts['transcripts'][$sRefSeq][$nVersion]['g'])) {
+                foreach ($aVersions as $n) {
+                    if (!empty(self::$transcripts['transcripts'][$sRefSeq][$n]['g'])) {
                         $this->data = [
-                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$nVersion]['g'],
+                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
                         ];
                         break;
                     }
