@@ -4844,7 +4844,7 @@ class HGVS_ReferenceSequence extends HGVS
                         ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
                 } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
                     // Something else was wrong.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
                 }
                 break;
 
@@ -4977,7 +4977,7 @@ class HGVS_RefSeqContextClose extends HGVS
 {
     public array $patterns = [
         'valid'   => [')', []],
-        'invalid' => ['}', ['WREFERENCEFORMAT' => 'The reference sequence is formatted incorrectly.']],
+        'invalid' => ['}', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
     ];
 }
 
@@ -4989,7 +4989,7 @@ class HGVS_RefSeqContextOpen extends HGVS
 {
     public array $patterns = [
         'valid'   => ['(', []],
-        'invalid' => ['{', ['WREFERENCEFORMAT' => 'The reference sequence is formatted incorrectly.']],
+        'invalid' => ['{', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
     ];
 }
 
@@ -5029,7 +5029,7 @@ class HGVS_RefSeqGenomic extends HGVS
                 ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
         } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
             // Something else was wrong.
-            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
         }
         parent::validate(); // Do a case-check.
     }
@@ -5072,7 +5072,7 @@ class HGVS_RefSeqTranscript extends HGVS
                 ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
         } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
             // Something else was wrong.
-            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
         }
 
         // If the transcript data is present, we can validate transcripts properly.
