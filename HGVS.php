@@ -1951,6 +1951,10 @@ class HGVS_DNAInsSuffix extends HGVS
             }
         }
 
+        // Suffixes with reference sequences may store data that are not relevant downstream.
+        // The reference sequence may be a direct child or an indirect child. Just remove this data if it's there.
+        unset($this->data['hgnc_id']);
+
         // In case of any error, remove WSUFFIXFORMAT.
         if ($this->getMessagesByGroup('errors')) {
             unset($this->messages['WSUFFIXFORMAT']);
