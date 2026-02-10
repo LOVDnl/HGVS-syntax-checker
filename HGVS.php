@@ -4812,14 +4812,28 @@ class HGVS_ReferenceSequence extends HGVS
                     $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->Gene->isTheCaseOK());
 
                 } else {
-                    $this->molecule_type = $this->RefSeqGenomic->molecule_type;
-                    $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+                    // The use of a gene symbol with a genomic reference sequence is invalid in all other cases.
+                    // Version 0.5.7 and prior considered this situation to have a genomic context only.
+                    // As such, only "g." was allowed. This caused NC(GENE):c. variants to get an EWRONGREFERENCE.
+                    // This was changed in 0.6.0. We'll read ahead and try to see what the prefix is.
+                    // When we find a "g", we'll suggest removing the gene symbol. When we find anything else, we'll
+                    //  suggest switching to c./n., depending on the transcript info.
+                    if (preg_match('/^:*g[.(0-9]/', $this->getSuffix())) {
+                        // It _looks_ like we have a "g." up ahead. Treat this as an attempt at a genomic context.
+                        // The gene should not be part of the reference sequence.
+                        $this->molecule_type = $this->RefSeqGenomic->molecule_type;
+                        $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+                        $this->corrected_values = $this->RefSeqGenomic->getCorrectedValues();
+                        $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
+                        $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
 
-                    // The gene should not be part of the reference sequence.
-                    // Note that we won't switch to allow c. or n. prefixes.
-                    $this->corrected_values = $this->RefSeqGenomic->getCorrectedValues();
-                    $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+                    } else {
+                        // We'll treat anything else as an attempt to provide a genomic transcript context.
+                        $this->molecule_type = 'genome_transcript';
+                        $this->allowed_prefixes = HGVS_RefSeqTranscript::getPrefixesByGene($this->Gene); // Defaults to c, n.
+
+                        // STUB!
+                    }
                 }
                 break;
 
@@ -5107,6 +5121,32 @@ class HGVS_RefSeqTranscript extends HGVS
             }
         }
         return false;
+    }
+
+
+
+
+
+    public static function getPrefixesByGene ($Gene)
+    {
+        // Given the gene, list all possible prefixes (c., n.).
+        $aTranscripts = self::getTranscriptsByGene($Gene);
+        if (!$aTranscripts) {
+            // This could be false (we don't have a cache or unknown gene) or an empty array.
+            // Default to any prefix.
+            return ['c', 'n'];
+        }
+
+        // Check the given transcripts.
+        $aReturn = [];
+        $aPrefixes = array_map(function ($s) { return substr($s, 0, 2); }, array_keys($aTranscripts));
+        if (in_array('NM', $aPrefixes)) {
+            $aReturn[] = 'c';
+        }
+        if (in_array('NR', $aPrefixes)) {
+            $aReturn[] = 'n';
+        }
+        return $aReturn;
     }
 
 
