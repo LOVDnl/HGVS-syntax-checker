@@ -4760,6 +4760,8 @@ class HGVS_ReferenceSequence extends HGVS
         'refseq_gene_with_transcript'    => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
         'refseq_protein'                 => ['HGVS_RefSeqProtein', []],
         'refseq_other'                   => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
+        // NOTE: A gene MUST be followed by a colon, otherwise, we do not want to register this as a reference sequence. It'll result in too many false positives.
+        'gene'                           => ['HGVS_Gene', '/(?=[:])/', []],
         'ensembl_genomic'                => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'ensembl_transcript'             => ['/(ENST)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
         'LRG_transcript'                 => ['/(LRG)([_-]?)([0-9]+)([({[]?)(t)([0-9]+)([)}\]]?)/', []],
@@ -4896,6 +4898,28 @@ class HGVS_ReferenceSequence extends HGVS
                     'Currently, variant descriptions using "' . $this->value . '" are not yet supported.' .
                     ' This does not necessarily mean the description is not valid according to the HGVS nomenclature.' .
                     ' Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.';
+                break;
+
+            case 'gene':
+                // We'll treat this as an attempt to provide a transcript context.
+                $this->molecule_type = 'transcript';
+                $this->allowed_prefixes = HGVS_RefSeqTranscript::getPrefixesByGene($this->Gene); // Defaults to c, n.
+
+                // Whether we throw a warning or an error depends on what we can do. So first check that.
+                $aTranscripts = HGVS_RefSeqTranscript::getPreferredTranscriptsByGene($this->Gene);
+                if (!$aTranscripts) {
+                    // OK, so we can't fix this. Throw an error.
+                    $this->messages['EREFERENCEFORMAT'] = 'Do not use genes as reference sequences. Supported reference sequence IDs are from NCBI Refseq and Ensembl.';
+                    // This isn't really a "corrected" value, but it's better than nothing.
+                    $this->corrected_values = $this->Gene->getCorrectedValues();
+
+                } else {
+                    // OK, so we can fix this. Throw a warning only.
+                    $this->messages['WREFERENCEFORMAT'] = 'Do not use genes as reference sequences. Supported reference sequence IDs are from NCBI Refseq and Ensembl.';
+                    // Our corrected values are the transcripts. The array is already prepared to be used like this.
+                    $this->corrected_values = $aTranscripts;
+                }
+                $this->caseOK = $this->Gene->isTheCaseOK();
                 break;
 
             case 'ensembl_genomic':
