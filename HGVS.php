@@ -4832,7 +4832,31 @@ class HGVS_ReferenceSequence extends HGVS
                         $this->molecule_type = 'genome_transcript';
                         $this->allowed_prefixes = HGVS_RefSeqTranscript::getPrefixesByGene($this->Gene); // Defaults to c, n.
 
-                        // STUB!
+                        // Whether we throw a warning or an error depends on what we can do. So first check that.
+                        $aTranscripts = HGVS_RefSeqTranscript::getPreferredTranscriptsByGene($this->Gene);
+                        if (!$aTranscripts) {
+                            // OK, so we can't fix this. Throw an error.
+                            $this->messages['EREFERENCEFORMAT'] = 'Do not use genes as contexts in reference sequence IDs. Only NCBI RefSeq transcripts are supported for this format.';
+                            // This isn't really a "corrected" value, but it's better than nothing.
+                            $this->corrected_values = $this->buildCorrectedValues(
+                                $this->RefSeqGenomic->getCorrectedValues(),
+                                '(',
+                                $this->Gene->getCorrectedValues(),
+                                ')'
+                            );
+
+                        } else {
+                            // OK, so we can fix this. Throw a warning only.
+                            $this->messages['WREFERENCEFORMAT'] = 'Do not use genes as contexts in reference sequence IDs. Only NCBI RefSeq transcripts are supported for this format.';
+                            // Replace the gene symbol by the transcripts. The array is already prepared to be used like this.
+                            $this->corrected_values = $this->buildCorrectedValues(
+                                $this->RefSeqGenomic->getCorrectedValues(),
+                                '(',
+                                $aTranscripts,
+                                ')'
+                            );
+                        }
+                        $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->Gene->isTheCaseOK());
                     }
                 }
                 break;
@@ -5121,6 +5145,38 @@ class HGVS_RefSeqTranscript extends HGVS
             }
         }
         return false;
+    }
+
+
+
+
+
+    public static function getPreferredTranscriptsByGene ($Gene)
+    {
+        // Given the gene, list all preferred transcripts, sorted on probability.
+        $aTranscripts = self::getTranscriptsByGene($Gene);
+        if (!$aTranscripts) {
+            // This could be false (we don't have a cache or unknown gene) or an empty array.
+            return $aTranscripts;
+        }
+
+        // OK, so we got a list of transcripts. Loop through it and sort.
+        // Always pick the latest version of each transcript, and calculate the probability.
+        $aReturn = [];
+        foreach ($aTranscripts as $sTranscript => $aTranscript) {
+            $nVersion = max(array_keys($aTranscript));
+            $aVersion = $aTranscript[$nVersion];
+            // A Plus Clinical transcript gets double points, a Refseq Select gets double again.
+            $aReturn["$sTranscript.$nVersion"] = (empty($aVersion['s'])? 10 : ($aVersion['s'] == 'rpc'? 20 : 40));
+        }
+
+        // Now, calculate the probabilities.
+        $nScoreTotal = array_sum($aReturn);
+        foreach ($aReturn as $sTranscript => $nScore) {
+            $aReturn[$sTranscript] = round(($nScore/$nScoreTotal), 2);
+        }
+        arsort($aReturn); // Sort on probability, keep the indices.
+        return $aReturn;
     }
 
 
