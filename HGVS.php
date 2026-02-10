@@ -976,6 +976,32 @@ class HGVS
                     array_shift($this->patterns[$this->matched_pattern]);
                     array_shift($this->patterns[$this->matched_pattern]);
                 }
+
+                // Check all of our suggested corrections, and remove bad ones, if we can.
+                $aCorrections = $this->getCorrectedValues();
+                $nCorrections = count($aCorrections);
+                if ($nCorrections > 1) {
+                    // Sometimes, we have a mix of good and bad corrections. E.g., IVD:100del results in "IVD" being
+                    //  replaced by transcripts, and the missing prefix is replaced by "c." and "n." suggestions, since
+                    //  the prefix doesn't have better information on the suggested corrections of the refseq.
+                    // Here, we'll filter out the NM:n. and NR:c. suggestions.
+                    $aNewCorrections = [];
+                    foreach ($aCorrections as $sCorrectedValue => $nConfidence) {
+                        if (HGVS::check($sCorrectedValue)->isValid()) {
+                            // A valid suggestion.
+                            $aNewCorrections[$sCorrectedValue] = $nConfidence;
+                        }
+                    }
+
+                    // If we have none left, just leave it as is.
+                    // But if we do have something left, and the count is different, correct.
+                    $nNewCorrections = count($aNewCorrections);
+                    if ($nNewCorrections && $nNewCorrections != $nCorrections) {
+                        // We have to correct all confidence scores, and overwrite our list.
+                        $nFactor = ($nCorrections / $nNewCorrections);
+                        $this->corrected_values = array_map(function ($n) use ($nFactor) { return $n * $nFactor; }, $aNewCorrections);
+                    }
+                }
             }
         }
     }
