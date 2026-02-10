@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-02-06   // When modified, also change the library_version.
+ * Modified    : 2026-02-10   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -5087,6 +5087,32 @@ class HGVS_RefSeqTranscript extends HGVS
     ];
     public static array $transcripts = [];
 
+    public static function loadData ()
+    {
+        // Load the transcript data, if present. We can then validate transcripts properly and provide detailed info.
+        if (self::$transcripts) {
+            return true;
+        } else {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/transcripts.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['dates', 'transcripts']) {
+                        self::$transcripts = $aJSON;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
@@ -5116,21 +5142,7 @@ class HGVS_RefSeqTranscript extends HGVS
         }
 
         // If the transcript data is present, we can validate transcripts properly.
-        if (empty(self::$transcripts)) {
-            // We haven't loaded the file yet, find and load it.
-            $sFile = dirname(__FILE__) . '/cache/transcripts.json';
-            if (is_readable($sFile)) {
-                $sJSON = @file_get_contents($sFile);
-                if ($sJSON) {
-                    $aJSON = @json_decode($sJSON, true);
-                    if ($aJSON !== false && array_keys($aJSON) == ['dates', 'transcripts']) {
-                        self::$transcripts = $aJSON;
-                    }
-                }
-            }
-        }
-
-        if (!self::$transcripts) {
+        if (!self::loadData()) {
             // Just warn the user that we can't validate transcripts at the moment.
             $this->messages['INOREFSEQNMVALIDATION'] = 'We currently can not validate RefSeq transcript IDs because the transcript list has not been downloaded. See the documentation on how to download the transcript list.';
             // Lower the confidence.
