@@ -5113,6 +5113,46 @@ class HGVS_RefSeqTranscript extends HGVS
 
 
 
+    public static function getTranscriptsByGene ($Gene)
+    {
+        // Given the gene, get all available transcript data.
+        static $aTranscriptsByGene = [];
+
+        if (self::loadData()) {
+            // $Gene could be an object, a string symbol, or an HGNC ID.
+            if (is_object($Gene) && get_class($Gene) == 'HGVS_Gene') {
+                $nHGNC = ($Gene->getData()['hgnc_id'] ?? null);
+            } elseif (is_int($Gene) || ctype_digit($Gene)) {
+                $nHGNC = (int) $Gene;
+            } elseif (is_string($Gene)) {
+                $nHGNC = (HGVS_Gene::check($Gene)->getData()['hgnc_id'] ?? null);
+            }
+
+            if ($nHGNC) {
+                // OK, we got something. Now loop the transcripts and collect what we have.
+                // Cache the results, though.
+                if (!isset($aTranscriptsByGene[$nHGNC])) {
+                    $aTranscripts = [];
+                    foreach (self::$transcripts['transcripts'] as $sTranscript => $aTranscript) {
+                        foreach ($aTranscript as $nVersion => $aVersion) {
+                            if (($aVersion['g'] ?? '') == $nHGNC) {
+                                $aTranscripts[$sTranscript][$nVersion] = $aVersion;
+                            }
+                        }
+                    }
+                    $aTranscriptsByGene[$nHGNC] = $aTranscripts;
+                }
+
+                return $aTranscriptsByGene[$nHGNC];
+            }
+        }
+        return false;
+    }
+
+
+
+
+
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
