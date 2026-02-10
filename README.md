@@ -134,8 +134,8 @@ This returns:
 ```json
 [
     {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-02-10",
+        "library_version": "0.6.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -144,7 +144,8 @@ This returns:
             "output": "21.1.3"
         },
         "caches": {
-          "genes": "2025-05-01"
+            "genes": "2026-02-03",
+            "transcripts": "2026-02-03"
         }
     }
 ]
@@ -201,14 +202,18 @@ require 'path/to/HGVS.php';
 // Check all version info.
 $aVersions = HGVS::getVersions();
 // [
-//     "library_date" => "2025-03-26",
-//     "library_version" => "0.4.2",
+//     "library_date" => "2026-02-10",
+//     "library_version" => "0.6.0",
 //     "HGVS_nomenclature_versions" => [
 //         "input" => [
 //             "minimum" => "15.11",
-//             "maximum" => "21.1.2"
+//             "maximum" => "21.1.3"
 //         ],
-//         "output" => "21.1.2"
+//         "output" => "21.1.3"
+//     ],
+//     "caches" => [
+//         "genes" => "2026-02-03",
+//         "transcripts" => "2026-02-03"
 //     ]
 // ]
 
@@ -361,11 +366,13 @@ $HGVS = HGVS::debug('c.157C>T');
 
 
 ## Features that require configuration
-### Gene symbol recognition
-The LOVD HGVS library contains a feature that recognizes and corrects gene symbols.
-In order for this to work, the library relies on a local copy of the official gene symbol list
- from the HUGO Gene Nomenclature Committee (HGNC).
-To obtain this copy, an update script needs to be run on a regular basis; for instance, once a month.
+### Gene symbol and RefSeq transcript recognition
+The LOVD HGVS library contains a feature that recognizes and corrects human gene symbols
+ and RefSeq transcripts.
+In order for this to work, the library relies on local copies of the official gene symbol list
+ from the HUGO Gene Nomenclature Committee (HGNC) and RefSeq transcript information obtained from
+ the National Center for Biotechnology Information (NCBI).
+To obtain these copies, an update script needs to be run on a regular basis; for instance, once a month.
 The update script is located in the `cache` directory.
 You can invoke it like:
 

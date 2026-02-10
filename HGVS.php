@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2025-10-10   // When modified, also change the library_version.
+ * Modified    : 2026-02-10   // When modified, also change the library_version.
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
@@ -783,8 +783,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2025-10-10',
-            'library_version' => '0.5.7',
+            'library_date' => '2026-02-10',
+            'library_version' => '0.6.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -794,6 +794,7 @@ class HGVS
             ],
             'caches' => [
                 'genes' => (file_exists(__DIR__ . '/cache/genes.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/genes.json')) : null),
+                'transcripts' => (file_exists(__DIR__ . '/cache/transcripts.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/transcripts.json')) : null),
             ],
         ];
     }
@@ -974,6 +975,32 @@ class HGVS
                     // A simple, yet effective solution. Simply remove the refseq and the colon from the pattern.
                     array_shift($this->patterns[$this->matched_pattern]);
                     array_shift($this->patterns[$this->matched_pattern]);
+                }
+
+                // Check all of our suggested corrections, and remove bad ones, if we can.
+                $aCorrections = $this->getCorrectedValues();
+                $nCorrections = count($aCorrections);
+                if ($nCorrections > 1) {
+                    // Sometimes, we have a mix of good and bad corrections. E.g., IVD:100del results in "IVD" being
+                    //  replaced by transcripts, and the missing prefix is replaced by "c." and "n." suggestions, since
+                    //  the prefix doesn't have better information on the suggested corrections of the refseq.
+                    // Here, we'll filter out the NM:n. and NR:c. suggestions.
+                    $aNewCorrections = [];
+                    foreach ($aCorrections as $sCorrectedValue => $nConfidence) {
+                        if (HGVS::check($sCorrectedValue)->isValid()) {
+                            // A valid suggestion.
+                            $aNewCorrections[$sCorrectedValue] = $nConfidence;
+                        }
+                    }
+
+                    // If we have none left, just leave it as is.
+                    // But if we do have something left, and the count is different, correct.
+                    $nNewCorrections = count($aNewCorrections);
+                    if ($nNewCorrections && $nNewCorrections != $nCorrections) {
+                        // We have to correct all confidence scores, and overwrite our list.
+                        $nFactor = ($nCorrections / $nNewCorrections);
+                        $this->corrected_values = array_map(function ($n) use ($nFactor) { return $n * $nFactor; }, $aNewCorrections);
+                    }
                 }
             }
         }
@@ -1949,6 +1976,10 @@ class HGVS_DNAInsSuffix extends HGVS
                 $this->corrected_values = $this->DNAInsSuffixComplex->getCorrectedValues();
             }
         }
+
+        // Suffixes with reference sequences may store data that are not relevant downstream.
+        // The reference sequence may be a direct child or an indirect child. Just remove this data if it's there.
+        unset($this->data['hgnc_id']);
 
         // In case of any error, remove WSUFFIXFORMAT.
         if ($this->getMessagesByGroup('errors')) {
@@ -4536,6 +4567,27 @@ class HGVS_Gene extends HGVS
 
 
 
+class HGVS_GeneVersionSuffix extends HGVS
+{
+    public array $patterns = [
+        // NOTE: This class is optionally matched; it's completely happy not to match anything.
+        //       That way, we can safely include it in patterns without having to define a pattern without it.
+        //       Its origin is mostly older Mutalyzer output where "GENE_v001" was used to define a transcript context.
+        'version' => ['/_v[0-9]+/', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
+        'nothing' => ['/(?=[^_])|$/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue('');
+    }
+}
+
+
+
+
+
 class HGVS_Genome extends HGVS
 {
     public static array $builds = [
@@ -4724,194 +4776,154 @@ class HGVS_Lengths extends HGVS
 class HGVS_ReferenceSequence extends HGVS
 {
     public array $patterns = [
-        'refseq_genomic_coding'       => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_genomic_non-coding'   => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_genomic_with_gene'    => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_genomic'              => ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_coding_genomic'       => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_coding_with_gene'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_coding'               => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_non-coding_genomic'   => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_non-coding_with_gene' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[({]\s*([A-Z][A-Za-z0-9#@-]*(_v[0-9]+)?)\s*[)}]/', []],
-        'refseq_non-coding'           => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_gene_with_genomic'    => ['/([A-Z][A-Za-z0-9#@-]*)\s*[({]\s*(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_gene_with_coding'     => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_gene_with_non-coding' => ['/(?:[A-Z][A-Za-z0-9#@-]*)\s*[({]\s*([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?\s*[)}]/', []],
-        'refseq_protein'              => ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'refseq_other'                => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
-        'ensembl_genomic'             => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'ensembl_transcript'          => ['/(ENST)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
-        'LRG_transcript'              => ['/(LRG)([_-]?)([0-9]+)([({[]?)(t)([0-9]+)([)}\]]?)/', []],
-        'LRG_genomic'                 => ['/(LRG)([_-]?)([0-9]+)/', []],
-        'build_and_chr'               => ['HGVS_Genome', 'HGVS_VCFSeparator', 'HGVS_Chromosome', []],
-        'build(chr)'                  => ['HGVS_Genome', '(', 'HGVS_Chromosome', ')', []],
+        'refseq_genomic_with_transcript' => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
+        'refseq_genomic_with_gene'       => ['HGVS_RefSeqGenomic', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', 'HGVS_GeneVersionSuffix', 'HGVS_RefSeqContextClose', []],
+        'refseq_genomic'                 => ['HGVS_RefSeqGenomic', []],
+        'refseq_transcript_with_genomic' => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped.']],
+        'refseq_transcript_with_gene'    => ['HGVS_RefSeqTranscript', 'HGVS_RefSeqContextOpen', 'HGVS_Gene', 'HGVS_GeneVersionSuffix', 'HGVS_RefSeqContextClose', []],
+        'refseq_transcript'              => ['HGVS_RefSeqTranscript', []],
+        'refseq_gene_with_genomic'       => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqGenomic', 'HGVS_RefSeqContextClose', ['WREFERENCEFORMAT' => 'The gene symbol should be placed after the genomic reference sequence ID.']],
+        'refseq_gene_with_transcript'    => ['HGVS_Gene', 'HGVS_RefSeqContextOpen', 'HGVS_RefSeqTranscript', 'HGVS_RefSeqContextClose', []],
+        'refseq_protein'                 => ['HGVS_RefSeqProtein', []],
+        'refseq_other'                   => ['/^(N[TW]_([0-9]{6})|[A-Z][0-9]{5}|[A-Z]{2}[0-9]{6})(\.[0-9]+)/', []],
+        // NOTE: A gene MUST be followed by a colon, otherwise, we do not want to register this as a reference sequence. It'll result in too many false positives.
+        'gene'                           => ['HGVS_Gene', '/(?=[:])/', []],
+        'ensembl_genomic'                => ['/(ENSG)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'ensembl_transcript'             => ['/(ENST)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'LRG_transcript'                 => ['/(LRG)([_-]?)([0-9]+)([({[]?)(t)([0-9]+)([)}\]]?)/', []],
+        'LRG_genomic'                    => ['/(LRG)([_-]?)([0-9]+)/', []],
+        'build_and_chr'                  => ['HGVS_Genome', 'HGVS_VCFSeparator', 'HGVS_Chromosome', []],
+        'build(chr)'                     => ['HGVS_Genome', '(', 'HGVS_Chromosome', ')', []],
         // NOTE: The HGVS_Chromosome class also handles the chr(build) syntax.
-        'chr'                         => ['HGVS_Chromosome', []],
+        'chr'                            => ['HGVS_Chromosome', []],
         // Because I do actually want to match something so we can validate the variant itself, match anything.
-        'other'                       => ['/([A-Z][^:;\[\]\(\)]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
+        'other'                          => ['/([A-Z][^:;\[\]\(\)]{2,})?(?=:)/', ['EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.']],
     ];
 
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
         switch ($this->matched_pattern) {
-            case 'refseq_genomic_coding':
-            case 'refseq_genomic_non-coding':
-            case 'refseq_coding_genomic':
-            case 'refseq_non-coding_genomic':
+            case 'refseq_genomic_with_transcript':
+            case 'refseq_transcript_with_genomic':
                 $this->molecule_type = 'genome_transcript';
-                $this->allowed_prefixes = [(strpos($this->matched_pattern, 'non-coding') !== false? 'n' : 'c')];
-                // If the transcript and the genomic refseq are switched, fix all of that and log it.
-                if (substr($this->matched_pattern, -7) == 'genomic') {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'The genomic and transcript reference sequence IDs have been swapped.';
-                    // Now, swap the regexes so the reconstruction will work well.
-                    $this->regex = [
-                        $this->regex[0],
-                        $this->regex[5],
-                        $this->regex[6],
-                        $this->regex[7],
-                        ($this->regex[8] ?? NULL),
-                        $this->regex[1],
-                        $this->regex[2],
-                        $this->regex[3],
-                        ($this->regex[4] ?? NULL),
-                    ];
-                }
-
-                $this->setCorrectedValue(
-                    strtoupper($this->regex[1]) .
-                    '_' .
-                    str_pad((int) $this->regex[3], 6, '0', STR_PAD_LEFT) .
-                    (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1)) .
-                    '(' .
-                    strtoupper($this->regex[5]) .
-                    '_' .
-                    str_pad((int) $this->regex[7], (strlen((int) $this->regex[7]) > 6? 9 : 6), '0', STR_PAD_LEFT) .
-                    (!isset($this->regex[8])? '' : '.' . (int) substr($this->regex[8], 1)) .
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
+                $this->corrected_values = $this->buildCorrectedValues(
+                    $this->RefSeqGenomic->getCorrectedValues(),
+                    '(',
+                    $this->RefSeqTranscript->getCorrectedValues(),
                     ')'
                 );
-                $this->caseOK = ($this->value == strtoupper($this->value));
-
-                if ($this->regex[2] != '_' || $this->regex[6] != '_') {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
-                } elseif (strlen((int) $this->regex[3]) > 6) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (strlen($this->regex[3]) != 6) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (strlen((int) $this->regex[7]) > 9) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'NCBI transcript reference sequence IDs consist of six or nine digits.';
-                } elseif (!in_array(strlen($this->regex[7]), [6, 9])) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI transcript reference sequence IDs consist of six or nine digits.';
-                } elseif (empty($this->regex[4]) || empty($this->regex[8])) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'The reference sequence ID is missing the required version number.' .
-                        ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif (!$this->hasMessage('WREFERENCEFORMAT') && $this->caseOK
-                    && $this->value != $this->getCorrectedValue()) {
-                    // Something else was wrong.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
-                }
+                $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->RefSeqTranscript->isTheCaseOK());
                 break;
 
-            case 'refseq_gene_with_genomic':
-                $this->regex = [
-                    $this->regex[0],
-                    $this->regex[2],
-                    $this->regex[3],
-                    $this->regex[4],
-                    $this->regex[5],
-                    $this->regex[1],
-                ];
             case 'refseq_genomic':
-            case 'refseq_genomic_with_gene':
-                $this->molecule_type = (strtoupper($this->regex[1]) == 'NC'? 'chromosome' : 'genome');
-                $this->allowed_prefixes = [(strtoupper($this->regex[1]) == 'NC' && in_array((int) $this->regex[3], ['1807', '12920'])? 'm' : 'g')];
-                $this->setCorrectedValue(
-                    strtoupper($this->regex[1]) .
-                    '_' .
-                    str_pad((int) $this->regex[3], 6, '0', STR_PAD_LEFT) .
-                    (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
-                );
-                $this->caseOK = ($this->value == strtoupper($this->value));
+                $this->molecule_type = $this->RefSeqGenomic->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+                $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
+                break;
 
-                // Handle the NC(GENE) and GENE(NC) formats, only allowed for the mitochondrial reference sequence.
-                if (in_array($this->matched_pattern, ['refseq_genomic_with_gene', 'refseq_gene_with_genomic'])
-                    && $this->allowed_prefixes == ['m']) {
+            case 'refseq_genomic_with_gene':
+            case 'refseq_gene_with_genomic':
+                if ($this->RefSeqGenomic->allowed_prefixes == ['m']) {
                     // Mitochondrial reference sequence with a gene symbol. Also allow c. and n. prefixes.
                     $this->molecule_type = 'genome_transcript';
-                    $this->allowed_prefixes[] = 'c';
-                    $this->allowed_prefixes[] = 'n';
+                    // We don't know whether this gene is coding or not.
+                    $this->allowed_prefixes = ['m', 'c', 'n'];
 
-                    // Obviously, not all gene symbols are uppercase, but the mitochondrial genes all are.
-                    $this->appendCorrectedValue('(' . strtoupper($this->regex[5]) . ')');
-                }
+                    $this->corrected_values = $this->buildCorrectedValues(
+                        $this->RefSeqGenomic->getCorrectedValues(),
+                        '(',
+                        $this->Gene->getCorrectedValues(),
+                        ')'
+                    );
+                    $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->Gene->isTheCaseOK());
 
-                if ($this->regex[2] != '_') {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
-                } elseif (strlen((int) $this->regex[3]) > 6) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (strlen($this->regex[3]) != 6) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI genomic reference sequence IDs consist of six digits.';
-                } elseif (empty($this->regex[4])) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'The reference sequence ID is missing the required version number.' .
-                        ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif ($this->matched_pattern != 'refseq_genomic' && $this->allowed_prefixes == ['g']) {
-                    // Not mitochondrial. The gene has already been removed. We should just complain about it.
-                    // Note that we won't switch to allow c. or n. prefixes.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
-                } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
-                    // Something else was wrong.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+                } else {
+                    // The use of a gene symbol with a genomic reference sequence is invalid in all other cases.
+                    // Version 0.5.7 and prior considered this situation to have a genomic context only.
+                    // As such, only "g." was allowed. This caused NC(GENE):c. variants to get an EWRONGREFERENCE.
+                    // This was changed in 0.6.0. We'll read ahead and try to see what the prefix is.
+                    // When we find a "g", we'll suggest removing the gene symbol. When we find anything else, we'll
+                    //  suggest switching to c./n., depending on the transcript info.
+                    if (preg_match('/^:*g[.(0-9]/', $this->getSuffix())) {
+                        // It _looks_ like we have a "g." up ahead. Treat this as an attempt at a genomic context.
+                        // The gene should not be part of the reference sequence.
+                        $this->molecule_type = $this->RefSeqGenomic->molecule_type;
+                        $this->allowed_prefixes = $this->RefSeqGenomic->allowed_prefixes;
+                        $this->corrected_values = $this->RefSeqGenomic->getCorrectedValues();
+                        $this->caseOK = $this->RefSeqGenomic->isTheCaseOK();
+                        $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+
+                    } else {
+                        // We'll treat anything else as an attempt to provide a genomic transcript context.
+                        $this->molecule_type = 'genome_transcript';
+                        $this->allowed_prefixes = HGVS_RefSeqTranscript::getPrefixesByGene($this->Gene); // Defaults to c, n.
+
+                        // Whether we throw a warning or an error depends on what we can do. So first check that.
+                        $aTranscripts = HGVS_RefSeqTranscript::getPreferredTranscriptsByGene($this->Gene);
+                        if (!$aTranscripts) {
+                            // OK, so we can't fix this. Throw an error.
+                            $this->messages['EREFERENCEFORMAT'] = 'Do not use genes as contexts in reference sequence IDs. Only NCBI RefSeq transcripts are supported for this format.';
+                            // This isn't really a "corrected" value, but it's better than nothing.
+                            $this->corrected_values = $this->buildCorrectedValues(
+                                $this->RefSeqGenomic->getCorrectedValues(),
+                                '(',
+                                $this->Gene->getCorrectedValues(),
+                                ')'
+                            );
+
+                        } else {
+                            // OK, so we can fix this. Throw a warning only.
+                            $this->messages['WREFERENCEFORMAT'] = 'Do not use genes as contexts in reference sequence IDs. Only NCBI RefSeq transcripts are supported for this format.';
+                            // Replace the gene symbol by the transcripts. The array is already prepared to be used like this.
+                            $this->corrected_values = $this->buildCorrectedValues(
+                                $this->RefSeqGenomic->getCorrectedValues(),
+                                '(',
+                                $aTranscripts,
+                                ')'
+                            );
+                        }
+                        $this->caseOK = ($this->RefSeqGenomic->isTheCaseOK() && $this->Gene->isTheCaseOK());
+                    }
                 }
                 break;
 
-            case 'refseq_coding_with_gene':
-            case 'refseq_coding':
-            case 'refseq_non-coding_with_gene':
-            case 'refseq_non-coding':
-            case 'refseq_gene_with_coding':
-            case 'refseq_gene_with_non-coding':
-            case 'refseq_protein':
-                $this->molecule_type = ($this->matched_pattern == 'refseq_protein'? 'protein' : 'transcript');
-                $this->allowed_prefixes = [(strpos($this->matched_pattern, 'non-coding') !== false? 'n' : ($this->matched_pattern == 'refseq_protein'? 'p' : 'c'))];
-                $this->setCorrectedValue(
-                    strtoupper($this->regex[1]) .
-                    '_' .
-                    str_pad((int) $this->regex[3], (strlen((int) $this->regex[3]) > 6? 9 : 6), '0', STR_PAD_LEFT) .
-                    (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
-                );
-                $this->caseOK = ($this->regex[1] == strtoupper($this->regex[1]));
+            case 'refseq_transcript':
+                $this->molecule_type = $this->RefSeqTranscript->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
+                $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
+                break;
 
-                if ($this->regex[2] != '_') {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
-                } elseif (strlen((int) $this->regex[3]) > 9) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
-                } elseif (!in_array(strlen($this->regex[3]), [6, 9])) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
-                } elseif (empty($this->regex[4])) {
-                    $this->messages['EREFERENCEFORMAT'] =
-                        'The reference sequence ID is missing the required version number.' .
-                        ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
-                } elseif (!in_array($this->matched_pattern, ['refseq_coding', 'refseq_non-coding', 'refseq_protein'])) {
-                    $this->messages['WREFERENCEFORMAT'] =
-                        'The reference sequence ID should not include a gene symbol.';
-                } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
-                    // Something else was wrong.
-                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is formatted incorrectly.';
+            case 'refseq_transcript_with_gene':
+            case 'refseq_gene_with_transcript':
+                $this->molecule_type = $this->RefSeqTranscript->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
+                // The gene should not be part of the reference sequence. But now that we have it, do check it.
+                $nGeneID = ($this->Gene->getData()['hgnc_id'] ?? 0);
+                $nTranscriptGeneID = ($this->RefSeqTranscript->getData()['hgnc_id'] ?? 0);
+                if ($nGeneID && $nTranscriptGeneID && $nGeneID != $nTranscriptGeneID) {
+                    $this->messages['EREFERENCEFORMAT'] = "The reference sequence ID should not include a gene symbol, but this gene symbol also doesn't match this transcript reference sequence. Please double-check your input.";
+                    unset($this->data['hgnc_id']);
+                    // This does not fix it, but does standardize to Transcript(GENE).
+                    $this->corrected_values = $this->buildCorrectedValues(
+                        $this->RefSeqTranscript->getCorrectedValues(),
+                        '(',
+                        $this->Gene->getCorrectedValues(),
+                        ')'
+                    );
+                    $this->caseOK = ($this->RefSeqTranscript->isTheCaseOK() && $this->Gene->isTheCaseOK());
+                } else {
+                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+                    $this->corrected_values = $this->RefSeqTranscript->getCorrectedValues();
+                    $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
                 }
+                break;
+
+            case 'refseq_protein':
+                $this->molecule_type = $this->RefSeqProtein->molecule_type;
+                $this->allowed_prefixes = $this->RefSeqProtein->allowed_prefixes;
+                $this->caseOK = $this->RefSeqProtein->isTheCaseOK();
                 break;
 
             case 'refseq_other':
@@ -4927,6 +4939,28 @@ class HGVS_ReferenceSequence extends HGVS
                     'Currently, variant descriptions using "' . $this->value . '" are not yet supported.' .
                     ' This does not necessarily mean the description is not valid according to the HGVS nomenclature.' .
                     ' Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.';
+                break;
+
+            case 'gene':
+                // We'll treat this as an attempt to provide a transcript context.
+                $this->molecule_type = 'transcript';
+                $this->allowed_prefixes = HGVS_RefSeqTranscript::getPrefixesByGene($this->Gene); // Defaults to c, n.
+
+                // Whether we throw a warning or an error depends on what we can do. So first check that.
+                $aTranscripts = HGVS_RefSeqTranscript::getPreferredTranscriptsByGene($this->Gene);
+                if (!$aTranscripts) {
+                    // OK, so we can't fix this. Throw an error.
+                    $this->messages['EREFERENCEFORMAT'] = 'Do not use genes as reference sequences. Supported reference sequence IDs are from NCBI Refseq and Ensembl.';
+                    // This isn't really a "corrected" value, but it's better than nothing.
+                    $this->corrected_values = $this->Gene->getCorrectedValues();
+
+                } else {
+                    // OK, so we can fix this. Throw a warning only.
+                    $this->messages['WREFERENCEFORMAT'] = 'Do not use genes as reference sequences. Supported reference sequence IDs are from NCBI Refseq and Ensembl.';
+                    // Our corrected values are the transcripts. The array is already prepared to be used like this.
+                    $this->corrected_values = $aTranscripts;
+                }
+                $this->caseOK = $this->Gene->isTheCaseOK();
                 break;
 
             case 'ensembl_genomic':
@@ -4954,7 +4988,7 @@ class HGVS_ReferenceSequence extends HGVS
                 } elseif (strlen($this->regex[3]) != 11) {
                     $this->messages['WREFERENCEFORMAT'] =
                         'Ensembl reference sequence IDs require 11 digits.';
-                } elseif (empty($this->regex[4])) {
+                } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
                     $this->messages['EREFERENCEFORMAT'] =
                         'The reference sequence ID is missing the required version number.' .
                         ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
@@ -5030,6 +5064,350 @@ class HGVS_ReferenceSequence extends HGVS
                     }
                 }
                 break;
+        }
+        parent::validate(); // Do a case-check.
+    }
+}
+
+
+
+
+
+class HGVS_RefSeqContextClose extends HGVS
+{
+    public array $patterns = [
+        'valid'   => [')', []],
+        'invalid' => ['}', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
+    ];
+}
+
+
+
+
+
+class HGVS_RefSeqContextOpen extends HGVS
+{
+    public array $patterns = [
+        'valid'   => ['(', []],
+        'invalid' => ['{', ['WREFERENCEFORMAT' => 'The reference sequence is not formatted correctly.']],
+    ];
+}
+
+
+
+
+
+class HGVS_RefSeqGenomic extends HGVS
+{
+    public array $patterns = [
+        ['/(N[CG])([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->molecule_type = (strtoupper($this->regex[1]) == 'NC'? 'chromosome' : 'genome');
+        $this->allowed_prefixes = [(strtoupper($this->regex[1]) == 'NC' && in_array((int) $this->regex[3], ['1807', '12920'])? 'm' : 'g')];
+        $this->setCorrectedValue(
+            strtoupper($this->regex[1]) .
+            '_' .
+            str_pad((int) $this->regex[3], 6, '0', STR_PAD_LEFT) .
+            (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
+        );
+        $this->caseOK = ($this->value == strtoupper($this->value));
+
+        if ($this->regex[2] != '_') {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
+        } elseif (strlen($this->regex[3]) != 6) {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI genomic reference sequence IDs consist of six digits.';
+        } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
+            $this->messages['EREFERENCEFORMAT'] =
+                'The reference sequence ID is missing the required version number.' .
+                ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
+        } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
+            // Something else was wrong.
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
+        }
+        parent::validate(); // Do a case-check.
+    }
+}
+
+
+
+
+
+class HGVS_RefSeqProtein extends HGVS
+{
+    public array $patterns = [
+        ['/([NXY]P)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->molecule_type = 'protein';
+        $this->allowed_prefixes = ['p'];
+        $this->setCorrectedValue(
+            strtoupper($this->regex[1]) .
+            '_' .
+            str_pad((int) $this->regex[3], (strlen((int) $this->regex[3]) > 6? 9 : 6), '0', STR_PAD_LEFT) .
+            (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
+        );
+        $this->caseOK = ($this->regex[1] == strtoupper($this->regex[1]));
+
+        if ($this->regex[2] != '_') {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
+        } elseif (strlen((int) $this->regex[3]) > 9) {
+            $this->messages['EREFERENCEFORMAT'] =
+                'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
+        } elseif (!in_array(strlen($this->regex[3]), [6, 9])) {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
+        } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
+            $this->messages['EREFERENCEFORMAT'] =
+                'The reference sequence ID is missing the required version number.' .
+                ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
+        } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
+            // Something else was wrong.
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
+        }
+        parent::validate(); // Do a case-check.
+    }
+}
+
+
+
+
+
+class HGVS_RefSeqTranscript extends HGVS
+{
+    public array $patterns = [
+        'coding'     => ['/([NX]M)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+        'non-coding' => ['/([NX]R)([_-]?)([0-9]+)(\.[0-9]+)?/', []],
+    ];
+    public static array $transcripts = [];
+
+    public static function loadData ()
+    {
+        // Load the transcript data, if present. We can then validate transcripts properly and provide detailed info.
+        if (self::$transcripts) {
+            return true;
+        } else {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/transcripts.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['dates', 'transcripts']) {
+                        self::$transcripts = $aJSON;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getPreferredTranscriptsByGene ($Gene)
+    {
+        // Given the gene, list all preferred transcripts, sorted on probability.
+        $aTranscripts = self::getTranscriptsByGene($Gene);
+        if (!$aTranscripts) {
+            // This could be false (we don't have a cache or unknown gene) or an empty array.
+            return $aTranscripts;
+        }
+
+        // OK, so we got a list of transcripts. Loop through it and sort.
+        // Always pick the latest version of each transcript, and calculate the probability.
+        $aReturn = [];
+        foreach ($aTranscripts as $sTranscript => $aTranscript) {
+            $nVersion = max(array_keys($aTranscript));
+            $aVersion = $aTranscript[$nVersion];
+            // A Plus Clinical transcript gets double points, a Refseq Select gets double again.
+            $aReturn["$sTranscript.$nVersion"] = (empty($aVersion['s'])? 10 : ($aVersion['s'] == 'rpc'? 20 : 40));
+        }
+
+        // Now, calculate the probabilities.
+        $nScoreTotal = array_sum($aReturn);
+        foreach ($aReturn as $sTranscript => $nScore) {
+            $aReturn[$sTranscript] = round(($nScore/$nScoreTotal), 2);
+        }
+        arsort($aReturn); // Sort on probability, keep the indices.
+        return $aReturn;
+    }
+
+
+
+
+
+    public static function getPrefixesByGene ($Gene)
+    {
+        // Given the gene, list all possible prefixes (c., n.).
+        $aTranscripts = self::getTranscriptsByGene($Gene);
+        if (!$aTranscripts) {
+            // This could be false (we don't have a cache or unknown gene) or an empty array.
+            // Default to any prefix.
+            return ['c', 'n'];
+        }
+
+        // Check the given transcripts.
+        $aReturn = [];
+        $aPrefixes = array_map(function ($s) { return substr($s, 0, 2); }, array_keys($aTranscripts));
+        if (in_array('NM', $aPrefixes)) {
+            $aReturn[] = 'c';
+        }
+        if (in_array('NR', $aPrefixes)) {
+            $aReturn[] = 'n';
+        }
+        return $aReturn;
+    }
+
+
+
+
+
+    public static function getTranscriptsByGene ($Gene)
+    {
+        // Given the gene, get all available transcript data.
+        static $aTranscriptsByGene = [];
+
+        if (self::loadData()) {
+            // $Gene could be an object, a string symbol, or an HGNC ID.
+            if (is_object($Gene) && get_class($Gene) == 'HGVS_Gene') {
+                $nHGNC = ($Gene->getData()['hgnc_id'] ?? null);
+            } elseif (is_int($Gene) || ctype_digit($Gene)) {
+                $nHGNC = (int) $Gene;
+            } elseif (is_string($Gene)) {
+                $nHGNC = (HGVS_Gene::check($Gene)->getData()['hgnc_id'] ?? null);
+            }
+
+            if ($nHGNC) {
+                // OK, we got something. Now loop the transcripts and collect what we have.
+                // Cache the results, though.
+                if (!isset($aTranscriptsByGene[$nHGNC])) {
+                    $aTranscripts = [];
+                    foreach (self::$transcripts['transcripts'] as $sTranscript => $aTranscript) {
+                        foreach ($aTranscript as $nVersion => $aVersion) {
+                            if (($aVersion['g'] ?? '') == $nHGNC) {
+                                $aTranscripts[$sTranscript][$nVersion] = $aVersion;
+                            }
+                        }
+                    }
+                    $aTranscriptsByGene[$nHGNC] = $aTranscripts;
+                }
+
+                return $aTranscriptsByGene[$nHGNC];
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->molecule_type = 'transcript';
+        $this->allowed_prefixes = [($this->matched_pattern == 'non-coding'? 'n' : 'c')];
+        $this->setCorrectedValue(
+            strtoupper($this->regex[1]) .
+            '_' .
+            str_pad((int) $this->regex[3], (strlen((int) $this->regex[3]) > 6? 9 : 6), '0', STR_PAD_LEFT) .
+            (!isset($this->regex[4])? '' : '.' . (int) substr($this->regex[4], 1))
+        );
+        $this->caseOK = ($this->regex[1] == strtoupper($this->regex[1]));
+
+        if ($this->regex[2] != '_') {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI reference sequence IDs require an underscore between the prefix and the numeric ID.';
+        } elseif (!in_array(strlen($this->regex[3]), [6, 9])) {
+            $this->messages['WREFERENCEFORMAT'] =
+                'NCBI ' . $this->molecule_type . ' reference sequence IDs consist of six or nine digits.';
+        } elseif (empty($this->regex[4]) || !intval(substr($this->regex[4], 1))) {
+            $this->messages['EREFERENCEFORMAT'] =
+                'The reference sequence ID is missing the required version number.' .
+                ' NCBI RefSeq and Ensembl IDs require version numbers when used in variant descriptions.';
+        } elseif ($this->caseOK && $this->value != $this->getCorrectedValue()) {
+            // Something else was wrong.
+            $this->messages['WREFERENCEFORMAT'] = 'The reference sequence is not formatted correctly.';
+        }
+
+        // If the transcript data is present, we can validate transcripts properly.
+        if (!self::loadData()) {
+            // Just warn the user that we can't validate transcripts at the moment.
+            $this->messages['INOREFSEQNMVALIDATION'] = 'We currently can not validate RefSeq transcript IDs because the transcript list has not been downloaded. See the documentation on how to download the transcript list.';
+            // Lower the confidence.
+            $this->corrected_values = $this->buildCorrectedValues([$this->value => 0.5]);
+        } elseif ($this->input[0] == 'N') {
+            // Validate the transcript ID, which we can only do for NMs and NRs, not XMs or XRs (we don't have that data).
+            list($sRefSeq, $nVersion) = array_pad(explode('.', $this->getCorrectedValue()), 2, 0);
+            if (!isset(self::$transcripts['transcripts'][$sRefSeq])) {
+                // This is not recognized as a valid transcript ID.
+                $this->messages['EINVALIDREFSEQID'] = 'Invalid or withdrawn RefSeq ID: ' . $sRefSeq . '.';
+
+            } else {
+                // Store the gene ID in the data, if available.
+                // The gene ID is corrently stored per version. There are differences.
+                // I'm not sure how to solve that, so let's just check the latest data.
+                $aVersions = array_keys(self::$transcripts['transcripts'][$sRefSeq]);
+                rsort($aVersions);
+                foreach ($aVersions as $n) {
+                    if (!empty(self::$transcripts['transcripts'][$sRefSeq][$n]['g'])) {
+                        $this->data = [
+                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
+                        ];
+                        break;
+                    }
+                }
+
+                // Now, check the given version.
+                if (!$nVersion) {
+                    // The user didn't specify a version. Suggest answers based on what I have. They already got a warning.
+                    if (count($aVersions) == 1) {
+                        // Full confidence for the version that we have.
+                        $this->corrected_values = $this->buildCorrectedValues($sRefSeq, '.', current($aVersions));
+                    } else {
+                        // Set the first one at 60% and then just divide the rest.
+                        $aParts = [];
+                        $nConfidenceLeft = 1;
+                        foreach ($aVersions as $nKey => $nVersion) {
+                            if (($nKey + 1) == count($aVersions)) {
+                                // This is our last option.
+                                $nConfidence = round($nConfidenceLeft, 2);
+                            } else {
+                                $nConfidence = round($nConfidenceLeft * 0.6, 2);
+                                $nConfidenceLeft -= $nConfidence;
+                            }
+                            $aParts[$nVersion] = $nConfidence;
+                        }
+                        $this->corrected_values = $this->buildCorrectedValues($sRefSeq, '.', $aParts);
+                    }
+
+                } elseif (!isset(self::$transcripts['transcripts'][$sRefSeq][$nVersion])) {
+                    // The transcript we know, but not the version.
+                    // If the version lower than what we have, it's OK (our history is the problem), but they should update.
+                    // If their version is too high, warn them to double-check, but it could be us.
+                    if ($nVersion < min($aVersions)) {
+                        $sSuggestion = $sRefSeq . '.' . max($aVersions);
+                        $this->messages['IREFSEQVERSION'] = "Consider updating your use of $sRefSeq to a newer version (e.g., $sSuggestion).";
+                    } else {
+                        // In principle, we could be missing a version in between as well.
+                        // Use the same warning for an unknown version or one that seems too high.
+                        $sVersions = implode(', ', array_reverse($aVersions));
+                        $this->messages['IREFSEQVERSION'] = "Unknown version for $sRefSeq. We know of: $sVersions. Possibly, our transcript cache is out of date.";
+                    }
+                }
+            }
         }
         parent::validate(); // Do a case-check.
     }
