@@ -4899,10 +4899,25 @@ class HGVS_ReferenceSequence extends HGVS
             case 'refseq_gene_with_transcript':
                 $this->molecule_type = $this->RefSeqTranscript->molecule_type;
                 $this->allowed_prefixes = $this->RefSeqTranscript->allowed_prefixes;
-                $this->corrected_values = $this->RefSeqTranscript->getCorrectedValues();
-                $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
-                // The gene should not be part of the reference sequence.
-                $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+                // The gene should not be part of the reference sequence. But now that we have it, do check it.
+                $nGeneID = ($this->Gene->getData()['hgnc_id'] ?? 0);
+                $nTranscriptGeneID = ($this->RefSeqTranscript->getData()['hgnc_id'] ?? 0);
+                if ($nGeneID && $nTranscriptGeneID && $nGeneID != $nTranscriptGeneID) {
+                    $this->messages['EREFERENCEFORMAT'] = "The reference sequence ID should not include a gene symbol, but this gene symbol also doesn't match this transcript reference sequence. Please double-check your input.";
+                    unset($this->data['hgnc_id']);
+                    // This does not fix it, but does standardize to Transcript(GENE).
+                    $this->corrected_values = $this->buildCorrectedValues(
+                        $this->RefSeqTranscript->getCorrectedValues(),
+                        '(',
+                        $this->Gene->getCorrectedValues(),
+                        ')'
+                    );
+                    $this->caseOK = ($this->RefSeqTranscript->isTheCaseOK() && $this->Gene->isTheCaseOK());
+                } else {
+                    $this->messages['WREFERENCEFORMAT'] = 'The reference sequence ID should not include a gene symbol.';
+                    $this->corrected_values = $this->RefSeqTranscript->getCorrectedValues();
+                    $this->caseOK = $this->RefSeqTranscript->isTheCaseOK();
+                }
                 break;
 
             case 'refseq_protein':
