@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2021-12-03
- * Modified    : 2025-03-26
+ * Modified    : 2026-02-11
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
@@ -151,7 +151,7 @@ NC_000015.9:g.40699840C>T" rows="5"><?= (empty($_GET['multipleVariants']) || !is
         ?>
     </div>
     <div>
-        &copy; 2024 – 2025 the LOVD team
+        &copy; 2024 – 2026 the LOVD team
     </div>
 </footer>
 

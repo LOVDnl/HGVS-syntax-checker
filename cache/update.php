@@ -112,6 +112,6 @@ if (!$bUpdateCache) {
         echo "Could not save the transcript data.\n";
         exit(6);
     } else {
-        echo 'Successfully stored ' . (count($aData) - 1) . " transcripts.\n";
+        echo 'Successfully stored ' . count($aData['transcripts']) . " transcripts.\n";
     }
 }
