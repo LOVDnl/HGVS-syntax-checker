@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2011-09-06
- * Modified    : 2025-03-19
+ * Modified    : 2026-02-12
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
@@ -39,7 +39,7 @@ if (empty($_REQUEST['var'])) {
 
 if (!empty($_REQUEST['callVV']) && $_REQUEST['callVV'] == 'true') {
     require '../variant_validator.php';
-    $_VV = new LOVD_VV();
+    $_VV = new LOVD\HGVS\LOVD_VV();
     $bVV = true;
 } else {
     $bVV = false;
@@ -64,7 +64,7 @@ $aVariants = preg_split('/\s*\n\s*/', trim($_REQUEST['var']));
 $aResponse = [];
 foreach ($aVariants as $sVariant) {
     $sVariant = trim($sVariant);
-    $HGVS = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence();
+    $HGVS = LOVD\HGVS\HGVS::checkVariant($sVariant)->allowMissingReferenceSequence();
     $aVariant = $HGVS->getInfo();
 
     if (isset($aVariant['errors']['ENOTSUPPORTED'])) {

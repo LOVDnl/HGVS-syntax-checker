@@ -4,13 +4,14 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2025-06-11
+ * Modified    : 2026-02-12
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
 
+namespace LOVD\HGVS;
 require_once 'HGVS.php';
 require_once 'variant_validator.php';
 
