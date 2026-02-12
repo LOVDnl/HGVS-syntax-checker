@@ -16,7 +16,7 @@ if (!class_exists('HGVS')) {
     require_once('HGVS.php');
 }
 
-class LOVD_VV
+class VV
 {
     // This class defines the LOVD VV object, handling all Variant Validator calls.
 

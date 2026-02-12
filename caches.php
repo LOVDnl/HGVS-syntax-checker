@@ -58,7 +58,7 @@ class caches
         }
         // Initiate VV if not already done so.
         if (!self::$oVV) {
-            self::$oVV = new LOVD_VV();
+            self::$oVV = new VV();
         }
 
         // Call VV with the defaults and collect all information.

@@ -39,7 +39,7 @@ if (empty($_REQUEST['var'])) {
 
 if (!empty($_REQUEST['callVV']) && $_REQUEST['callVV'] == 'true') {
     require '../variant_validator.php';
-    $_VV = new LOVD\HGVS\LOVD_VV();
+    $_VV = new LOVD\HGVS\VV();
     $bVV = true;
 } else {
     $bVV = false;
