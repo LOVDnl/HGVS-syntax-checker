@@ -134,8 +134,8 @@ This returns:
 ```json
 [
     {
-        "library_date": "2026-02-10",
-        "library_version": "0.6.0",
+        "library_date": "2026-02-12",
+        "library_version": "1.0.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -192,18 +192,20 @@ E.g., when enforcing a gene check,
 
 #### From within a PHP application
 When already coding in PHP, it's easy to just include the `HGVS.php` library file and start using it.
-Using this method, you'll have full access to all features the library can offer.
+See further below for a method using `composer`, if you prefer that.
+When using the library directly in PHP, you'll have full access to all features the library can offer.
 
 ```php
 <?php
-// Include the HGVS.php file.
+// Include the HGVS.php file. Note that the class uses the LOVD\HGVS namespace.
 require 'path/to/HGVS.php';
+use LOVD\HGVS\HGVS;
 
 // Check all version info.
 $aVersions = HGVS::getVersions();
 // [
-//     "library_date" => "2026-02-10",
-//     "library_version" => "0.6.0",
+//     "library_date" => "2026-02-12",
+//     "library_version" => "1.0.0",
 //     "HGVS_nomenclature_versions" => [
 //         "input" => [
 //             "minimum" => "15.11",
@@ -241,9 +243,9 @@ var_dump(HGVS::check('NM_004006.3')->requireVariant()->isValid()); // False.
 var_dump(HGVS::checkVariant('NM_004006.3')->isValid()); // False.
 
 // If you're not interested in variants, you can also directly use other classes, like so:
-var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isValid()); // True.
-var_dump(HGVS_Genome::check('GRCh38')->isValid()); // True. We recognize hg18, hg19, hg38, GRCh36, GRCh37, and GRCh38.
-var_dump(HGVS_VariantIdentifier::check('rs123456')->isValid()); // True. Note that, also this, is just a syntax check.
+var_dump(LOVD\HGVS\HGVS_ReferenceSequence::check('NM_004006.3')->isValid()); // True.
+var_dump(LOVD\HGVS\HGVS_Genome::check('GRCh38')->isValid()); // True. We recognize hg18, hg19, hg38, GRCh36, GRCh37, and GRCh38.
+var_dump(LOVD\HGVS\HGVS_VariantIdentifier::check('rs123456')->isValid()); // True. Note that, also this, is just a syntax check.
 
 
 
@@ -348,7 +350,7 @@ $aComponents = HGVS::check("c.419_420ins[T;450_470;AGGG]")->Variant->DNAVariantB
 
 // Useful for parsing text; could the given input be incomplete?
 // 1) False, because this reference sequence is complete.
-var_dump(HGVS_ReferenceSequence::check('NM_004006.3')->isPossiblyIncomplete());
+var_dump(LOVD\HGVS\HGVS_ReferenceSequence::check('NM_004006.3')->isPossiblyIncomplete());
 // 2) True, because now, we're not just checking for a reference sequence,
 //     and this could be just the start of a variant description.
 var_dump(HGVS::check('NM_004006.3')->isPossiblyIncomplete());
@@ -359,6 +361,32 @@ var_dump(HGVS::check('NM_004006.3')->isPossiblyIncomplete());
 //  which you can follow the logic used to match your input.
 // Turn on output buffering if you wish to collect this output into a variable.
 $HGVS = HGVS::debug('c.157C>T');
+```
+
+#### Including the library into your project using composer
+Starting from v1.0.0, you can use `composer` to include the HGVS syntax checker.
+In your project's `composer.json`, add:
+
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/LOVDnl/HGVS-syntax-checker"
+    }
+],
+```
+
+Then, require the HGVS syntax checker package:
+
+```bash
+composer require lovd/hgvs-syntax-checker
+```
+
+Then, from within your project, you can do, e.g.,:
+
+```php
+use LOVD\HGVS\HGVS;
+$HGVS = HGVS::checkVariant('c.157C>T');
 ```
 
 
