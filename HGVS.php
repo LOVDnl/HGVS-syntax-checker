@@ -4,12 +4,29 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-02-10   // When modified, also change the library_version.
+ * Modified    : 2026-02-12   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *************/
+
+namespace LOVD\HGVS;
+
+function get_class ($o)
+{
+    // Overloading \get_class() that includes the current namespace, complicating my code everywhere.
+    $s = \get_class($o);
+    if (strpos($s, __NAMESPACE__ . '\\') === 0) {
+        // This class is in our own namespace.
+        return str_replace(__NAMESPACE__ . '\\', '', $s);
+    }
+    return $s;
+}
+
+
+
+
 
 #[AllowDynamicProperties]
 class HGVS
@@ -98,7 +115,8 @@ class HGVS
                             }
                             print("$sClassString('$sInputToParse') rule $sPatternName, pattern $sPattern, result is pending.\n");
                         }
-                        $aPattern[$i] = new $sPattern($sInputToParse, $this, $bDebugging);
+                        $sFullName = __NAMESPACE__ . '\\' . $sPattern; // Required, otherwise PHP doesn't find the class.
+                        $aPattern[$i] = new $sFullName($sInputToParse, $this, $bDebugging);
                         // Store for later, if needed.
                         $this->memory[$sPattern][$sInputToParse] = $aPattern[$i];
                     }
@@ -783,8 +801,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-02-10',
-            'library_version' => '0.6.0',
+            'library_date' => '2026-02-12',
+            'library_version' => '1.0.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',

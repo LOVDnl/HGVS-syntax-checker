@@ -1,7 +1,7 @@
 #!/bin/php
 <?php
 // Created  2024-12-30
-// Modified 2025-01-10
+// Modified 2026-02-12
 
 if (empty($_SERVER['argc']) || $_SERVER['argc'] != 2) {
     if (empty($_SERVER['argv'])) {
@@ -47,7 +47,7 @@ require '../HGVS.php';
 foreach ($aInput as $aLine) {
     $aOutput = $aLine;
     $sVariant = $aLine[0];
-    $HGVS = new HGVS($sVariant);
+    $HGVS = new LOVD\HGVS\HGVS($sVariant);
     $HGVS->allowMissingReferenceSequence(); // Don't freak out if there is no refseq.
     $aOutput[] = ($HGVS->isValid()? 'valid' : 'invalid');
     $aMessages = $HGVS->getMessages();

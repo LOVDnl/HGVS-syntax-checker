@@ -1,0 +1,20 @@
+{
+    "name": "lovd/hgvs-syntax-checker",
+    "description": "PHP library to validate variant descriptions in the HGVS nomenclature syntax. Also includes a variant caching library and the VariantValidator interface.",
+    "type": "library",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Ivo Fokkema",
+            "email": "I.F.A.C.Fokkema@LUMC.nl",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "LOVD\\HGVS\\": ""
+        },
+        "classmap": ["caches.php", "HGVS.php", "variant_validator.php"]
+    },
+    "require": {}
+}
