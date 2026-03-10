@@ -210,8 +210,27 @@ class caches
         }
         $aFile = @file($sFile, FILE_IGNORE_NEW_LINES);
         if ($aFile !== false) {
+            // If we're dealing with an old file, we should handle things a bit differently.
+            $bOldFormat = ($aFile[0][0] == '#');
+            if ($bOldFormat) {
+                // Remove the header.
+                array_shift($aFile);
+            }
+
             foreach ($aFile as $sLine) {
                 $aLine = explode("\t", $sLine, 2);
+                if (empty($aLine[1]) || ($bOldFormat && !substr($aLine[1], 0, 3) != 'NC_')) {
+                    // Skip empty answers or errors when reading the old format.
+                    continue;
+                } elseif (isset(self::$NC_cache[$aLine[0]])) {
+                    if (self::$NC_cache[$aLine[0]] == $aLine[1]) {
+                        // We have seen this variant before, and we already have this answer stored. Nothing to do.
+                        continue;
+                    }
+                    // We have seen this variant already, but we have a different value here.
+                    // This is a conflict we should let people know about.
+                    throw new \Exception("Conflict while merging cache files for {$aLine[0]}");
+                }
                 self::$NC_cache[$aLine[0]] = $aLine[1];
             }
             return true;
