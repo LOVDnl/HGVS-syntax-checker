@@ -202,17 +202,18 @@ class caches
 
 
 
-    public static function loadCorrectedNCs ()
+    public static function loadCorrectedNCs (string $sFile = ''): bool
     {
         // Loads the NC cache when the data is requested.
-        $aFile = @file(self::$sFileNC, FILE_IGNORE_NEW_LINES);
+        if (!$sFile) {
+            $sFile = self::$sFileNC;
+        }
+        $aFile = @file($sFile, FILE_IGNORE_NEW_LINES);
         if ($aFile !== false) {
-            $aCache = [];
             foreach ($aFile as $sLine) {
                 $aLine = explode("\t", $sLine, 2);
-                $aCache[$aLine[0]] = $aLine[1];
+                self::$NC_cache[$aLine[0]] = $aLine[1];
             }
-            self::$NC_cache = $aCache;
             return true;
         }
 
