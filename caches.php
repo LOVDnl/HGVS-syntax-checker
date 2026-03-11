@@ -29,6 +29,11 @@ class Caches
     public static function buildCaches ($sVariant, $sBuild = false)
     {
         // Adds the given NC variant to both the NC and the mapping caches.
+        // Return values:
+        // true  : Success.
+        // 1     : Addition was not needed, variant already known.
+        // 0     : Internal failure with VV. Failure may be non-permanent.
+        // false : Internal failure when adding data to the cache. Failure is likely permanent.
         if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
             return null;
         }
@@ -49,7 +54,11 @@ class Caches
         // We assume that the variant is valid. If we validate it here and change it,
         //  the input of this function won't be usable for getCorrectedNC().
         // Check if we need to call VV.
-        if (self::hasCorrectedNC($sVariant)) {
+        if (self::hasErrors($sVariant)) {
+            // We've seen this variant before, and it has errors. There's nothing to do for us now.
+            return 1;
+
+        } elseif (self::hasCorrectedNC($sVariant)) {
             $sVariantCorrected = self::getCorrectedNC($sVariant);
             if (self::hasMapping($sVariantCorrected, $sBuild)) {
                 // Nothing to do.
@@ -64,6 +73,11 @@ class Caches
         // Call VV with the defaults and collect all information.
         $aVV = self::$oVV->verifyGenomic($sVariant, $aVVOptions);
         if (!$aVV || empty($aVV['data']['DNA'])) {
+            // If there are errors, store this.
+            if (!empty($aVV['errors'])) {
+                // There is a problem with the variant. Store the errors, so we won't repeat this request.
+                return self::setCorrectedNC($sVariant, json_encode($aVV['errors']));
+            }
             return 0; // Evaluates to false, indicates a VV or input error.
         }
 
@@ -179,9 +193,9 @@ class Caches
 
 
 
-    public static function hasError ($sNC)
+    public static function hasErrors ($sNC)
     {
-        // Checks if we have an error for a certain input.
+        // Checks if we have errors for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
