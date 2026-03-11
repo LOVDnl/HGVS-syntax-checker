@@ -172,7 +172,21 @@ class Caches
             return null;
         }
 
-        return isset(self::$NC_cache[$sNC]);
+        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{');
+    }
+
+
+
+
+
+    public static function hasError ($sNC)
+    {
+        // Checks if we have an error for a certain input.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{');
     }
 
 
