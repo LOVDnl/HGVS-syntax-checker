@@ -149,7 +149,27 @@ class Caches
             return null;
         }
 
-        return (self::$NC_cache[$sNC] ?? false);
+        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{') {
+            return self::$NC_cache[$sNC];
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getErrors ($sNC)
+    {
+        // Gets the errors for a certain input.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
+            return json_decode(self::$NC_cache[$sNC], true);
+        }
+        return false;
     }
 
 
