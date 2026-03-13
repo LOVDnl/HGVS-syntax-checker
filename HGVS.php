@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-02-12   // When modified, also change the library_version.
+ * Modified    : 2026-03-13   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -801,8 +801,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-02-12',
-            'library_version' => '1.0.0',
+            'library_date' => '2026-03-13',
+            'library_version' => '1.0.1',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -815,6 +815,15 @@ class HGVS
                 'transcripts' => (file_exists(__DIR__ . '/cache/transcripts.json')? date('Y-m-d', filemtime(__DIR__ . '/cache/transcripts.json')) : null),
             ],
         ];
+    }
+
+
+
+
+
+    public function hasErrors ()
+    {
+        return (bool) $this->getMessagesByGroup('errors');
     }
 
 
@@ -844,6 +853,15 @@ class HGVS
         // This function checks if this class has a property called $sClassName.
         // A property is a matched object, stored in the $this->properties array.
         return ($this->properties && is_array($this->properties) && in_array($sClassName, $this->properties));
+    }
+
+
+
+
+
+    public function hasWarnings ()
+    {
+        return (bool) $this->getMessagesByGroup('warnings');
     }
 
 
