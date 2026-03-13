@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-02-12
+ * Modified    : 2026-03-11
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -15,7 +15,7 @@ namespace LOVD\HGVS;
 require_once 'HGVS.php';
 require_once 'variant_validator.php';
 
-class caches
+class Caches
 {
     // Class that handles the caches. Should be used statically.
     private static array $mapping_cache = [];
@@ -29,6 +29,11 @@ class caches
     public static function buildCaches ($sVariant, $sBuild = false)
     {
         // Adds the given NC variant to both the NC and the mapping caches.
+        // Return values:
+        // true  : Success.
+        // 1     : Addition was not needed, variant already known.
+        // 0     : Internal failure with VV. Failure may be non-permanent.
+        // false : Internal failure when adding data to the cache. Failure is likely permanent.
         if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
             return null;
         }
@@ -49,7 +54,11 @@ class caches
         // We assume that the variant is valid. If we validate it here and change it,
         //  the input of this function won't be usable for getCorrectedNC().
         // Check if we need to call VV.
-        if (self::hasCorrectedNC($sVariant)) {
+        if (self::hasErrors($sVariant)) {
+            // We've seen this variant before, and it has errors. There's nothing to do for us now.
+            return 1;
+
+        } elseif (self::hasCorrectedNC($sVariant)) {
             $sVariantCorrected = self::getCorrectedNC($sVariant);
             if (self::hasMapping($sVariantCorrected, $sBuild)) {
                 // Nothing to do.
@@ -64,6 +73,11 @@ class caches
         // Call VV with the defaults and collect all information.
         $aVV = self::$oVV->verifyGenomic($sVariant, $aVVOptions);
         if (!$aVV || empty($aVV['data']['DNA'])) {
+            // If there are errors, store this.
+            if (!empty($aVV['errors'])) {
+                // There is a problem with the variant. Store the errors, so we won't repeat this request.
+                return self::setCorrectedNC($sVariant, json_encode($aVV['errors']));
+            }
             return 0; // Evaluates to false, indicates a VV or input error.
         }
 
@@ -135,7 +149,27 @@ class caches
             return null;
         }
 
-        return (self::$NC_cache[$sNC] ?? false);
+        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{') {
+            return self::$NC_cache[$sNC];
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getErrors ($sNC)
+    {
+        // Gets the errors for a certain input.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
+            return json_decode(self::$NC_cache[$sNC], true);
+        }
+        return false;
     }
 
 
@@ -172,7 +206,21 @@ class caches
             return null;
         }
 
-        return isset(self::$NC_cache[$sNC]);
+        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{');
+    }
+
+
+
+
+
+    public static function hasErrors ($sNC)
+    {
+        // Checks if we have errors for a certain input.
+        if (!self::$NC_cache && !self::loadCorrectedNCs()) {
+            return null;
+        }
+
+        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{');
     }
 
 
@@ -202,17 +250,37 @@ class caches
 
 
 
-    public static function loadCorrectedNCs ()
+    public static function loadCorrectedNCs (string $sFile = ''): bool
     {
         // Loads the NC cache when the data is requested.
-        $aFile = @file(self::$sFileNC, FILE_IGNORE_NEW_LINES);
+        if (!$sFile) {
+            $sFile = self::$sFileNC;
+        }
+        $aFile = @file($sFile, FILE_IGNORE_NEW_LINES);
         if ($aFile !== false) {
-            $aCache = [];
+            // If we're dealing with an old file, we should handle things a bit differently.
+            $bOldFormat = ($aFile[0][0] == '#');
+            if ($bOldFormat) {
+                // Remove the header.
+                array_shift($aFile);
+            }
+
             foreach ($aFile as $sLine) {
                 $aLine = explode("\t", $sLine, 2);
-                $aCache[$aLine[0]] = $aLine[1];
+                if (empty($aLine[1]) || ($bOldFormat && !substr($aLine[1], 0, 3) != 'NC_')) {
+                    // Skip empty answers or errors when reading the old format.
+                    continue;
+                } elseif (isset(self::$NC_cache[$aLine[0]])) {
+                    if (self::$NC_cache[$aLine[0]] == $aLine[1]) {
+                        // We have seen this variant before, and we already have this answer stored. Nothing to do.
+                        continue;
+                    }
+                    // We have seen this variant already, but we have a different value here.
+                    // This is a conflict we should let people know about.
+                    throw new \Exception("Conflict while merging cache files for {$aLine[0]}");
+                }
+                self::$NC_cache[$aLine[0]] = $aLine[1];
             }
-            self::$NC_cache = $aCache;
             return true;
         }
 
@@ -419,4 +487,4 @@ class caches
     }
 }
 
-register_shutdown_function(['caches', 'shutdown']);
+register_shutdown_function(['LOVD\HGVS\Caches', 'shutdown']);
