@@ -314,9 +314,19 @@ class VV
                 // This API endpoint needs authorization. Did we provide any?
                 if ($this->sAuthToken) {
                     // Apparently, we did...
-                    return ['errors' => 'Authentication failed; API token rejected.'];
+                    return array_merge(
+                        $this->aResponse,
+                        [
+                            'errors' => 'Authentication failed; API token rejected.',
+                        ]
+                    );
                 } else {
-                    return ['errors' => 'Authentication failed; please generate an API token.'];
+                    return array_merge(
+                        $this->aResponse,
+                        [
+                            'errors' => 'Authentication failed; please generate an API token.',
+                        ]
+                    );
                 }
             }
         }
