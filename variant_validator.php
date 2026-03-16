@@ -301,7 +301,26 @@ class VV
             if ($aJSONResponse !== false) {
                 return $aJSONResponse;
             }
+
+        } else {
+            // Analyze the headers to see if this was an HTTP 401.
+            if (function_exists('http_get_last_response_headers')) {
+                // Relatively new, but was introduced very shortly before $http_response_header was deprecated.
+                $sHTTP = (http_get_last_response_headers()[0] ?? '');
+            } else {
+                $sHTTP = ($http_response_header[0] ?? '');
+            }
+            if (strpos($sHTTP, ' 401 UNAUTHORIZED')) {
+                // This API endpoint needs authorization. Did we provide any?
+                if ($this->sAuthToken) {
+                    // Apparently, we did...
+                    return ['errors' => 'Authentication failed; API token rejected.'];
+                } else {
+                    return ['errors' => 'Authentication failed; please generate an API token.'];
+                }
+            }
         }
+
         // Something went wrong...
         return false;
     }
