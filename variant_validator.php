@@ -528,6 +528,11 @@ class VV
         }
         if (!$aJSON || empty($aJSON['transcripts'])) {
             // Failure.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             // OK, but... what if we were working on chrM? And VV doesn't support these yet?
             if ($aJSON && isset($aJSON['current_symbol']) && substr($aJSON['current_symbol'], 0, 3) == 'MT-') {
                 // Collect all NCs and builds for chrM.
@@ -660,6 +665,7 @@ class VV
     public function test ()
     {
         // Tests the VV endpoint.
+        // NOTE: This does not detect whether this VV endpoint needs authorization. Apparently, the hello endpoint is unprotected always.
 
         $aJSON = $this->callVV('hello');
         if (!$aJSON) {
@@ -773,6 +779,11 @@ class VV
             // Failure. This happens when VV fails hard or if we can't find our input back in the output.
             // We should have stopped unsupported variant descriptions because we already checked for WNOTSUPPORTED.
             // So this should be an VV error.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             return false;
         }
 
@@ -1076,6 +1087,11 @@ class VV
             // Failure. This happens when VV fails hard.
             // We should have stopped unsupported variant descriptions because we already checked for WNOTSUPPORTED.
             // So this should be an VV error.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             return false;
         }
 
