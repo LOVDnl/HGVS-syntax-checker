@@ -253,6 +253,9 @@ class VV
                 curl_setopt($hCurl, CURLOPT_FOLLOWLOCATION, true); // Make sure we follow redirects.
                 // Set a version so that VV can recognize us.
                 curl_setopt($hCurl, CURLOPT_USERAGENT, 'LOVD/VV:' . HGVS::getVersions()['library_version']);
+                if ($this->sAuthToken) {
+                    curl_setopt($hCurl, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$this->sAuthToken}"]);
+                }
 
                 // Set proxy, if we are used from within LOVD and LOVD requires a proxy.
                 if (!empty($_CONF['proxy_host'])) {
@@ -264,20 +267,30 @@ class VV
             }
 
             curl_setopt($hCurl, CURLOPT_URL, $sURL);
-            $sJSONResponse = curl_exec($hCurl);
+            $sJSONResponse = @curl_exec($hCurl);
 
         } elseif (function_exists('lovd_php_file')) {
             // Backup method, no curl installed. We'll try LOVD's file() implementation, which also handles proxies.
-            $aJSONResponse = lovd_php_file($sURL);
+            if (!$this->sAuthToken) {
+                $aJSONResponse = @lovd_php_file($sURL);
+            } else {
+                $aJSONResponse = @lovd_php_file($sURL, false, false, ["Authorization: Bearer {$this->sAuthToken}"]);
+            }
             if ($aJSONResponse !== false) {
                 $sJSONResponse = implode("\n", $aJSONResponse);
             }
 
         } else {
             // Last fallback. Requires fopen wrappers.
-            $aJSONResponse = file($sURL);
-            if ($aJSONResponse !== false) {
-                $sJSONResponse = implode("\n", $aJSONResponse);
+            if (!$this->sAuthToken) {
+                $sJSONResponse = @file_get_contents($sURL);
+            } else {
+                $Context = stream_context_create([
+                    'http' => [
+                        'header' => "Authorization: Bearer {$this->sAuthToken}",
+                    ]
+                ]);
+                $sJSONResponse = @file_get_contents($sURL, 0, $Context);
             }
         }
 
