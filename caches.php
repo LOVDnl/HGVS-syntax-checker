@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-03-11
+ * Modified    : 2026-03-17
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -20,6 +20,7 @@ class Caches
     // Class that handles the caches. Should be used statically.
     private static array $mapping_cache = [];
     private static array $NC_cache = [];
+    private static array $aVV = ['url' => '', 'auth_token' => ''];
     private static int $nNewMappingsSinceWrite = 0;
     private static int $nNewNCsSinceWrite = 0;
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
@@ -67,7 +68,7 @@ class Caches
         }
         // Initiate VV if not already done so.
         if (!self::$oVV) {
-            self::$oVV = new VV();
+            self::$oVV = new VV(self::$aVV['url'], self::$aVV['auth_token']);
         }
 
         // Call VV with the defaults and collect all information.
@@ -393,6 +394,23 @@ class Caches
         }
 
         return true;
+    }
+
+
+
+
+
+    public static function setVVOptions (array $aOptions): void
+    {
+        // Overwrite VV options (URL, auth token) with new values.
+        foreach ($aOptions as $sKey => $sValue) {
+            self::$aVV[$sKey] = $sValue;
+        }
+
+        // If we have an object already, destroy it.
+        if (self::$oVV) {
+            self::$oVV = false;
+        }
     }
 
 
