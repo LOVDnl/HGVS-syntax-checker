@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2026-02-12
+ * Modified    : 2026-03-16
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -21,6 +21,7 @@ class VV
     // This class defines the LOVD VV object, handling all Variant Validator calls.
 
     public $sURL = 'https://rest.variantvalidator.org/'; // The URL of the VV endpoint.
+    private $sAuthToken = ''; // API token for endpoints protected by authorization.
     public $aResponse = array( // The standard response body.
         'data' => array(),
         'messages' => array(),
@@ -34,13 +35,17 @@ class VV
 
 
 
-    function __construct ($sURL = '')
+    function __construct ($sURL = '', $sAuthToken = '')
     {
         // Initiates the VV object. Nothing much to do except for filling in the URL.
 
         if ($sURL) {
             // We don't test given URLs, that would take too much time.
             $this->sURL = rtrim($sURL, '/') . '/';
+        }
+        if ($sAuthToken) {
+            // We don't test given tokens, that would take too much time.
+            $this->sAuthToken = $sAuthToken;
         }
         // __construct() should return void.
     }
@@ -248,6 +253,9 @@ class VV
                 curl_setopt($hCurl, CURLOPT_FOLLOWLOCATION, true); // Make sure we follow redirects.
                 // Set a version so that VV can recognize us.
                 curl_setopt($hCurl, CURLOPT_USERAGENT, 'LOVD/VV:' . HGVS::getVersions()['library_version']);
+                if ($this->sAuthToken) {
+                    curl_setopt($hCurl, CURLOPT_HTTPHEADER, ["Authorization: Bearer {$this->sAuthToken}"]);
+                }
 
                 // Set proxy, if we are used from within LOVD and LOVD requires a proxy.
                 if (!empty($_CONF['proxy_host'])) {
@@ -259,20 +267,30 @@ class VV
             }
 
             curl_setopt($hCurl, CURLOPT_URL, $sURL);
-            $sJSONResponse = curl_exec($hCurl);
+            $sJSONResponse = @curl_exec($hCurl);
 
         } elseif (function_exists('lovd_php_file')) {
             // Backup method, no curl installed. We'll try LOVD's file() implementation, which also handles proxies.
-            $aJSONResponse = lovd_php_file($sURL);
+            if (!$this->sAuthToken) {
+                $aJSONResponse = @lovd_php_file($sURL);
+            } else {
+                $aJSONResponse = @lovd_php_file($sURL, false, false, ["Authorization: Bearer {$this->sAuthToken}"]);
+            }
             if ($aJSONResponse !== false) {
                 $sJSONResponse = implode("\n", $aJSONResponse);
             }
 
         } else {
             // Last fallback. Requires fopen wrappers.
-            $aJSONResponse = file($sURL);
-            if ($aJSONResponse !== false) {
-                $sJSONResponse = implode("\n", $aJSONResponse);
+            if (!$this->sAuthToken) {
+                $sJSONResponse = @file_get_contents($sURL);
+            } else {
+                $Context = stream_context_create([
+                    'http' => [
+                        'header' => "Authorization: Bearer {$this->sAuthToken}",
+                    ]
+                ]);
+                $sJSONResponse = @file_get_contents($sURL, 0, $Context);
             }
         }
 
@@ -283,7 +301,36 @@ class VV
             if ($aJSONResponse !== false) {
                 return $aJSONResponse;
             }
+
+        } else {
+            // Analyze the headers to see if this was an HTTP 401.
+            if (function_exists('http_get_last_response_headers')) {
+                // Relatively new, but was introduced very shortly before $http_response_header was deprecated.
+                $sHTTP = (http_get_last_response_headers()[0] ?? '');
+            } else {
+                $sHTTP = ($http_response_header[0] ?? '');
+            }
+            if (strpos($sHTTP, ' 401 UNAUTHORIZED')) {
+                // This API endpoint needs authorization. Did we provide any?
+                if ($this->sAuthToken) {
+                    // Apparently, we did...
+                    return array_merge(
+                        $this->aResponse,
+                        [
+                            'errors' => 'Authentication failed; API token rejected.',
+                        ]
+                    );
+                } else {
+                    return array_merge(
+                        $this->aResponse,
+                        [
+                            'errors' => 'Authentication failed; please generate an API token.',
+                        ]
+                    );
+                }
+            }
         }
+
         // Something went wrong...
         return false;
     }
@@ -481,6 +528,11 @@ class VV
         }
         if (!$aJSON || empty($aJSON['transcripts'])) {
             // Failure.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             // OK, but... what if we were working on chrM? And VV doesn't support these yet?
             if ($aJSON && isset($aJSON['current_symbol']) && substr($aJSON['current_symbol'], 0, 3) == 'MT-') {
                 // Collect all NCs and builds for chrM.
@@ -613,6 +665,7 @@ class VV
     public function test ()
     {
         // Tests the VV endpoint.
+        // NOTE: This does not detect whether this VV endpoint needs authorization. Apparently, the hello endpoint is unprotected always.
 
         $aJSON = $this->callVV('hello');
         if (!$aJSON) {
@@ -726,6 +779,11 @@ class VV
             // Failure. This happens when VV fails hard or if we can't find our input back in the output.
             // We should have stopped unsupported variant descriptions because we already checked for WNOTSUPPORTED.
             // So this should be an VV error.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             return false;
         }
 
@@ -1029,6 +1087,11 @@ class VV
             // Failure. This happens when VV fails hard.
             // We should have stopped unsupported variant descriptions because we already checked for WNOTSUPPORTED.
             // So this should be an VV error.
+            if (!empty($aJSON['errors'])) {
+                // Errors from callVV(), like HTTP 401. Just return that.
+                return $aJSON;
+            }
+
             return false;
         }
 
