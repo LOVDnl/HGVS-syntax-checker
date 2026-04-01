@@ -3414,15 +3414,23 @@ class HGVS_DNAPrefix extends HGVS
                 $this->messages['WPREFIXMISSING'] = 'This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., "' . $this->getCorrectedValue() . '.").';
 
             } elseif (!in_array($this->getCorrectedValue(), $RefSeq->allowed_prefixes)) {
-                $this->messages['EWRONGREFERENCE'] =
-                    'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the DNA type (' . $this->getCorrectedValue() . ').' .
-                    ' For variants on ' . $RefSeq->getCorrectedValue() . ', please use the ' . implode('. or ', $RefSeq->allowed_prefixes) . '. prefix.' .
-                    ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->matched_pattern .
-                    ($this->matched_pattern == 'genomic'? '' : ' ' . $this->molecule_type) . ' reference sequence.';
-                // Specifically for LRGs; suggest to add "t1". That's a "dumb" suggestion,
-                //  but we anyway will have a low confidence score, since we're raising an error here, not a warning.
-                if ($RefSeq->matched_pattern == 'LRG_genomic') {
-                    $RefSeq->appendCorrectedValue('t1');
+                // This prefix doesn't match this reference. Report this, but fix it for chrM:g variants.
+                $sMessage = 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the DNA type (' . $this->getCorrectedValue() . ').' .
+                    ' For variants on ' . $RefSeq->getCorrectedValue() . ', please use the ' . implode('. or ', $RefSeq->allowed_prefixes) . '. prefix.';
+                if ($RefSeq->allowed_prefixes == ['m'] && $this->getCorrectedValue() == 'g') {
+                    // Exception, we know how to fix this.
+                    $this->messages['WWRONGPREFIX'] = $sMessage;
+                    $this->setCorrectedValue('m');
+
+                } else {
+                    $this->messages['EWRONGREFERENCE'] = $sMessage .
+                        ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->matched_pattern .
+                        ($this->matched_pattern == 'genomic'? '' : ' ' . $this->molecule_type) . ' reference sequence.';
+                    // Specifically for LRGs; suggest to add "t1". That's a "dumb" suggestion,
+                    //  but we anyway will have a low confidence score, since we're raising an error here, not a warning.
+                    if ($RefSeq->matched_pattern == 'LRG_genomic') {
+                        $RefSeq->appendCorrectedValue('t1');
+                    }
                 }
             }
 
