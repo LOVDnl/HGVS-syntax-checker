@@ -4588,7 +4588,7 @@ class HGVS_Gene extends HGVS
                         // Check our input.
                         if (strtolower($this->value) != strtolower($sSymbol)) {
                             // The user used an alias or so.
-                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been replaced by "' . $sSymbol . '".';
                         } else {
                             $this->caseOK = ($this->value == $sSymbol);
                         }
