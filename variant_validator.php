@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2020-03-09
- * Modified    : 2026-03-16
+ * Modified    : 2026-04-01
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -199,6 +199,11 @@ class VV
             $sFault, $aRegs)) {
             // This will help the user pick a transcript version that works.
             $aData['messages']['IREFSEQUPDATED'] = 'Reference sequence can be updated to one of: ' . str_replace('|', ', ', $aRegs[1]);
+
+        } elseif (strpos($sFault, 'This coding sequence variant description spans at least one intron') !== false) {
+            // This is just information. Sure, we'll pass it on.
+            // The message contains "coding sequence" for NMs as well as NRs.
+            $aData['messages']['ISPANSINTRON'] = 'This variant spans one or more introns.';
 
         } elseif (strpos($sFault, 'Interval end position ') === 0) {
             // E.g., NC_000017.10:g.2000_1000del.
