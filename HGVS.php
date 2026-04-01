@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-03-13   // When modified, also change the library_version.
+ * Modified    : 2026-04-01   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -529,7 +529,9 @@ class HGVS
     public function getCorrectedValues ()
     {
         // This function returns the corrected values, possibly building them first.
-        if ($this->corrected_values) {
+        if ($this->corrected_values && !empty($this->parent)) {
+            // Use the cached result, but not if we don't have a parent.
+            // That way, modifiers like ->requireVariant() will always be processed.
             return $this->corrected_values;
         }
 
