@@ -529,9 +529,10 @@ class HGVS
     public function getCorrectedValues ()
     {
         // This function returns the corrected values, possibly building them first.
-        if ($this->corrected_values && !empty($this->parent)) {
-            // Use the cached result, but not if we don't have a parent.
-            // That way, modifiers like ->requireVariant() will always be processed.
+        if ($this->corrected_values) {
+            // Use the cached result, not only to speed up the process but also to make sure we don't overwrite stuff.
+            // Corrected values may be set in validate() methods, and even the top parent class sets corrected values.
+            // However, this means that any modifiers, like ->requireVariant(), need to handle changes as well.
             return $this->corrected_values;
         }
 
@@ -975,6 +976,13 @@ class HGVS
         if (!$this->isAVariant()) {
             $sType = $this->getIdentifiedAsFormatted();
             $this->messages['EVARIANTREQUIRED'] = 'This input requires a variant description' . (!$sType? '.' : '; ' . $sType . ' given.');
+
+            // Adjust the corrected value if we didn't have errors yet, but we'll have errors now.
+            // We used to this by getting getCorrectedValues() to rebuild, but that overwrote other adjustments.
+            $bAlreadyHadErrors = array_diff(array_keys($this->getMessagesByGroup('errors')), ['EREFSEQMISSING', 'EVARIANTREQUIRED']);
+            if (!$bAlreadyHadErrors) {
+                $this->appendCorrectedValue('', 0.1);
+            }
         }
 
         return $this;
