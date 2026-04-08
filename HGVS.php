@@ -4577,7 +4577,7 @@ class HGVS_Gene extends HGVS
             } else {
                 // Store the ID in the data.
                 $this->data = [
-                    'hgnc_id' => $nHGNCID,
+                    'hgnc_id' => (int) $nHGNCID,
                 ];
 
                 // Check if we used the correct symbol for this gene.
@@ -5422,7 +5422,7 @@ class HGVS_RefSeqTranscript extends HGVS
                 foreach ($aVersions as $n) {
                     if (!empty(self::$transcripts['transcripts'][$sRefSeq][$n]['g'])) {
                         $this->data = [
-                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
+                            'hgnc_id' => (int) self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
                         ];
                         break;
                     }
