@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-04-01   // When modified, also change the library_version.
+ * Modified    : 2026-04-08   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -559,8 +559,12 @@ class HGVS
                 if ($Part[0] == '/') {
                     // A regex. This requires the fix to be manually created because of the case check.
                     // If this is not set, then we will default to the input value with a confidence of 50%.
-                    $this->corrected_values = [$this->value => 0.5];
-                    return $this->corrected_values;
+                    if ($this->corrected_values) {
+                        $Part = key($this->corrected_values);
+                    } else {
+                        $this->corrected_values = [$this->value => 0.5];
+                        return $this->corrected_values;
+                    }
                 }
                 $aCorrectedValues = $this->buildCorrectedValues($aCorrectedValues, $Part);
             }
