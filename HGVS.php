@@ -5801,7 +5801,11 @@ class HGVS_VCF extends HGVS
         // We also need to store the data fields. Yes, this is duplicated work.
         // However, it's much simpler to do it here; everything the VCFBody does is string-based.
         $HGVSVariant = new HGVS_Variant('g.' . $this->VCFBody->getCorrectedValue(), null, $this->debugging);
-        $this->data = $HGVSVariant->getData();
+        unset($this->data['type']); // This is just to prevent it from ending up in the "wrong" place in the data array.
+        $this->data = array_merge(
+            $this->getData(), // We may have some data from reference sequences or genome builds here.
+            $HGVSVariant->getData()
+        );
 
         // We could have triggered a whitespace warning, but that's normal for us.
         unset($this->messages['WWHITESPACE']);
