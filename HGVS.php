@@ -604,12 +604,8 @@ class HGVS
                 if ($Part[0] == '/') {
                     // A regex. This requires the fix to be manually created because of the case check.
                     // If this is not set, then we will default to the input value with a confidence of 50%.
-                    if ($this->corrected_values) {
-                        $Part = key($this->corrected_values);
-                    } else {
-                        $this->corrected_values = [$this->value => 0.5];
-                        return $this->corrected_values;
-                    }
+                    $this->corrected_values = [$this->value => 0.5];
+                    return $this->corrected_values;
                 }
                 $aCorrectedValues = $this->buildCorrectedValues($aCorrectedValues, $Part);
             }
