@@ -16,5 +16,8 @@
         },
         "classmap": ["caches.php", "HGVS.php", "variant_validator.php"]
     },
-    "require": {}
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*"
+    }
 }

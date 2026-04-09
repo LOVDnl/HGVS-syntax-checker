@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-03-13   // When modified, also change the library_version.
+ * Modified    : 2026-04-09   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -12,6 +12,50 @@
  *************/
 
 namespace LOVD\HGVS;
+
+function mb_strlen ($s)
+{
+    // Overloading \mb_strlen(), which may not exist.
+    if (function_exists('mb_strlen')) {
+        return \mb_strlen($s);
+    } else {
+        // Simplified fallback, not the same, but usually, good enough.
+        // However, when we know we might be handling UTF-8, try to decode.
+        if (ini_get('default_charset') == 'UTF-8') {
+            $s = utf8_decode($s);
+        }
+        return strlen($s);
+    }
+}
+
+
+
+
+
+function mb_substr ($s, $n, $l = null)
+{
+    // Overloading \mb_strlen(), which may not exist.
+    if (function_exists('mb_strlen')) {
+        return \mb_substr($s, $n, $l);
+    } else {
+        // Simplified fallback, not the same, but usually, good enough.
+        // However, when we know we might be handling UTF-8, try to decode.
+        if (ini_get('default_charset') == 'UTF-8' && strlen($s) != strlen(utf8_decode($s))) {
+            // There's an actual UTF-8 character in the input.
+            // Rely on preg_match_all(), that can recognize UTF-8 characters.
+            preg_match_all('/./us', $s, $aRegs);
+            $aChars = $aRegs[0];
+            return implode(array_slice($aChars, $n, $l));
+
+        } else {
+            return substr($s, $n, $l);
+        }
+    }
+}
+
+
+
+
 
 function get_class ($o)
 {
@@ -194,7 +238,7 @@ class HGVS
                         $this->patterns_matched ++;
                         // Store what is left, if anything is left.
                         // Note that regexes should not be part of a pattern array, but only get their own pattern line. E.g., this object is all about this regex, or we messed up.
-                        $sInputToParse = substr($sInputToParse, strlen($aRegs[0]));
+                        $sInputToParse = mb_substr($sInputToParse, mb_strlen($aRegs[0]));
                         // Store the regex values for further processing, if needed.
                         $this->regex = $aRegs;
                     } else {
@@ -206,13 +250,13 @@ class HGVS
                 } else {
                     // Assume a simple string match.
                     if ($bDebugging) {
-                        print("$sClassString('$sInputToParse') rule $sPatternName, pattern $sPattern, and this returned " . (int) (strlen($sInputToParse) >= strlen($sPattern) && substr($sInputToParse, 0, strlen($sPattern)) == $sPattern) . "\n");
+                        print("$sClassString('$sInputToParse') rule $sPatternName, pattern $sPattern, and this returned " . (int) (mb_strlen($sInputToParse) >= strlen($sPattern) && mb_substr($sInputToParse, 0, strlen($sPattern)) == $sPattern) . "\n");
                     }
-                    if (strlen($sInputToParse) >= strlen($sPattern) && substr($sInputToParse, 0, strlen($sPattern)) == $sPattern) {
+                    if (mb_strlen($sInputToParse) >= strlen($sPattern) && mb_substr($sInputToParse, 0, strlen($sPattern)) == $sPattern) {
                         // This pattern matched.
                         $this->patterns_matched ++;
                         // Store what is left, if anything is left.
-                        $sInputToParse = substr($sInputToParse, strlen($sPattern));
+                        $sInputToParse = mb_substr($sInputToParse, strlen($sPattern));
                     } else {
                         // Didn't match.
                         $bMatching = false;
@@ -231,7 +275,7 @@ class HGVS
                 if ($sInputToParse !== '') {
                     // We matched everything, but there is a suffix, something left that didn't match.
                     // In the main HGVS object, this is a problem. Otherwise, this is what we have to return to the parent.
-                    $this->value = substr($sValue, 0, -strlen($sInputToParse));
+                    $this->value = mb_substr($sValue, 0, -mb_strlen($sInputToParse));
                     $this->suffix = $sInputToParse;
                     if (!isset($this->parent)) {
                         // This is the main HGVS class. The variant has a suffix that we didn't identify.
@@ -505,7 +549,7 @@ class HGVS
         // This function discards the suffix. This is used in text parsing, when
         //  suffixes are very common (periods, commas, closing parentheses).
 
-        $this->input = substr($this->input, 0, -strlen($this->suffix));
+        $this->input = mb_substr($this->input, 0, -mb_strlen($this->suffix));
         $this->suffix = '';
         unset($this->messages['WINPUTLEFT']);
 
@@ -530,6 +574,9 @@ class HGVS
     {
         // This function returns the corrected values, possibly building them first.
         if ($this->corrected_values) {
+            // Use the cached result, not only to speed up the process but also to make sure we don't overwrite stuff.
+            // Corrected values may be set in validate() methods, and even the top parent class sets corrected values.
+            // However, this means that any modifiers, like ->requireVariant(), need to handle changes as well.
             return $this->corrected_values;
         }
 
@@ -801,8 +848,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-03-17',
-            'library_version' => '1.1.0',
+            'library_date' => '2026-04-09',
+            'library_version' => '1.1.1',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -969,6 +1016,13 @@ class HGVS
         if (!$this->isAVariant()) {
             $sType = $this->getIdentifiedAsFormatted();
             $this->messages['EVARIANTREQUIRED'] = 'This input requires a variant description' . (!$sType? '.' : '; ' . $sType . ' given.');
+
+            // Adjust the corrected value if we didn't have errors yet, but we'll have errors now.
+            // We used to this by getting getCorrectedValues() to rebuild, but that overwrote other adjustments.
+            $bAlreadyHadErrors = array_diff(array_keys($this->getMessagesByGroup('errors')), ['EREFSEQMISSING', 'EVARIANTREQUIRED']);
+            if (!$bAlreadyHadErrors) {
+                $this->appendCorrectedValue('', 0.1);
+            }
         }
 
         return $this;
@@ -1102,7 +1156,7 @@ class HGVS_ANNOVARVariant extends HGVS
             //       Remove everything that looks like the protein description.
             if (preg_match('/[A-Z][0-9]+[A-Z]/', $this->getSuffix(), $aRegs)) {
                 // Remove that protein description.
-                $this->suffix = substr($this->getSuffix(), strlen($aRegs[0]));
+                $this->suffix = mb_substr($this->getSuffix(), mb_strlen($aRegs[0]));
             }
             $this->messages['WANNOVARPROTEIN'] = 'This ANNOVAR variant description also contains a protein variant description. If you wish to correct this description, submit it separately.';
         }
@@ -1154,7 +1208,7 @@ class HGVS_Caret extends HGVS
             // Our input ended with a closing bracket or parenthesis. Add them to our suffix.
             $this->suffix = $aRegs[1];
             // But then, take it off of our value, as well.
-            $this->value = substr($this->value, 0, -strlen($aRegs[1]));
+            $this->value = mb_substr($this->value, 0, -mb_strlen($aRegs[1]));
         }
 
         $this->setCorrectedValue($this->value);
@@ -1813,11 +1867,11 @@ class HGVS_DNAIns extends HGVS
                     foreach ($VCF->getCorrectedValues() as $sValue => $nConfidence) {
                         if ($VariantPrefix && !in_array($VariantPrefix->getCorrectedValue(), ['c', 'r'])) {
                             // A negative position is, if generated, not possible.
-                            if (substr($sValue, 0, 1) == '-') {
+                            if (mb_substr($sValue, 0, 1) == '-') {
                                 continue;
                             }
                         }
-                        $aCorrections[substr($sValue, 0, -4)] = $nConfidence;
+                        $aCorrections[mb_substr($sValue, 0, -4)] = $nConfidence;
                     }
                     if ($aCorrections) {
                         $Positions->corrected_values = $aCorrections;
@@ -2246,7 +2300,7 @@ class HGVS_DNANull extends HGVS
             return false; // Break out of the entire object.
         }
 
-        $this->data['type'] = substr($this->getCorrectedValue(), 0, 1);
+        $this->data['type'] = mb_substr($this->getCorrectedValue(), 0, 1);
         $this->predicted = ($this->matched_pattern == 'predicted');
 
         $VariantPrefix = ($this->getParentProperty('DNAPrefix') ?: $this->getParentProperty('RNAPrefix'));
@@ -2588,7 +2642,7 @@ class HGVS_DNAPositionNumber extends HGVS
 
         // Check for values with zeros. Of course, zero itself is never a valid position,
         //  but we don't know yet whether we're "0", "-0", "+0", or "*0". So, just check for zero as a prefix.
-        if ($this->value && substr($this->value, 0, 1) == '0') {
+        if ($this->value && mb_substr($this->value, 0, 1) == '0') {
             $this->messages['WPOSITIONWITHZERO'] = 'Variant positions should not be prefixed by a 0.';
             $nCorrectionConfidence *= 0.9;
         }
@@ -2671,13 +2725,13 @@ class HGVS_DNAPositionSeparator extends HGVS
             // We can do this in a more complex way, but matching anything else than the already used prefix is weird.
             // E.g., we could use our own classes and match "r." when we're using "c.", but then what will we say?
             // Let's keep things simple and just look for the prefix we already are using.
-            if ($sVariantPrefix && strtolower(substr($this->suffix, 0, 2)) == $sVariantPrefix) {
+            if ($sVariantPrefix && strtolower(mb_substr($this->suffix, 0, 2)) == $sVariantPrefix) {
                 // Add warning, and remove this additional suffix.
                 $this->messages['WPREFIXREPEATED'] =
                     'The molecule type ("' . $sVariantPrefix . '") should only be used once, prefixing the first given position.';
                 // Pull this out of the suffix.
-                $this->value .= substr($this->suffix, 0, 2);
-                $this->suffix = substr($this->suffix, 2);
+                $this->value .= mb_substr($this->suffix, 0, 2);
+                $this->suffix = mb_substr($this->suffix, 2);
             }
         }
     }
@@ -3412,15 +3466,23 @@ class HGVS_DNAPrefix extends HGVS
                 $this->messages['WPREFIXMISSING'] = 'This variant description seems incomplete. Variant descriptions should start with a molecule type (e.g., "' . $this->getCorrectedValue() . '.").';
 
             } elseif (!in_array($this->getCorrectedValue(), $RefSeq->allowed_prefixes)) {
-                $this->messages['EWRONGREFERENCE'] =
-                    'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the DNA type (' . $this->getCorrectedValue() . ').' .
-                    ' For variants on ' . $RefSeq->getCorrectedValue() . ', please use the ' . implode('. or ', $RefSeq->allowed_prefixes) . '. prefix.' .
-                    ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->matched_pattern .
-                    ($this->matched_pattern == 'genomic'? '' : ' ' . $this->molecule_type) . ' reference sequence.';
-                // Specifically for LRGs; suggest to add "t1". That's a "dumb" suggestion,
-                //  but we anyway will have a low confidence score, since we're raising an error here, not a warning.
-                if ($RefSeq->matched_pattern == 'LRG_genomic') {
-                    $RefSeq->appendCorrectedValue('t1');
+                // This prefix doesn't match this reference. Report this, but fix it for chrM:g variants.
+                $sMessage = 'The given reference sequence (' . $RefSeq->getCorrectedValue() . ') does not match the DNA type (' . $this->getCorrectedValue() . ').' .
+                    ' For variants on ' . $RefSeq->getCorrectedValue() . ', please use the ' . implode('. or ', $RefSeq->allowed_prefixes) . '. prefix.';
+                if ($RefSeq->allowed_prefixes == ['m'] && $this->getCorrectedValue() == 'g') {
+                    // Exception, we know how to fix this.
+                    $this->messages['WWRONGPREFIX'] = $sMessage;
+                    $this->setCorrectedValue('m');
+
+                } else {
+                    $this->messages['EWRONGREFERENCE'] = $sMessage .
+                        ' For ' . $this->getCorrectedValue() . '. variants, please use a ' . $this->matched_pattern .
+                        ($this->matched_pattern == 'genomic'? '' : ' ' . $this->molecule_type) . ' reference sequence.';
+                    // Specifically for LRGs; suggest to add "t1". That's a "dumb" suggestion,
+                    //  but we anyway will have a low confidence score, since we're raising an error here, not a warning.
+                    if ($RefSeq->matched_pattern == 'LRG_genomic') {
+                        $RefSeq->appendCorrectedValue('t1');
+                    }
                 }
             }
 
@@ -3570,7 +3632,7 @@ class HGVS_DNARepeat extends HGVS
                 $VariantPrefix = ($this->getParentProperty('DNAPrefix') ?: $this->getParentProperty('RNAPrefix'));
                 if ($VariantPrefix && $VariantPrefix->getCorrectedValue() == 'c') {
                     foreach ($aRepeatUnits as $Component) {
-                        if ($Component->hasProperty('DNAAlts') && (strlen($Component->DNAAlts->getCorrectedValue()) % 3)) {
+                        if ($Component->hasProperty('DNAAlts') && (mb_strlen($Component->DNAAlts->getCorrectedValue()) % 3)) {
                             // Repeat variants on coding DNA should always have a length of a multiple of three bases.
                             $this->messages['EINVALIDREPEATLENGTH'] =
                                 'A repeat sequence of coding DNA should always have a length of (a multiple of) 3.';
@@ -3585,7 +3647,7 @@ class HGVS_DNARepeat extends HGVS
                     $nPositionsLength = $Positions->getLengths()[0];
                     // This is the simplest way, not going through all objects.
                     $sSequence = preg_replace('/\[[^\]]+\]/', '', $this->getValue());
-                    $nSequenceLength = strlen($sSequence);
+                    $nSequenceLength = mb_strlen($sSequence);
 
                     if ($nSequenceLength > $nPositionsLength) {
                         $this->messages['EINVALIDREPEATLENGTH'] =
@@ -3603,7 +3665,7 @@ class HGVS_DNARepeat extends HGVS
                         // Collect all sequence lengths.
                         $aRepeatUnitCounts = array_map(
                             function ($Component) {
-                                return [strlen($Component->DNAAlts->getCorrectedValue()), 1];
+                                return [mb_strlen($Component->DNAAlts->getCorrectedValue()), 1];
                             }, $aRepeatUnits
                         );
 
@@ -3923,7 +3985,7 @@ class HGVS_DNAVariantBody extends HGVS
                         foreach ($this->getCorrectedValues() as $sValue => $nConfidence) {
                             if (strpos($sValue, '(;)') !== false) {
                                 // Remove the square brackets.
-                                $aCorrectedValues[substr($sValue, 1, -1)] = $nConfidence;
+                                $aCorrectedValues[mb_substr($sValue, 1, -1)] = $nConfidence;
                             } else {
                                 // Just copy it.
                                 $aCorrectedValues[$sValue] = $nConfidence;
@@ -3991,14 +4053,14 @@ class HGVS_DNAVariantBody extends HGVS
                 || !preg_match('/^[ACGT]+$/', $this->DNARefs->getCorrectedValue())
                 || !preg_match('/^[ACGT]+$/', $this->DNAAlts->getCorrectedValue())
                 || ($VariantPrefix && !empty($VariantPrefix->getMessages()
-                    && (strlen($this->DNARefs->getCorrectedValue()) > 1
-                        || strlen($this->DNAAlts->getCorrectedValue()) > 1)))) {
+                    && (mb_strlen($this->DNARefs->getCorrectedValue()) > 1
+                        || mb_strlen($this->DNAAlts->getCorrectedValue()) > 1)))) {
                 // Likely a protein description, instead, or something else entirely.
                 return 0; // Break out of this pattern only.
             }
 
             // Keep it simple if both REF and ALT are just one nucleotide.
-            if (strlen($this->DNARefs->getCorrectedValue()) == 1 && strlen($this->DNAAlts->getCorrectedValue()) == 1) {
+            if (mb_strlen($this->DNARefs->getCorrectedValue()) == 1 && mb_strlen($this->DNAAlts->getCorrectedValue()) == 1) {
                 // A warning has already been thrown. Just set the corrected value.
                 $this->corrected_values = $this->buildCorrectedValues(
                     $this->DNAPositions->getCorrectedValues(),
@@ -4064,8 +4126,8 @@ class HGVS_DNAVariantBody extends HGVS
         // E.g., a Null followed by an unknown phasing allele makes no sense because they can't be in cis.
         // There is no real guidance on this, but I'm going for a strict set of variants that can have unknown alleles.
         if (in_array($this->matched_pattern, ['allele_trans', 'allele_cis', 'other'])
-            && strlen($this->suffix) > 3 && substr($this->suffix, 0, 3) == '(;)') {
-            $this->DNAAlleleUnknownPhase = new HGVS_DNAVariantBody(substr($this->suffix, 3), $this, $this->debugging);
+            && mb_strlen($this->suffix) > 3 && mb_substr($this->suffix, 0, 3) == '(;)') {
+            $this->DNAAlleleUnknownPhase = new HGVS_DNAVariantBody(mb_substr($this->suffix, 3), $this, $this->debugging);
             if ($this->DNAAlleleUnknownPhase->hasMatched()) {
                 $this->data['type'] = ';';
                 $this->messages = array_merge(
@@ -4105,10 +4167,10 @@ class HGVS_DNAVariantBody extends HGVS
 
         } elseif (!in_array($this->matched_pattern, ['allele_trans', 'allele_cis'])
             && !$this->getParent('DNAAllele')
-            && strlen($this->suffix) > 1 && substr($this->suffix, 0, 1) == ';') {
+            && mb_strlen($this->suffix) > 1 && mb_substr($this->suffix, 0, 1) == ';') {
             // Allele syntax without square brackets? We're not handling alleles and not in one, but there is a ";".
             // If so, try to match what's next and predict whether this was cis or trans.
-            $this->DNAAllele = new HGVS_DNAVariantBody(substr($this->suffix, 1), $this, $this->debugging);
+            $this->DNAAllele = new HGVS_DNAVariantBody(mb_substr($this->suffix, 1), $this, $this->debugging);
             if ($this->DNAAllele->hasMatched()) {
                 // When what we matched is also an allele, then abort, because we don't know how to handle that.
                 if ($this->DNAAllele->getData()['type'] == ';') {
@@ -4222,7 +4284,7 @@ class HGVS_DNAVariantType extends HGVS
                     $this->messages['WWRONGTYPE'] =
                         'A substitution should be a change of one base to one base. Did you mean to describe an unchanged ' .
                         ($Positions->range? 'range' : 'position') . '?';
-                } elseif (strlen($sREF) > 1 || strlen($sALT) > 1) {
+                } elseif (mb_strlen($sREF) > 1 || mb_strlen($sALT) > 1) {
                     $this->messages['WWRONGTYPE'] =
                         'A substitution should be a change of one base to one base. Did you mean to describe a deletion-insertion?';
                 }
@@ -4259,7 +4321,7 @@ class HGVS_DNAVariantType extends HGVS
                 //  and the REF can never be bigger than the maximum length given by the positions.
                 list($nMinLengthVariant, $nMaxLengthVariant) = $Positions->getLengths();
                 $bPositionLengthIsCertain = ($nMinLengthVariant == $nMaxLengthVariant);
-                $nREFLength = strlen(trim($sREF, '.'));
+                $nREFLength = mb_strlen(trim($sREF, '.'));
 
                 // Simplest situation first: a certain range. The REF needs to match perfectly for a warning.
                 // Otherwise, throw an error.
@@ -4297,7 +4359,7 @@ class HGVS_DNAVariantType extends HGVS
                 );
                 // Lower the confidence of our prediction when the position was single but the REF was not.
                 // (e.g., c.100AAA>G).
-                $nCorrectionConfidence = (!$Positions->range && strlen($sREF) > 1? 0.6 : 1);
+                $nCorrectionConfidence = (!$Positions->range && mb_strlen($sREF) > 1? 0.6 : 1);
                 $this->parent->corrected_values = $this->buildCorrectedValues(
                     ['' => $nCorrectionConfidence],
                     $this->VCF->getCorrectedValues()
@@ -4380,7 +4442,7 @@ class HGVS_DNAVariantType extends HGVS
             $this->value = strtoupper($this->value);
 
             // Compare positions and bases.
-            if (!$Positions->range && strlen($this->value) == 1) {
+            if (!$Positions->range && mb_strlen($this->value) == 1) {
                 // This could be a substitution...
                 $this->corrected_values = $this->buildCorrectedValues(
                     [
@@ -4413,7 +4475,7 @@ class HGVS_DNAVariantType extends HGVS
                     ' They are written like "' . $Positions->getCorrectedValue() . $this->getCorrectedValue() . '".';
 
                 // Only when the lengths match, suggest a reference call.
-                if ($Positions->getLengths()[0] == strlen($this->value)) {
+                if ($Positions->getLengths()[0] == mb_strlen($this->value)) {
                     // Lower the confidence a bit, first.
                     $this->appendCorrectedValue('', 0.5);
                     $this->addCorrectedValue('=', 0.5);
@@ -4555,7 +4617,7 @@ class HGVS_Gene extends HGVS
             } else {
                 // Store the ID in the data.
                 $this->data = [
-                    'hgnc_id' => $nHGNCID,
+                    'hgnc_id' => (int) $nHGNCID,
                 ];
 
                 // Check if we used the correct symbol for this gene.
@@ -4578,7 +4640,7 @@ class HGVS_Gene extends HGVS
                         // Check our input.
                         if (strtolower($this->value) != strtolower($sSymbol)) {
                             // The user used an alias or so.
-                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been corrected to "' . $sSymbol . '".';
+                            $this->messages['WSYMBOLCORRECTED'] = 'The gene symbol "' . $this->value . '" has been replaced by "' . $sSymbol . '".';
                         } else {
                             $this->caseOK = ($this->value == $sSymbol);
                         }
@@ -5400,7 +5462,7 @@ class HGVS_RefSeqTranscript extends HGVS
                 foreach ($aVersions as $n) {
                     if (!empty(self::$transcripts['transcripts'][$sRefSeq][$n]['g'])) {
                         $this->data = [
-                            'hgnc_id' => self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
+                            'hgnc_id' => (int) self::$transcripts['transcripts'][$sRefSeq][$n]['g'],
                         ];
                         break;
                     }
@@ -5641,7 +5703,7 @@ class HGVS_ProteinRef extends HGVS
         if ($this->matched_pattern == 'valid_short') {
             $this->setCorrectedValue(strtoupper($this->value));
         } else {
-            $this->setCorrectedValue(strtoupper($this->value[0]) . strtolower(substr($this->value, 1)));
+            $this->setCorrectedValue(strtoupper($this->value[0]) . strtolower(mb_substr($this->value, 1)));
         }
         $this->caseOK = ($this->value == $this->getCorrectedValue());
 
@@ -5779,7 +5841,11 @@ class HGVS_VCF extends HGVS
         // We also need to store the data fields. Yes, this is duplicated work.
         // However, it's much simpler to do it here; everything the VCFBody does is string-based.
         $HGVSVariant = new HGVS_Variant('g.' . $this->VCFBody->getCorrectedValue(), null, $this->debugging);
-        $this->data = $HGVSVariant->getData();
+        unset($this->data['type']); // This is just to prevent it from ending up in the "wrong" place in the data array.
+        $this->data = array_merge(
+            $this->getData(), // We may have some data from reference sequences or genome builds here.
+            $HGVSVariant->getData()
+        );
 
         // We could have triggered a whitespace warning, but that's normal for us.
         unset($this->messages['WWHITESPACE']);
@@ -5917,17 +5983,17 @@ class HGVS_VCFBody extends HGVS
 
         // Shift variant if REF and ALT are similar.
         // 'Eat' letters from either end - first left, then right - to isolate the difference.
-        while (strlen($sREF) > 0 && strlen($sALT) > 0 && $sREF[0] == $sALT[0]) {
-            $sREF = substr($sREF, 1);
-            $sALT = substr($sALT, 1);
+        while (mb_strlen($sREF) > 0 && mb_strlen($sALT) > 0 && $sREF[0] == $sALT[0]) {
+            $sREF = mb_substr($sREF, 1);
+            $sALT = mb_substr($sALT, 1);
             $nOffset ++;
         }
-        while (strlen($sREF) > 0 && strlen($sALT) > 0 && substr($sREF, -1) == substr($sALT, -1)) {
-            $sREF = substr($sREF, 0, -1);
-            $sALT = substr($sALT, 0, -1);
+        while (mb_strlen($sREF) > 0 && mb_strlen($sALT) > 0 && mb_substr($sREF, -1) == mb_substr($sALT, -1)) {
+            $sREF = mb_substr($sREF, 0, -1);
+            $sALT = mb_substr($sALT, 0, -1);
         }
-        $nREF = strlen($sREF);
-        $nALT = strlen($sALT);
+        $nREF = mb_strlen($sREF);
+        $nALT = mb_strlen($sALT);
 
         // Now determine the actual variant type.
         if ($nREF == 0 && $nALT == 0) {
@@ -5949,7 +6015,7 @@ class HGVS_VCFBody extends HGVS
 
         } elseif ($nREF == 0) {
             // Something has been added... could be an insertion or a duplication.
-            if ($sALT != $sOriALT && substr($sOriALT, strrpos($sOriALT, $sALT) - $nALT, $nALT) == $sALT) {
+            if ($sALT != $sOriALT && mb_substr($sOriALT, strrpos($sOriALT, $sALT) - $nALT, $nALT) == $sALT) {
                 // Duplication. Note that the start position might be quite
                 //  far from the actual insert.
                 $this->setCorrectedValue($this->getPositionString($sPosition, $nIntronOffset, ($nOffset - $nALT), $nALT) . 'dup');
@@ -6059,7 +6125,7 @@ trait HGVS_CheckBasesGiven
 
             // The suffix should not have been used only when the variant length matches the length given in the suffix.
             $nVariantLength = $Positions->getLengths()[0];
-            $nSuffixLength = strlen($Refs->getCorrectedValue());
+            $nSuffixLength = mb_strlen($Refs->getCorrectedValue());
 
             // Simplest situation first: length matches.
             if ($nVariantLength == $nSuffixLength) {
@@ -6095,8 +6161,8 @@ trait HGVS_DNASequence
     {
         // This function calculates the sequence's minimum and maximum length, and returns this into an array.
         if ($this->getSequences()) {
-            $nLengthMin = strlen($this->getSequences()[0]);
-            $nLengthMax = strlen($this->getSequences()[1]);
+            $nLengthMin = mb_strlen($this->getSequences()[0]);
+            $nLengthMax = mb_strlen($this->getSequences()[1]);
             return [$nLengthMin, $nLengthMax];
 
         } else {
@@ -6196,11 +6262,11 @@ if (!empty($_SERVER['argc']) && __FILE__ == realpath($_SERVER['argv'][0])) {
                 $aData[] = HGVS::getVersions();
             } elseif (strtolower(strstr($sVariant, ':', true)) == 'gene') {
                 // Force a gene-check.
-                $sGene = substr(strstr($sVariant, ':'), 1);
+                $sGene = mb_substr(strstr($sVariant, ':'), 1);
                 $aData[] = HGVS_Gene::check($sGene)->getInfo();
             } elseif (strtolower(strstr($sVariant, ':', true)) == 'refseq') {
                 // Force a refseq-check.
-                $sRefSeq = substr(strstr($sVariant, ':'), 1);
+                $sRefSeq = mb_substr(strstr($sVariant, ':'), 1);
                 $aData[] = HGVS_ReferenceSequence::check($sRefSeq)->getInfo();
             } else {
                 $aData[] = HGVS::check($sVariant)->getInfo();
