@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-04-09   // When modified, also change the library_version.
+ * Modified    : 2026-04-14   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -72,7 +72,7 @@ function get_class ($o)
 
 
 
-#[AllowDynamicProperties]
+#[\AllowDynamicProperties]
 class HGVS
 {
     // NOTE: Regular expressions should only be used as a single value on a row. When used as part of a row,
@@ -848,8 +848,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-04-09',
-            'library_version' => '1.1.1',
+            'library_date' => '2026-04-14',
+            'library_version' => '1.1.2',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
