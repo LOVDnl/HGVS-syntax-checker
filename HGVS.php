@@ -1451,6 +1451,29 @@ class HGVS_ChromosomeNumber extends HGVS
 
 
 
+class HGVS_CNVCopyNumber extends HGVS
+{
+    public array $patterns = [
+        ['/[0-9]/', []],
+    ];
+}
+
+
+
+
+
+class HGVS_CNVMethod extends HGVS
+{
+    public array $patterns = [
+        'array'      => ['arr', []],
+        'sequencing' => ['seq', []],
+    ];
+}
+
+
+
+
+
 class HGVS_Colon extends HGVS
 {
     public array $patterns = [
