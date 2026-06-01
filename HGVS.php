@@ -1456,7 +1456,8 @@ class HGVS_ChromosomeNumber extends HGVS
 class HGVS_CNV extends HGVS
 {
     public array $patterns = [
-        ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'full'  => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'short' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
     ];
 
     public function validate ()
@@ -1507,7 +1508,10 @@ class HGVS_CNV extends HGVS
         $this->corrected_values = $this->buildCorrectedValues(
             $this->Chromosome->getCorrectedValue(),
             ':g.',
-            $this->DNAPositions->getCorrectedValue(),
+            ($this->getMatchedPattern() == 'full'?
+                $this->DNAPositions->getCorrectedValue() :
+                'pter_qter'
+            ),
             $sVariantType
         );
 
