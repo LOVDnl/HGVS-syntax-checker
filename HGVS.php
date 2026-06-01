@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-04-14   // When modified, also change the library_version.
+ * Modified    : 2026-06-01   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -1387,6 +1387,37 @@ class HGVS_Chromosome extends HGVS
             $this->addCorrectedValue(self::$refseqs['hg18'][$sChr], 0.05);
         }
     }
+}
+
+
+
+
+
+class HGVS_ChromosomeBand extends HGVS
+{
+    public array $patterns = [
+        'band' => ['/[pq][0-9]+(\.[0-9]+)?/', []],
+        'ter'  => ['/[p|q]ter/', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue(strtolower($this->value));
+        $this->caseOK = ($this->value == $this->getCorrectedValue());
+    }
+}
+
+
+
+
+
+class HGVS_ChromosomeBands extends HGVS
+{
+    public array $patterns = [
+        'range'  => ['HGVS_ChromosomeBand', 'HGVS_ChromosomeBand', []],
+        'single' => ['HGVS_ChromosomeBand', []],
+    ];
 }
 
 
