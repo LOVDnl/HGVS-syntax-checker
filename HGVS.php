@@ -1429,8 +1429,9 @@ class HGVS_ChromosomeNumber extends HGVS
 {
     public array $patterns = [
         'number' => ['/[0-9]{1,2}(?![0-9])/', []],
-        'X'      => ['/X(?![A-Z])/', []],
-        'Y'      => ['/Y(?![A-Z])/', []],
+        // Deliberately allow Xp, Xq, Yp, and Yq to be recognized as a Chromosome.
+        'X'      => ['/X(?![A-O,R-Z])/', []],
+        'Y'      => ['/Y(?![A-O,R-Z])/', []],
         'M'      => ['/M(?![A-Z])/', []],
     ];
 
