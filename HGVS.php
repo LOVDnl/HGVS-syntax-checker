@@ -82,6 +82,7 @@ class HGVS
         'full_variant'       => ['HGVS_ReferenceSequence', 'HGVS_Colon', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
         'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
+        'CNV'                => ['HGVS_CNV', ['WCNV' => 'Recognized a CNV-like format; converting this format to HGVS nomenclature.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
         'reference_sequence' => ['HGVS_ReferenceSequence', []],
         'gene'               => ['HGVS_Gene', []],
@@ -1444,6 +1445,84 @@ class HGVS_ChromosomeNumber extends HGVS
                 $this->messages['EINVALIDCHROMOSOME'] = 'This variant description contains an invalid chromosome number: "' . $this->value . '".';
             }
         }
+    }
+}
+
+
+
+
+
+class HGVS_CNV extends HGVS
+{
+    public array $patterns = [
+        ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        // First, determine the variant type based on the CopyNumber.
+        $sChr = strtoupper($this->Chromosome->getValue());
+        switch ($this->CNVCopyNumber->getCorrectedValue()) {
+            case '0':
+                $sVariantType = 'del';
+                $sZygosity = 'homozygous';
+                break;
+
+            case '1':
+                $sVariantType = 'del';
+                $sZygosity = 'heterozygous';
+                break;
+
+            case '2':
+                // For sex chromosomes, this depends on the sex of the patient. We don't have that info, so we're guessing.
+                if ($sChr == 'X' || $sChr == 'Y') {
+                    // Probably a duplication in a male.
+                    $sVariantType = 'dup';
+                    $sZygosity = 'hemizygous';
+                } else {
+                    // Autosome; probably normal? Or maybe they wanted to indicate an inversion?
+                    $sVariantType = '=';
+                    $sZygosity = 'homozygous';
+                }
+                break;
+
+            case '3':
+                $sVariantType = 'dup';
+                $sZygosity = 'heterozygous';
+                break;
+
+            case '4':
+                $sVariantType = 'dup';
+                $sZygosity = 'homozygous';
+                break;
+
+            default:
+                $sVariantType = '?';
+                $sZygosity = 'unknown';
+        }
+
+        // The build is not needed; the Chromosome object has used it already.
+        $this->corrected_values = $this->buildCorrectedValues(
+            $this->Chromosome->getCorrectedValue(),
+            ':g.',
+            $this->DNAPositions->getCorrectedValue(),
+            $sVariantType
+        );
+
+        // We also need to store the data fields. Yes, this is duplicated work.
+        // However, it's much simpler to do it like this.
+        $HGVSVariant = new HGVS($this->getCorrectedValue(), null, $this->debugging);
+        $this->data = array_merge(
+            $HGVSVariant->getData(),
+            [
+                'zygosity' => $sZygosity,
+                'platform' => $this->CNVMethod->getMatchedPattern(),
+            ]
+        );
+
+        // We could have triggered a whitespace warning, but that's normal for us.
+        unset($this->messages['WWHITESPACE']);
     }
 }
 
