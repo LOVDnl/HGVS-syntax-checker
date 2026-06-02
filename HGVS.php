@@ -1580,13 +1580,14 @@ class HGVS_CNV extends HGVS
         // The build is not needed; the Chromosome object has used it already.
         $this->corrected_values = $this->buildCorrectedValues(
             $this->Chromosome->getCorrectedValue(),
-            ':g.',
+            ':g.(',
             ($this->getMatchedPattern() == 'full'?
                 $this->DNAPositions->getCorrectedValue() :
                 ($this->hasProperty('ChromosomeBands')?
                     implode('_', $this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue()))) :
                     'pter_qter')
             ),
+            ')',
             $sVariantType
         );
 
