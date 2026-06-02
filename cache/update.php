@@ -115,3 +115,47 @@ if (!$bUpdateCache) {
         echo 'Successfully stored ' . count($aData['transcripts']) . " transcripts.\n";
     }
 }
+
+
+
+
+
+// 3) Load the cytoband data.
+$sCacheFile = 'cytobands.json';
+$bUpdateCache = (!file_exists($sCacheFile));
+
+if (!$bUpdateCache) {
+    echo "Cytoband cache already downloaded.\n";
+} else {
+    $aData = [];
+    foreach (['hg19', 'hg38'] as $sBuild) {
+        $sSource = "https://hgdownload.soe.ucsc.edu/goldenPath/{$sBuild}/database/cytoBand.txt.gz";
+        $aFile = gzfile($sSource, FILE_IGNORE_NEW_LINES);
+        if (!$aFile) {
+            echo "Could not load the remote data for $sBuild.\n";
+            exit(7);
+        }
+
+        foreach ($aFile as $sLine) {
+            list($sChr, $nStart, $nEnd, $sBand) = explode("\t", $sLine);
+            $sChr = substr($sChr, 3); // Remove 'chr' from "chr1".
+            $nStart ++; // UCSC uses 0-based half-open intervals. Fix that, and also convert this to int.
+
+            // Ignore non-relevant "chromosomes".
+            if (!preg_match('/^([XYM]|[0-9]{1,2})$/', $sChr)) {
+                continue;
+            }
+
+            $aData[$sBuild][$sChr][$sBand] = [$nStart, (int) $nEnd];
+        }
+        ksort($aData[$sBuild]);
+    }
+
+    // Now store the file.
+    if (!file_put_contents($sCacheFile, json_encode($aData))) {
+        echo "Could not save the cytoband data.\n";
+        exit(8);
+    } else {
+        echo "Successfully stored cytoband data.\n";
+    }
+}
