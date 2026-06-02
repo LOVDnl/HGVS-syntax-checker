@@ -1523,9 +1523,10 @@ class HGVS_ChromosomeNumber extends HGVS
 class HGVS_CNV extends HGVS
 {
     public array $patterns = [
-        'full'  => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
-        'short' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
-        'del'   => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
+        '2_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        '4_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPositions', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ')', []],
+        'short'       => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'del'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
     ];
 
     public function validate ()
@@ -1533,7 +1534,16 @@ class HGVS_CNV extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         // First, determine the variant type based on the CopyNumber.
         $sChr = strtoupper($this->Chromosome->getValue());
-        switch (($this->hasProperty('CNVCopyNumber')? $this->CNVCopyNumber->getCorrectedValue() : '?')) {
+        $sCopyNumber = '?';
+        if ($this->hasProperty('CNVCopyNumber')) {
+            if (is_array($this->CNVCopyNumber)) {
+                // Four positions given. The middle copy number determines the variant type.
+                $sCopyNumber = $this->CNVCopyNumber[1]->getCorrectedValue();
+            } else {
+                $sCopyNumber = $this->CNVCopyNumber->getCorrectedValue();
+            }
+        }
+        switch ($sCopyNumber) {
             case '0':
                 $sVariantType = 'del';
                 $sZygosity = 'homozygous';
@@ -1581,12 +1591,15 @@ class HGVS_CNV extends HGVS
         $this->corrected_values = $this->buildCorrectedValues(
             $this->Chromosome->getCorrectedValue(),
             ':g.(',
-            ($this->getMatchedPattern() == 'full'?
+            ($this->getMatchedPattern() == '2_positions'?
                 $this->DNAPositions->getCorrectedValue() :
-                ($this->hasProperty('ChromosomeBands')?
-                    implode('_', $this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue()))) :
-                    'pter_qter')
-            ),
+                ($this->getMatchedPattern() == '4_positions'?
+                    $this->DNAPosition[0]->getCorrectedValue() . '_' .
+                    str_replace('_', ')_(', $this->DNAPositions->getCorrectedValue()) . '_' .
+                    $this->DNAPosition[1]->getCorrectedValue() :
+                    ($this->hasProperty('ChromosomeBands')?
+                        implode('_', $this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue()))) :
+                        'pter_qter'))),
             ')',
             $sVariantType
         );
