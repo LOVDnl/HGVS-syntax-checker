@@ -1631,8 +1631,8 @@ class HGVS_CNVCopyNumber extends HGVS
 class HGVS_CNVMethod extends HGVS
 {
     public array $patterns = [
-        'array'      => ['arr', []],
-        'sequencing' => ['seq', []],
+        'array'      => ['/arr/', []],
+        'sequencing' => ['/seq/', []],
     ];
 }
 
