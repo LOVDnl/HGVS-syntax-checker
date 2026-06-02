@@ -1525,6 +1525,7 @@ class HGVS_CNV extends HGVS
     public array $patterns = [
         'full'  => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
         'short' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'del'   => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
     ];
 
     public function validate ()
@@ -1532,7 +1533,7 @@ class HGVS_CNV extends HGVS
         // Provide additional rules for validation, and stores values for the variant info if needed.
         // First, determine the variant type based on the CopyNumber.
         $sChr = strtoupper($this->Chromosome->getValue());
-        switch ($this->CNVCopyNumber->getCorrectedValue()) {
+        switch (($this->hasProperty('CNVCopyNumber')? $this->CNVCopyNumber->getCorrectedValue() : '?')) {
             case '0':
                 $sVariantType = 'del';
                 $sZygosity = 'homozygous';
@@ -1567,7 +1568,12 @@ class HGVS_CNV extends HGVS
                 break;
 
             default:
-                $sVariantType = '?';
+                // We also get here for the "del(X)" notation.
+                if ($this->getMatchedPattern() == 'del') {
+                    $sVariantType = 'del';
+                } else {
+                    $sVariantType = '?';
+                }
                 $sZygosity = 'unknown';
         }
 
@@ -1577,7 +1583,9 @@ class HGVS_CNV extends HGVS
             ':g.',
             ($this->getMatchedPattern() == 'full'?
                 $this->DNAPositions->getCorrectedValue() :
-                'pter_qter'
+                ($this->hasProperty('ChromosomeBands')?
+                    implode('_', $this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue()))) :
+                    'pter_qter')
             ),
             $sVariantType
         );
@@ -1592,6 +1600,12 @@ class HGVS_CNV extends HGVS
                 'platform' => $this->CNVMethod->getMatchedPattern(),
             ]
         );
+
+        if (!$HGVSVariant->isValid()) {
+            // This happens when chromosome bands are given that aren't found in our dataset.
+            $this->messages['EINVALIDCYTOBAND'] =
+                'The given cytoband ' . $this->ChromosomeBands->getCorrectedValue() . ' is not found in chromosome ' . strtoupper($this->Chromosome->getValue()) . '.';
+        }
 
         // We could have triggered a whitespace warning, but that's normal for us.
         unset($this->messages['WWHITESPACE']);
