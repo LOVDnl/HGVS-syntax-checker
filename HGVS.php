@@ -1400,6 +1400,58 @@ class HGVS_ChromosomeBand extends HGVS
         'band' => ['/[pq][0-9]+(\.[0-9]+)?/', []],
         'ter'  => ['/[p|q]ter/', []],
     ];
+    public static array $cytobands = [];
+
+    public function loadData ()
+    {
+        // Load the cytoband data, if present. We can then validate cytobands properly and provide detailed info.
+        if (self::$cytobands) {
+            return true;
+        } else {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/cytobands.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['hg19', 'hg38']) {
+                        self::$cytobands = $aJSON;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+    public function getPositions (string $sBuild, string $sChromosome)
+    {
+        // Translate the chromosome bands into genomic positions useful for HGVS descriptions.
+        if (!self::loadData() || !isset(self::$cytobands[$sBuild]) || !isset(self::$cytobands[$sBuild][$sChromosome])) {
+            return [];
+        }
+
+        $aBands = self::$cytobands[$sBuild][$sChromosome];
+        if ($this->getCorrectedValue() == 'pter') {
+            return current($aBands);
+        } elseif ($this->getCorrectedValue() == 'qter') {
+            return $aBands[array_key_last($aBands)];
+        } elseif (isset($aBands[$this->getCorrectedValue()])) {
+            // We have this band stored.
+            return $aBands[$this->getCorrectedValue()];
+        } else {
+            // For now, just return nothing. We could try to think of something clever, but bad bands would just make us guess, anyway...
+            return [];
+        }
+    }
+
+
+
+
 
     public function validate ()
     {
@@ -1419,6 +1471,21 @@ class HGVS_ChromosomeBands extends HGVS
         'range'  => ['HGVS_ChromosomeBand', 'HGVS_ChromosomeBand', []],
         'single' => ['HGVS_ChromosomeBand', []],
     ];
+
+    public function getPositions (string $sBuild, string $sChromosome)
+    {
+        // Translate the chromosome bands into genomic positions useful for HGVS descriptions.
+        if ($this->getMatchedPattern() == 'single') {
+            return $this->ChromosomeBand->getPositions($sBuild, $sChromosome);
+        } else {
+            // This assumes that the bands are given in the correct order.
+            // We do not currently have a method to sort them.
+            return [
+                $this->ChromosomeBand[0]->getPositions($sBuild, $sChromosome)[0],
+                $this->ChromosomeBand[1]->getPositions($sBuild, $sChromosome)[1]
+            ];
+        }
+    }
 }
 
 
