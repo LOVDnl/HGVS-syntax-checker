@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-06-01   // When modified, also change the library_version.
+ * Modified    : 2026-06-04   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -1524,6 +1524,7 @@ class HGVS_CNV extends HGVS
 {
     public array $patterns = [
         '2_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        '2_pos_2_chr' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
         '4_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPositions', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ')', []],
         'short'       => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
         'del'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
@@ -1532,6 +1533,18 @@ class HGVS_CNV extends HGVS
     public function validate ()
     {
         // Provide additional rules for validation, and stores values for the variant info if needed.
+        // First, handle having multiple chromosomes in the description.
+        if ($this->getMatchedPattern() == '2_pos_2_chr') {
+            // They need to match, otherwise, what's going on?
+            if ($this->Chromosome[0]->getCorrectedValue() != $this->Chromosome[1]->getCorrectedValue()) {
+                return false; // Break out of the entire object.
+            } else {
+                // To simplify handling the description:
+                $this->Chromosome = $this->Chromosome[0];
+                $this->matched_pattern = '2_positions';
+            }
+        }
+
         // First, determine the variant type based on the CopyNumber.
         $sChr = strtoupper($this->Chromosome->getValue());
         $sCopyNumber = '?';
