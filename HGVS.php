@@ -1437,9 +1437,11 @@ class HGVS_ChromosomeBand extends HGVS
 
         $aBands = self::$cytobands[$sBuild][$sChromosome];
         if ($this->getCorrectedValue() == 'pter') {
-            return current($aBands);
+            // Return pter's positions, but replace "1" by "pter".
+            return ['pter'] + current($aBands);
         } elseif ($this->getCorrectedValue() == 'qter') {
-            return $aBands[array_key_last($aBands)];
+            // Return qter's positions, but replace the last value by "qter".
+            return [1 => 'qter'] + $aBands[array_key_last($aBands)];
         } elseif (isset($aBands[$this->getCorrectedValue()])) {
             // We have this band stored.
             return $aBands[$this->getCorrectedValue()];
