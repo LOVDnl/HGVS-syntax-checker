@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-06-04   // When modified, also change the library_version.
+ * Modified    : 2026-06-05   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -1397,7 +1397,7 @@ class HGVS_Chromosome extends HGVS
 class HGVS_ChromosomeBand extends HGVS
 {
     public array $patterns = [
-        'band' => ['/[pq][0-9]+(\.[0-9]+)?/', []],
+        'band' => ['/[pq]\.?[0-9]+(\.[0-9]+)?/', []],
         'ter'  => ['/[p|q]ter/', []],
     ];
     public static array $cytobands = [];
