@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-04-16
- * Modified    : 2026-02-03
+ * Modified    : 2026-06-05
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -150,6 +150,9 @@ if (!$bUpdateCache) {
         }
         ksort($aData[$sBuild]);
     }
+
+    // For some reason, hg19 does not contain the values for chrM.
+    $aData['hg19']['M'] = $aData['hg38']['M'];
 
     // Now store the file.
     if (!file_put_contents($sCacheFile, json_encode($aData))) {
