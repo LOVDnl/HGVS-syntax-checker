@@ -1444,8 +1444,9 @@ class HGVS_ChromosomeBand extends HGVS
             // We have this band stored.
             return $aBands[$this->getCorrectedValue()];
         } else {
-            // For now, just return nothing. We could try to think of something clever, but bad bands would just make us guess, anyway...
-            return [];
+            // For now, just return the given input.
+            // We could try to think of something clever, but bad bands would just make us guess, anyway...
+            return [$this->getCorrectedValue(), $this->getCorrectedValue()];
         }
     }
 
@@ -1617,7 +1618,7 @@ class HGVS_CNV extends HGVS
                     str_replace('_', ')_(', $this->DNAPositions->getCorrectedValue()) . '_' .
                     $this->DNAPosition[1]->getCorrectedValue() :
                     ($this->hasProperty('ChromosomeBands')?
-                        implode('_', $this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue()))) :
+                        implode('_', array_unique($this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue())))) :
                         'pter_qter'))),
             ')',
             $sVariantType
