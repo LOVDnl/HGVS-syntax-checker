@@ -1397,7 +1397,7 @@ class HGVS_Chromosome extends HGVS
 class HGVS_ChromosomeBand extends HGVS
 {
     public array $patterns = [
-        'band' => ['/[pq]\.?[0-9]+(\.[0-9]+)?/', []],
+        'band' => ['/[pq]\.?[0-9]+(\s?\.\s?[0-9]+)?/', []],
         'ter'  => ['/[p|q]ter/', []],
     ];
     public static array $cytobands = [];
