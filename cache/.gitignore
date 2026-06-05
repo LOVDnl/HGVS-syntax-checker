@@ -3,3 +3,4 @@ mapping.txt
 NC-variants.txt
 symbol_to_ID.txt
 transcripts.json
+*.gz

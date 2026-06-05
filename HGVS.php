@@ -849,8 +849,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-04-14',
-            'library_version' => '1.1.2',
+            'library_date' => '2026-06-05',
+            'library_version' => '1.2.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1647,6 +1647,7 @@ class HGVS_CNV extends HGVS
         $this->data = array_merge(
             $HGVSVariant->getData(),
             [
+                'type' => $sVariantType, // In case the variant is broken, and it doesn't provide this.
                 'zygosity' => $sZygosity,
                 'platform' => $this->CNVMethod->getMatchedPattern(),
             ]
