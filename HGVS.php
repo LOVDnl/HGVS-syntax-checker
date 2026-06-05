@@ -1529,6 +1529,7 @@ class HGVS_CNV extends HGVS
         'short'       => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
         'del'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
         'dup'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'dup(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
+        'trp'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'trp(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
     ];
 
     public function validate ()
@@ -1592,13 +1593,16 @@ class HGVS_CNV extends HGVS
                 break;
 
             default:
-                // We also get here for the "del(X)" and "dup(X)" notation.
+                // We also get here for the "del(X)", "dup(X)", and "trp(X)" notations.
+                $sZygosity = 'unknown';
                 if (in_array($this->getMatchedPattern(), ['del', 'dup'])) {
                     $sVariantType = $this->getMatchedPattern();
+                } elseif ($this->getMatchedPattern() == 'trp') {
+                    $sVariantType = 'dup';
+                    $sZygosity = 'homozygous';
                 } else {
                     $sVariantType = '?';
                 }
-                $sZygosity = 'unknown';
         }
 
         // The build is not needed; the Chromosome object has used it already.
