@@ -1526,6 +1526,7 @@ class HGVS_CNV extends HGVS
         '2_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
         '2_pos_2_chr' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
         '4_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPositions', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ')', []],
+        '2_bands'     => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', '(', 'HGVS_Chromosome', ')', '(', 'HGVS_ChromosomeBands', ')', 'x', 'HGVS_CNVCopyNumber', []],
         'short'       => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
         'del'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
         'dup'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'dup(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
