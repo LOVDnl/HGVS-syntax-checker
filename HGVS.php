@@ -2695,14 +2695,22 @@ class HGVS_DNAPosition extends HGVS
 
         // Reset the limits if we have a known NC.
         $RefSeq = $this->getParentProperty('ReferenceSequence');
+        $Chromosome = $this->getParentProperty('Chromosome');
         if ($RefSeq) {
             $aRefSeqInfo = HGVS_Chromosome::getInfoByNC($RefSeq->getCorrectedValue());
-            if ($aRefSeqInfo) {
-                $nMaxPosition = HGVS_ChromosomeBand::getMaximumPosition($aRefSeqInfo['build'], $aRefSeqInfo['chr']);
-                if ($nMaxPosition) {
-                    // We have a numeric value for qter.
-                    $this->position_limits[1] = $nMaxPosition;
-                }
+        } elseif ($Chromosome) {
+            if (is_array($Chromosome)) {
+                $Chromosome = $Chromosome[0];
+            }
+            $aRefSeqInfo = HGVS_Chromosome::getInfoByNC($Chromosome->getCorrectedValue());
+        }
+        if (!empty($aRefSeqInfo)) {
+            // Try to get the maximum position for this chromosome.
+            // Note that we check for $nMaxPosition later in the code as well.
+            $nMaxPosition = HGVS_ChromosomeBand::getMaximumPosition($aRefSeqInfo['build'], $aRefSeqInfo['chr']);
+            if ($nMaxPosition) {
+                // We have a numeric value for qter.
+                $this->position_limits[1] = $nMaxPosition;
             }
         }
 
@@ -2772,6 +2780,15 @@ class HGVS_DNAPosition extends HGVS
                 if ($RefSeq && $RefSeq->molecule_type != 'genome_transcript') {
                     $this->messages['EWRONGREFERENCE'] =
                         'To verify intronic positions, add a genomic context to the transcript reference sequence.';
+                }
+
+            } elseif (!empty($nMaxPosition) && $sVariantPrefix == 'g') {
+                // Correct genomic positions, so we'll try to use pter and qter where we can.
+                // However, we're not doing this for circular genomes.
+                if ($this->position == 1) {
+                    $this->setCorrectedValue('pter');
+                } elseif ($this->position == $nMaxPosition) {
+                    $this->setCorrectedValue('qter');
                 }
             }
 
