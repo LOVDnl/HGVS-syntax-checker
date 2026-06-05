@@ -1402,7 +1402,7 @@ class HGVS_ChromosomeBand extends HGVS
     ];
     public static array $cytobands = [];
 
-    public function loadData ()
+    public static function loadData ()
     {
         // Load the cytoband data, if present. We can then validate cytobands properly and provide detailed info.
         if (self::$cytobands) {
@@ -1422,6 +1422,21 @@ class HGVS_ChromosomeBand extends HGVS
             }
         }
         return false;
+    }
+
+
+
+
+
+    public static function getMaximumPosition (string $sBuild, string $sChromosome)
+    {
+        // Gets the last position for a given chromosome.
+        if (!self::loadData() || !isset(self::$cytobands[$sBuild]) || !isset(self::$cytobands[$sBuild][$sChromosome])) {
+            return false;
+        }
+
+        $aBands = self::$cytobands[$sBuild][$sChromosome];
+        return $aBands[array_key_last($aBands)][1];
     }
 
 
@@ -2678,6 +2693,19 @@ class HGVS_DNAPosition extends HGVS
         $this->ISCN = false;
         $this->position_limits = $this->position_limits[$sVariantPrefix];
 
+        // Reset the limits if we have a known NC.
+        $RefSeq = $this->getParentProperty('ReferenceSequence');
+        if ($RefSeq) {
+            $aRefSeqInfo = HGVS_Chromosome::getInfoByNC($RefSeq->getCorrectedValue());
+            if ($aRefSeqInfo) {
+                $nMaxPosition = HGVS_ChromosomeBand::getMaximumPosition($aRefSeqInfo['build'], $aRefSeqInfo['chr']);
+                if ($nMaxPosition) {
+                    // We have a numeric value for qter.
+                    $this->position_limits[1] = $nMaxPosition;
+                }
+            }
+        }
+
         if ($this->matched_pattern == 'unknown') {
             $this->UTR = false;
             $this->position = $this->value;
@@ -2695,7 +2723,6 @@ class HGVS_DNAPosition extends HGVS
                 // There really was a prefix, so complain that they used the wrong one.
                 $this->messages['EWRONGPREFIX'] = 'Chromosomal positions pter and qter can only be reported using the "g." genomic prefix.';
             }
-            $RefSeq = $this->getParentProperty('ReferenceSequence');
             if ($RefSeq && $RefSeq->molecule_type != 'chromosome') {
                 $this->messages['EWRONGREFERENCE'] =
                     'A chromosomal reference sequence is required for pter or qter positions.';
