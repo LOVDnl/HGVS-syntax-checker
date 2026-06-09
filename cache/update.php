@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-04-16
- * Modified    : 2026-02-03
+ * Modified    : 2026-06-05
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -113,5 +113,52 @@ if (!$bUpdateCache) {
         exit(6);
     } else {
         echo 'Successfully stored ' . count($aData['transcripts']) . " transcripts.\n";
+    }
+}
+
+
+
+
+
+// 3) Load the cytoband data.
+$sCacheFile = 'cytobands.json';
+$bUpdateCache = (!file_exists($sCacheFile));
+
+if (!$bUpdateCache) {
+    echo "Cytoband cache already downloaded.\n";
+} else {
+    $aData = [];
+    foreach (['hg19', 'hg38'] as $sBuild) {
+        $sSource = "https://hgdownload.soe.ucsc.edu/goldenPath/{$sBuild}/database/cytoBand.txt.gz";
+        $aFile = gzfile($sSource, FILE_IGNORE_NEW_LINES);
+        if (!$aFile) {
+            echo "Could not load the remote data for $sBuild.\n";
+            exit(7);
+        }
+
+        foreach ($aFile as $sLine) {
+            list($sChr, $nStart, $nEnd, $sBand) = explode("\t", $sLine);
+            $sChr = substr($sChr, 3); // Remove 'chr' from "chr1".
+            $nStart ++; // UCSC uses 0-based half-open intervals. Fix that, and also convert this to int.
+
+            // Ignore non-relevant "chromosomes".
+            if (!preg_match('/^([XYM]|[0-9]{1,2})$/', $sChr)) {
+                continue;
+            }
+
+            $aData[$sBuild][$sChr][$sBand] = [$nStart, (int) $nEnd];
+        }
+        ksort($aData[$sBuild]);
+    }
+
+    // For some reason, hg19 does not contain the values for chrM.
+    $aData['hg19']['M'] = $aData['hg38']['M'];
+
+    // Now store the file.
+    if (!file_put_contents($sCacheFile, json_encode($aData))) {
+        echo "Could not save the cytoband data.\n";
+        exit(8);
+    } else {
+        echo "Successfully stored cytoband data.\n";
     }
 }

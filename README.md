@@ -82,7 +82,7 @@ For pro users, this means that `requireVariant()` and `allowMissingReferenceSequ
 
 
 ### The LOVD HGVS library
-When running the LOVD HGVS library locally, PHP 7.4 and the `json` extension are required.
+When running the LOVD HGVS library locally, PHP 7.4 and the `json` and `zlib` extensions are required.
 It's highly recommended to also have the `mbstring` extension installed.
 
 #### As a standalone tool run directly on the system (e.g., from Bash or Python).

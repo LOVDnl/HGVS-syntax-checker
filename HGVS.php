@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-04-14   // When modified, also change the library_version.
+ * Modified    : 2026-06-05   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -82,6 +82,7 @@ class HGVS
         'full_variant'       => ['HGVS_ReferenceSequence', 'HGVS_Colon', 'HGVS_Variant', []],
         'variant'            => ['HGVS_Variant', ['EREFSEQMISSING' => 'This variant is missing a reference sequence.']],
         'ANNOVAR'            => ['HGVS_ANNOVAR', ['WANNOVAR' => 'Recognized an ANNOVAR format. Please note that ANNOVAR produces invalid variant descriptions. We recommend using a tool that produces valid HGVS nomenclature-compliant descriptions.']],
+        'CNV'                => ['HGVS_CNV', ['WCNV' => 'Recognized a CNV-like format; converting this format to HGVS nomenclature.']],
         'VCF'                => ['HGVS_VCF', ['WVCF' => 'Recognized a VCF-like format; converting this format to HGVS nomenclature.']],
         'reference_sequence' => ['HGVS_ReferenceSequence', []],
         'gene'               => ['HGVS_Gene', []],
@@ -848,8 +849,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-04-14',
-            'library_version' => '1.1.2',
+            'library_date' => '2026-06-05',
+            'library_version' => '1.2.0',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1393,12 +1394,129 @@ class HGVS_Chromosome extends HGVS
 
 
 
+class HGVS_ChromosomeBand extends HGVS
+{
+    public array $patterns = [
+        'band' => ['/[pq]\.?[0-9]+(\s?\.\s?[0-9]+)?/', []],
+        'ter'  => ['/[p|q]ter/', []],
+    ];
+    public static array $cytobands = [];
+
+    public static function loadData ()
+    {
+        // Load the cytoband data, if present. We can then validate cytobands properly and provide detailed info.
+        if (self::$cytobands) {
+            return true;
+        } else {
+            // We haven't loaded the file yet, find and load it.
+            $sFile = dirname(__FILE__) . '/cache/cytobands.json';
+            if (is_readable($sFile)) {
+                $sJSON = @file_get_contents($sFile);
+                if ($sJSON) {
+                    $aJSON = @json_decode($sJSON, true);
+                    if ($aJSON !== false && array_keys($aJSON) == ['hg19', 'hg38']) {
+                        self::$cytobands = $aJSON;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getMaximumPosition (string $sBuild, string $sChromosome)
+    {
+        // Gets the last position for a given chromosome.
+        if (!self::loadData() || !isset(self::$cytobands[$sBuild]) || !isset(self::$cytobands[$sBuild][$sChromosome])) {
+            return false;
+        }
+
+        $aBands = self::$cytobands[$sBuild][$sChromosome];
+        return $aBands[array_key_last($aBands)][1];
+    }
+
+
+
+
+
+    public function getPositions (string $sBuild, string $sChromosome)
+    {
+        // Translate the chromosome bands into genomic positions useful for HGVS descriptions.
+        if (!self::loadData() || !isset(self::$cytobands[$sBuild]) || !isset(self::$cytobands[$sBuild][$sChromosome])) {
+            return [];
+        }
+
+        $aBands = self::$cytobands[$sBuild][$sChromosome];
+        if ($this->getCorrectedValue() == 'pter') {
+            // Return pter's positions, but replace "1" by "pter".
+            return ['pter'] + current($aBands);
+        } elseif ($this->getCorrectedValue() == 'qter') {
+            // Return qter's positions, but replace the last value by "qter".
+            return [1 => 'qter'] + $aBands[array_key_last($aBands)];
+        } elseif (isset($aBands[$this->getCorrectedValue()])) {
+            // We have this band stored.
+            return $aBands[$this->getCorrectedValue()];
+        } else {
+            // For now, just return the given input.
+            // We could try to think of something clever, but bad bands would just make us guess, anyway...
+            return [$this->getCorrectedValue(), $this->getCorrectedValue()];
+        }
+    }
+
+
+
+
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        $this->setCorrectedValue(strtolower($this->value));
+        $this->caseOK = ($this->value == $this->getCorrectedValue());
+    }
+}
+
+
+
+
+
+class HGVS_ChromosomeBands extends HGVS
+{
+    public array $patterns = [
+        'range'  => ['HGVS_ChromosomeBand', 'HGVS_ChromosomeBand', []],
+        'single' => ['HGVS_ChromosomeBand', []],
+    ];
+
+    public function getPositions (string $sBuild, string $sChromosome)
+    {
+        // Translate the chromosome bands into genomic positions useful for HGVS descriptions.
+        if ($this->getMatchedPattern() == 'single') {
+            return $this->ChromosomeBand->getPositions($sBuild, $sChromosome);
+        } else {
+            // This assumes that the bands are given in the correct order.
+            // We do not currently have a method to sort them.
+            return [
+                $this->ChromosomeBand[0]->getPositions($sBuild, $sChromosome)[0],
+                $this->ChromosomeBand[1]->getPositions($sBuild, $sChromosome)[1]
+            ];
+        }
+    }
+}
+
+
+
+
+
 class HGVS_ChromosomeNumber extends HGVS
 {
     public array $patterns = [
         'number' => ['/[0-9]{1,2}(?![0-9])/', []],
-        'X'      => ['/X(?![A-Z])/', []],
-        'Y'      => ['/Y(?![A-Z])/', []],
+        // Deliberately allow Xp, Xq, Yp, and Yq to be recognized as a Chromosome.
+        'X'      => ['/X(?![A-O,R-Z])/', []],
+        'Y'      => ['/Y(?![A-O,R-Z])/', []],
         'M'      => ['/M(?![A-Z])/', []],
     ];
 
@@ -1414,6 +1532,159 @@ class HGVS_ChromosomeNumber extends HGVS
             }
         }
     }
+}
+
+
+
+
+
+class HGVS_CNV extends HGVS
+{
+    public array $patterns = [
+        '2_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        '2_pos_2_chr' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', 'HGVS_Chromosome', 'HGVS_ChromosomeBand', '(', 'HGVS_DNAPositions', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        '4_positions' => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'HGVS_Chromosome', 'HGVS_ChromosomeBands', '(', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPositions', 'x', 'HGVS_CNVCopyNumber', ',', 'HGVS_DNAPosition', 'x', 'HGVS_CNVCopyNumber', ')', []],
+        '2_bands'     => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', '(', 'HGVS_Chromosome', ')', '(', 'HGVS_ChromosomeBands', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'short'       => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'seq(', 'HGVS_Chromosome', ')', 'x', 'HGVS_CNVCopyNumber', []],
+        'del'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'del(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
+        'dup'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'dup(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
+        'trp'         => ['HGVS_CNVMethod', '[', 'HGVS_Genome', ']', 'trp(', 'HGVS_Chromosome', ')(', 'HGVS_ChromosomeBands', ')', []],
+    ];
+
+    public function validate ()
+    {
+        // Provide additional rules for validation, and stores values for the variant info if needed.
+        // First, handle having multiple chromosomes in the description.
+        if ($this->getMatchedPattern() == '2_pos_2_chr') {
+            // They need to match, otherwise, what's going on?
+            if ($this->Chromosome[0]->getCorrectedValue() != $this->Chromosome[1]->getCorrectedValue()) {
+                return false; // Break out of the entire object.
+            } else {
+                // To simplify handling the description:
+                $this->Chromosome = $this->Chromosome[0];
+                $this->matched_pattern = '2_positions';
+            }
+        }
+
+        // First, determine the variant type based on the CopyNumber.
+        $sChr = strtoupper($this->Chromosome->getValue());
+        $sCopyNumber = '?';
+        if ($this->hasProperty('CNVCopyNumber')) {
+            if (is_array($this->CNVCopyNumber)) {
+                // Four positions given. The middle copy number determines the variant type.
+                $sCopyNumber = $this->CNVCopyNumber[1]->getCorrectedValue();
+            } else {
+                $sCopyNumber = $this->CNVCopyNumber->getCorrectedValue();
+            }
+        }
+        switch ($sCopyNumber) {
+            case '0':
+                $sVariantType = 'del';
+                $sZygosity = 'homozygous';
+                break;
+
+            case '1':
+                $sVariantType = 'del';
+                $sZygosity = 'heterozygous';
+                break;
+
+            case '2':
+                // For sex chromosomes, this depends on the sex of the patient. We don't have that info, so we're guessing.
+                if ($sChr == 'X' || $sChr == 'Y') {
+                    // Probably a duplication in a male.
+                    $sVariantType = 'dup';
+                    $sZygosity = 'hemizygous';
+                } else {
+                    // Autosome; probably normal? Or maybe they wanted to indicate an inversion?
+                    $sVariantType = '=';
+                    $sZygosity = 'homozygous';
+                }
+                break;
+
+            case '3':
+                $sVariantType = 'dup';
+                $sZygosity = 'heterozygous';
+                break;
+
+            case '4':
+                $sVariantType = 'dup';
+                $sZygosity = 'homozygous';
+                break;
+
+            default:
+                // We also get here for the "del(X)", "dup(X)", and "trp(X)" notations.
+                $sZygosity = 'unknown';
+                if (in_array($this->getMatchedPattern(), ['del', 'dup'])) {
+                    $sVariantType = $this->getMatchedPattern();
+                } elseif ($this->getMatchedPattern() == 'trp') {
+                    $sVariantType = 'dup';
+                    $sZygosity = 'homozygous';
+                } else {
+                    $sVariantType = '?';
+                }
+        }
+
+        // The build is not needed; the Chromosome object has used it already.
+        $this->corrected_values = $this->buildCorrectedValues(
+            $this->Chromosome->getCorrectedValue(),
+            ':g.(',
+            ($this->getMatchedPattern() == '2_positions'?
+                $this->DNAPositions->getCorrectedValue() :
+                ($this->getMatchedPattern() == '4_positions'?
+                    $this->DNAPosition[0]->getCorrectedValue() . '_' .
+                    str_replace('_', ')_(', $this->DNAPositions->getCorrectedValue()) . '_' .
+                    $this->DNAPosition[1]->getCorrectedValue() :
+                    ($this->hasProperty('ChromosomeBands')?
+                        implode('_', array_unique($this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue())))) :
+                        'pter_qter'))),
+            ')',
+            $sVariantType
+        );
+
+        // We also need to store the data fields. Yes, this is duplicated work.
+        // However, it's much simpler to do it like this.
+        $HGVSVariant = new HGVS($this->getCorrectedValue(), null, $this->debugging);
+        $this->data = array_merge(
+            $HGVSVariant->getData(),
+            [
+                'type' => $sVariantType, // In case the variant is broken, and it doesn't provide this.
+                'zygosity' => $sZygosity,
+                'platform' => $this->CNVMethod->getMatchedPattern(),
+            ]
+        );
+
+        if (!$HGVSVariant->isValid()) {
+            // This happens when chromosome bands are given that aren't found in our dataset.
+            $this->messages['EINVALIDCYTOBAND'] =
+                'The given cytoband ' . $this->ChromosomeBands->getCorrectedValue() . ' is not found in chromosome ' . strtoupper($this->Chromosome->getValue()) . '.';
+        }
+
+        // We could have triggered a whitespace warning, but that's normal for us.
+        unset($this->messages['WWHITESPACE']);
+    }
+}
+
+
+
+
+
+class HGVS_CNVCopyNumber extends HGVS
+{
+    public array $patterns = [
+        ['/[0-9]/', []],
+    ];
+}
+
+
+
+
+
+class HGVS_CNVMethod extends HGVS
+{
+    public array $patterns = [
+        'array'      => ['/arr/', []],
+        'sequencing' => ['/seq/', []],
+    ];
 }
 
 
@@ -2423,6 +2694,27 @@ class HGVS_DNAPosition extends HGVS
         $this->ISCN = false;
         $this->position_limits = $this->position_limits[$sVariantPrefix];
 
+        // Reset the limits if we have a known NC.
+        $RefSeq = $this->getParentProperty('ReferenceSequence');
+        $Chromosome = $this->getParentProperty('Chromosome');
+        if ($RefSeq) {
+            $aRefSeqInfo = HGVS_Chromosome::getInfoByNC($RefSeq->getCorrectedValue());
+        } elseif ($Chromosome) {
+            if (is_array($Chromosome)) {
+                $Chromosome = $Chromosome[0];
+            }
+            $aRefSeqInfo = HGVS_Chromosome::getInfoByNC($Chromosome->getCorrectedValue());
+        }
+        if (!empty($aRefSeqInfo)) {
+            // Try to get the maximum position for this chromosome.
+            // Note that we check for $nMaxPosition later in the code as well.
+            $nMaxPosition = HGVS_ChromosomeBand::getMaximumPosition($aRefSeqInfo['build'], $aRefSeqInfo['chr']);
+            if ($nMaxPosition) {
+                // We have a numeric value for qter.
+                $this->position_limits[1] = $nMaxPosition;
+            }
+        }
+
         if ($this->matched_pattern == 'unknown') {
             $this->UTR = false;
             $this->position = $this->value;
@@ -2440,7 +2732,6 @@ class HGVS_DNAPosition extends HGVS
                 // There really was a prefix, so complain that they used the wrong one.
                 $this->messages['EWRONGPREFIX'] = 'Chromosomal positions pter and qter can only be reported using the "g." genomic prefix.';
             }
-            $RefSeq = $this->getParentProperty('ReferenceSequence');
             if ($RefSeq && $RefSeq->molecule_type != 'chromosome') {
                 $this->messages['EWRONGREFERENCE'] =
                     'A chromosomal reference sequence is required for pter or qter positions.';
@@ -2490,6 +2781,15 @@ class HGVS_DNAPosition extends HGVS
                 if ($RefSeq && $RefSeq->molecule_type != 'genome_transcript') {
                     $this->messages['EWRONGREFERENCE'] =
                         'To verify intronic positions, add a genomic context to the transcript reference sequence.';
+                }
+
+            } elseif (!empty($nMaxPosition) && $sVariantPrefix == 'g') {
+                // Correct genomic positions, so we'll try to use pter and qter where we can.
+                // However, we're not doing this for circular genomes.
+                if ($this->position == 1) {
+                    $this->setCorrectedValue('pter');
+                } elseif ($this->position == $nMaxPosition) {
+                    $this->setCorrectedValue('qter');
                 }
             }
 
