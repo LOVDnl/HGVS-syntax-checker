@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-06-05   // When modified, also change the library_version.
+ * Modified    : 2026-06-10   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -849,8 +849,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-06-05',
-            'library_version' => '1.2.0',
+            'library_date' => '2026-06-10',
+            'library_version' => '1.2.1',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1625,9 +1625,7 @@ class HGVS_CNV extends HGVS
         }
 
         // The build is not needed; the Chromosome object has used it already.
-        $this->corrected_values = $this->buildCorrectedValues(
-            $this->Chromosome->getCorrectedValue(),
-            ':g.(',
+        $sPositions =
             ($this->getMatchedPattern() == '2_positions'?
                 $this->DNAPositions->getCorrectedValue() :
                 ($this->getMatchedPattern() == '4_positions'?
@@ -1636,7 +1634,17 @@ class HGVS_CNV extends HGVS
                     $this->DNAPosition[1]->getCorrectedValue() :
                     ($this->hasProperty('ChromosomeBands')?
                         implode('_', array_unique($this->ChromosomeBands->getPositions($this->Genome->getCorrectedValue(), strtoupper($this->Chromosome->getValue())))) :
-                        'pter_qter'))),
+                        'pter_qter')));
+
+        // Special case; duplications of pter_qter are sups, instead.
+        if ($sPositions == 'pter_qter' && $sVariantType == 'dup') {
+            $sVariantType = 'sup';
+        }
+
+        $this->corrected_values = $this->buildCorrectedValues(
+            $this->Chromosome->getCorrectedValue(),
+            ':g.(',
+            $sPositions,
             ')',
             $sVariantType
         );
@@ -4342,6 +4350,12 @@ class HGVS_DNAVariantBody extends HGVS
             // Reset whether we're incomplete or not.
             $this->possibly_incomplete = ($this->DNAPositions->isPossiblyIncomplete()
                 || $this->DNAVariantType->isPossiblyIncomplete());
+
+            // Special case; duplications of pter_qter are sups, instead.
+            if (in_array($this->DNAPositions->getCorrectedValue(), ['pter_qter', '(pter_qter)']) && $this->DNAVariantType->getCorrectedValue() == 'dup') {
+                $this->DNAVariantType->setCorrectedValue('sup');
+                $this->data['type'] = 'sup';
+            }
         }
 
         // Handle protein-like substitutions.
