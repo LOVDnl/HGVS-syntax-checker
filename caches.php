@@ -130,12 +130,19 @@ class Caches
     public static function getBuildByNC ($sNC)
     {
         // Gets the genome build for a certain input if we can.
+        static $aResults = []; // Store the results, as some pipelines use this a lot.
+        if (isset($aResults[$sNC])) {
+            return $aResults[$sNC];
+        }
+
         $HGVS = HGVS_ReferenceSequence::check($sNC);
         if ($HGVS->getIdentifiedAs() == 'refseq_genomic') {
             $aInfo = HGVS_Chromosome::getInfoByNC($HGVS->getValue());
-            return ($aInfo['build'] ?? false);
+            $aResults[$sNC] = ($aInfo['build'] ?? false);
+            return $aResults[$sNC];
         }
 
+        $aResults[$sNC] = false; // Cache this, too.
         return false;
     }
 
