@@ -31,8 +31,9 @@ class Caches
     {
         // Adds the given NC variant to both the NC and the mapping caches.
         // Return values:
+        // null  : Internal failure with the cache files.
         // true  : Success.
-        // 1     : Addition was not needed, variant already known.
+        // 1     : Addition was not needed, variant already known (includes previously known errors, e.g., EREF).
         // 0     : Internal failure with VV. Failure may be non-permanent.
         // false : Internal failure when adding data to the cache. Failure is likely permanent.
         if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
@@ -120,7 +121,7 @@ class Caches
             $aVV['data']['transcript_mappings']
         );
 
-        return $b;
+        return $b; // Returns true or false.
     }
 
 
