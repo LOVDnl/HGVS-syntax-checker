@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-03-17
+ * Modified    : 2026-06-15
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -169,6 +169,42 @@ class Caches
 
         if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
             return json_decode(self::$NC_cache[$sNC], true);
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getLiftOver ($sNC, $sBuild = false)
+    {
+        // Checks if we have the liftover data (in the mapping file) for a certain input.
+        if (!self::$mapping_cache && !self::loadMappings()) {
+            return null;
+        }
+
+        if (!$sBuild) {
+            // If no build is given, we should be able to find it.
+            $sBuild = self::getBuildByNC($sNC);
+        }
+
+        // Prepare the output.
+        $aReturn = [
+            $sBuild => $sNC,
+        ];
+
+        // Look for the liftover data in the mapping cache.
+        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        if ($nKey !== false) {
+            // Loop through all other builds to collect the liftover data.
+            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuild, 'mappings']) as $sBuild) {
+                $aReturn[$sBuild] = array_search($nKey, self::$mapping_cache[$sBuild]);
+            }
+
+            $aReturn = array_filter($aReturn); // Remove empty entries.
+            ksort($aReturn);
+            return $aReturn;
         }
         return false;
     }
