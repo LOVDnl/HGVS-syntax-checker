@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2024-11-05
- * Modified    : 2026-06-10   // When modified, also change the library_version.
+ * Modified    : 2026-06-15   // When modified, also change the library_version.
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -849,8 +849,8 @@ class HGVS
     public static function getVersions ()
     {
         return [
-            'library_date' => '2026-06-10',
-            'library_version' => '1.2.1',
+            'library_date' => '2026-06-15',
+            'library_version' => '1.2.2',
             'HGVS_nomenclature_versions' => [
                 'input' => [
                     'minimum' => '15.11',
@@ -1337,15 +1337,23 @@ class HGVS_Chromosome extends HGVS
     public static function getInfoByNC ($sNC)
     {
         // Find out what build and chromosome belongs to a certain NC.
+        static $aResults = []; // Store the results, as some pipelines use this a lot.
+        if (isset($aResults[$sNC])) {
+            return $aResults[$sNC];
+        }
+
         foreach (self::$refseqs as $sBuild => $aBuild) {
             $sChr = (string) array_search($sNC, $aBuild);
             if ($sChr) {
-                return [
+                $aResults[$sNC] = [
                     'build' => $sBuild,
                     'chr' => $sChr,
                 ];
+                return $aResults[$sNC];
             }
         }
+
+        $aResults[$sNC] = false; // Cache this, too.
         return false;
     }
 

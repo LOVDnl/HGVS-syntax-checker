@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-03-17
+ * Modified    : 2026-06-15
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -31,8 +31,9 @@ class Caches
     {
         // Adds the given NC variant to both the NC and the mapping caches.
         // Return values:
+        // null  : Internal failure with the cache files.
         // true  : Success.
-        // 1     : Addition was not needed, variant already known.
+        // 1     : Addition was not needed, variant already known (includes previously known errors, e.g., EREF).
         // 0     : Internal failure with VV. Failure may be non-permanent.
         // false : Internal failure when adding data to the cache. Failure is likely permanent.
         if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
@@ -120,7 +121,7 @@ class Caches
             $aVV['data']['transcript_mappings']
         );
 
-        return $b;
+        return $b; // Returns true or false.
     }
 
 
@@ -130,12 +131,19 @@ class Caches
     public static function getBuildByNC ($sNC)
     {
         // Gets the genome build for a certain input if we can.
+        static $aResults = []; // Store the results, as some pipelines use this a lot.
+        if (isset($aResults[$sNC])) {
+            return $aResults[$sNC];
+        }
+
         $HGVS = HGVS_ReferenceSequence::check($sNC);
         if ($HGVS->getIdentifiedAs() == 'refseq_genomic') {
             $aInfo = HGVS_Chromosome::getInfoByNC($HGVS->getValue());
-            return ($aInfo['build'] ?? false);
+            $aResults[$sNC] = ($aInfo['build'] ?? false);
+            return $aResults[$sNC];
         }
 
+        $aResults[$sNC] = false; // Cache this, too.
         return false;
     }
 
@@ -169,6 +177,42 @@ class Caches
 
         if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
             return json_decode(self::$NC_cache[$sNC], true);
+        }
+        return false;
+    }
+
+
+
+
+
+    public static function getLiftOver ($sNC, $sBuild = false)
+    {
+        // Checks if we have the liftover data (in the mapping file) for a certain input.
+        if (!self::$mapping_cache && !self::loadMappings()) {
+            return null;
+        }
+
+        if (!$sBuild) {
+            // If no build is given, we should be able to find it.
+            $sBuild = self::getBuildByNC($sNC);
+        }
+
+        // Prepare the output.
+        $aReturn = [
+            $sBuild => $sNC,
+        ];
+
+        // Look for the liftover data in the mapping cache.
+        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        if ($nKey !== false) {
+            // Loop through all other builds to collect the liftover data.
+            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuild, 'mappings']) as $sBuild) {
+                $aReturn[$sBuild] = array_search($nKey, self::$mapping_cache[$sBuild]);
+            }
+
+            $aReturn = array_filter($aReturn); // Remove empty entries.
+            ksort($aReturn);
+            return $aReturn;
         }
         return false;
     }
