@@ -20,7 +20,19 @@ class Caches
     // Class that handles the caches. Should be used statically.
     private static array $mapping_cache = [];
     private static array $NC_cache = [];
-    private static array $aVV = ['url' => '', 'auth_token' => ''];
+    private static array $aVV = [
+        'url' => '',
+        'auth_token' => '',
+        'transcript_options' => [
+            // We're storing the strings as keys so that if the keys are ever renamed, we can always easily add aliases.
+            // Internally, we store the integers to try and keep the file size down a bit and to simplify $a < $b.
+            'mane_select' => 1,
+            'mane' => 2,
+            'select' => 3,
+            'all' => 4,
+            'raw' => 5,
+        ]
+    ];
     private static int $nNewMappingsSinceWrite = 0;
     private static int $nNewNCsSinceWrite = 0;
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
@@ -69,9 +81,13 @@ class Caches
 
         } elseif (self::hasCorrectedNC($sVariant)) {
             $sVariantCorrected = self::getCorrectedNC($sVariant);
-            if (self::hasMapping($sVariantCorrected, $sBuild)) {
-                // Nothing to do.
-                return 1; // Evaluates to true, indicates that addition was not needed.
+            $aMapping = self::getMapping($sVariantCorrected, $sBuild);
+            if ($aMapping) {
+                // We have a mapping already. Are we asking for more?
+                if (isset($aMapping['VV']['s']) && $aMapping['VV']['s'] >= (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)) {
+                    // Nothing to do.
+                    return 1; // Evaluates to true, indicates that addition was not needed.
+                }
             }
         }
         // Initiate VV if not already done so.
@@ -125,7 +141,8 @@ class Caches
             $aVV['data']['genomic_mappings']['hg19'][0],
             $aVV['data']['genomic_mappings']['hg38'][0],
             'VV',
-            $aVV['data']['transcript_mappings']
+            // Also store the select method used for this mapping.
+            $aVV['data']['transcript_mappings'] + ['s' => (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)],
         );
 
         return $b; // Returns true or false.
@@ -421,9 +438,23 @@ class Caches
         // If we did receive data, double-check if we already have this mapping.
         // If so, we need to overwrite the mapping, not merge the data, duplicating everything.
         foreach ($aMappings as $sTranscript => $aMapping) {
+            // Note that $sTranscript can be "s" as well, where we store the select method.
             if (isset(self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript])) {
-                // Overwrite.
+                // Transcript (or select method) already exists.
+                if ($sTranscript == 's') {
+                    // This is a special value; if we have it already, store the highest value.
+                    // We use this to indicate the select method used for this mapping (mane_select, etc).
+                    // These values are stored as integers.
+                    self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript] = max(
+                        self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript],
+                        $aMapping
+                    );
+                    continue;
+                }
+
+                // Just a normal transcript; overwrite.
                 self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript] = $aMapping;
+
             } else {
                 // Append.
                 self::$mapping_cache['mappings'][$nKey] = array_merge_recursive(
