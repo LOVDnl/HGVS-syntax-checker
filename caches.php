@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-06-15
+ * Modified    : 2026-07-03
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -27,7 +27,7 @@ class Caches
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
     private static $oVV;
 
-    public static function buildCaches ($sVariant, $sBuild = false)
+    public static function buildCaches ($sVariant, $sBuild = false, $sMethod = null)
     {
         // Adds the given NC variant to both the NC and the mapping caches.
         // Return values:
@@ -45,12 +45,19 @@ class Caches
             $sBuild = self::getBuildByNC($sVariant);
         }
 
-        $aVVTranscriptOptions = ['mane_select', 'mane', 'select', 'all', 'raw'];
+        $aVVTranscriptOptions = array_keys(self::$aVV['transcript_options']); // mane_select, mane, select, all, raw.
+        if ($sMethod && isset(self::$aVV['transcript_options'][$sMethod])) {
+            // Start elsewhere, not with 'mane_select'.
+            while ($sMethod != $aVVTranscriptOptions[0]) {
+                // Remove this method, we requested something else.
+                array_shift($aVVTranscriptOptions);
+            }
+        }
         $aVVOptions = [
             'map_to_transcripts' => true, // Get the mapping data.
             'predict_protein' => true,    // Also predict the protein changes.
             'lift_over' => true,          // And, the lift-over, please.
-            'select_transcripts' => array_shift($aVVTranscriptOptions), // Start by just checking the MANE Select transcript.
+            'select_transcripts' => array_shift($aVVTranscriptOptions),
         ];
 
         // We assume that the variant is valid. If we validate it here and change it,
