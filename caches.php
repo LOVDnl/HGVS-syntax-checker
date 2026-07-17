@@ -18,7 +18,11 @@ require_once 'variant_validator.php';
 class Caches
 {
     // Class that handles the caches. Should be used statically.
-    private static array $mapping_cache = [];
+    private static array $mapping_cache = [
+        'hg19' => [], // Variant to key.
+        'hg38' => [], // Variant to key.
+        'mappings' => [], // Key to mapping info.
+    ];
     private static array $NC_cache = [];
     private static array $aVV = [
         'url' => '',
@@ -212,7 +216,7 @@ class Caches
     public static function getLiftOver ($sNC, $sBuild = false)
     {
         // Checks if we have the liftover data (in the mapping file) for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -248,7 +252,7 @@ class Caches
     public static function getMapping ($sNC, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -299,7 +303,7 @@ class Caches
     public static function hasMapping ($sNC, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -365,11 +369,6 @@ class Caches
         // Loads the mapping cache when the data is requested.
         $aFile = @file(self::$sFileMapping, FILE_IGNORE_NEW_LINES);
         if ($aFile !== false) {
-            $aCache = [
-                'hg19' => [], // Variant to key.
-                'hg38' => [], // Variant to key.
-                'mappings' => [], // Key to mapping info.
-            ];
             $iMapping = 0;
             foreach ($aFile as $sLine) {
                 $aLine = explode("\t", $sLine, 3);
@@ -412,7 +411,7 @@ class Caches
     public static function setMapping ($sDNA19, $sDNA38, $sMethod, $aMappings)
     {
         // Adds data to the mapping cache.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -547,7 +546,7 @@ class Caches
     public static function writeMappings ()
     {
         // Writes the data to the cache file.
-        if (!self::$mapping_cache) {
+        if (empty(self::$mapping_cache['mappings'])) {
             return false;
         }
 
