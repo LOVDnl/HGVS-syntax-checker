@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-06-15
+ * Modified    : 2026-07-17
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -18,16 +18,32 @@ require_once 'variant_validator.php';
 class Caches
 {
     // Class that handles the caches. Should be used statically.
-    private static array $mapping_cache = [];
+    private static array $mapping_cache = [
+        'hg19' => [], // Variant to key.
+        'hg38' => [], // Variant to key.
+        'mappings' => [], // Key to mapping info.
+    ];
     private static array $NC_cache = [];
-    private static array $aVV = ['url' => '', 'auth_token' => ''];
+    private static array $aVV = [
+        'url' => '',
+        'auth_token' => '',
+        'transcript_options' => [
+            // We're storing the strings as keys so that if the keys are ever renamed, we can always easily add aliases.
+            // Internally, we store the integers to try and keep the file size down a bit and to simplify $a < $b.
+            'mane_select' => 1,
+            'mane' => 2,
+            'select' => 3,
+            'all' => 4,
+            'raw' => 5,
+        ]
+    ];
     private static int $nNewMappingsSinceWrite = 0;
     private static int $nNewNCsSinceWrite = 0;
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
     private static $oVV;
 
-    public static function buildCaches ($sVariant, $sBuild = false)
+    public static function buildCaches ($sVariant, $sBuild = false, $sMethod = null)
     {
         // Adds the given NC variant to both the NC and the mapping caches.
         // Return values:
@@ -45,12 +61,19 @@ class Caches
             $sBuild = self::getBuildByNC($sVariant);
         }
 
-        $aVVTranscriptOptions = ['mane_select', 'mane', 'select', 'all', 'raw'];
+        $aVVTranscriptOptions = array_keys(self::$aVV['transcript_options']); // mane_select, mane, select, all, raw.
+        if ($sMethod && isset(self::$aVV['transcript_options'][$sMethod])) {
+            // Start elsewhere, not with 'mane_select'.
+            while ($sMethod != $aVVTranscriptOptions[0]) {
+                // Remove this method, we requested something else.
+                array_shift($aVVTranscriptOptions);
+            }
+        }
         $aVVOptions = [
             'map_to_transcripts' => true, // Get the mapping data.
             'predict_protein' => true,    // Also predict the protein changes.
             'lift_over' => true,          // And, the lift-over, please.
-            'select_transcripts' => array_shift($aVVTranscriptOptions), // Start by just checking the MANE Select transcript.
+            'select_transcripts' => array_shift($aVVTranscriptOptions),
         ];
 
         // We assume that the variant is valid. If we validate it here and change it,
@@ -62,9 +85,13 @@ class Caches
 
         } elseif (self::hasCorrectedNC($sVariant)) {
             $sVariantCorrected = self::getCorrectedNC($sVariant);
-            if (self::hasMapping($sVariantCorrected, $sBuild)) {
-                // Nothing to do.
-                return 1; // Evaluates to true, indicates that addition was not needed.
+            $aMapping = self::getMapping($sVariantCorrected, $sBuild);
+            if ($aMapping) {
+                // We have a mapping already. Are we asking for more?
+                if (($aMapping['VV']['s'] ?? 1) >= (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)) {
+                    // Nothing to do.
+                    return 1; // Evaluates to true, indicates that addition was not needed.
+                }
             }
         }
         // Initiate VV if not already done so.
@@ -118,7 +145,8 @@ class Caches
             $aVV['data']['genomic_mappings']['hg19'][0],
             $aVV['data']['genomic_mappings']['hg38'][0],
             'VV',
-            $aVV['data']['transcript_mappings']
+            // Also store the select method used for this mapping.
+            $aVV['data']['transcript_mappings'] + ['s' => (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)],
         );
 
         return $b; // Returns true or false.
@@ -188,7 +216,7 @@ class Caches
     public static function getLiftOver ($sNC, $sBuild = false)
     {
         // Checks if we have the liftover data (in the mapping file) for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -224,7 +252,7 @@ class Caches
     public static function getMapping ($sNC, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -275,7 +303,7 @@ class Caches
     public static function hasMapping ($sNC, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -341,11 +369,6 @@ class Caches
         // Loads the mapping cache when the data is requested.
         $aFile = @file(self::$sFileMapping, FILE_IGNORE_NEW_LINES);
         if ($aFile !== false) {
-            $aCache = [
-                'hg19' => [], // Variant to key.
-                'hg38' => [], // Variant to key.
-                'mappings' => [], // Key to mapping info.
-            ];
             $iMapping = 0;
             foreach ($aFile as $sLine) {
                 $aLine = explode("\t", $sLine, 3);
@@ -388,7 +411,7 @@ class Caches
     public static function setMapping ($sDNA19, $sDNA38, $sMethod, $aMappings)
     {
         // Adds data to the mapping cache.
-        if (!self::$mapping_cache && !self::loadMappings()) {
+        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
@@ -414,9 +437,23 @@ class Caches
         // If we did receive data, double-check if we already have this mapping.
         // If so, we need to overwrite the mapping, not merge the data, duplicating everything.
         foreach ($aMappings as $sTranscript => $aMapping) {
+            // Note that $sTranscript can be "s" as well, where we store the select method.
             if (isset(self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript])) {
-                // Overwrite.
+                // Transcript (or select method) already exists.
+                if ($sTranscript == 's') {
+                    // This is a special value; if we have it already, store the highest value.
+                    // We use this to indicate the select method used for this mapping (mane_select, etc).
+                    // These values are stored as integers.
+                    self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript] = max(
+                        self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript],
+                        $aMapping
+                    );
+                    continue;
+                }
+
+                // Just a normal transcript; overwrite.
                 self::$mapping_cache['mappings'][$nKey][$sMethod][$sTranscript] = $aMapping;
+
             } else {
                 // Append.
                 self::$mapping_cache['mappings'][$nKey] = array_merge_recursive(
@@ -509,7 +546,7 @@ class Caches
     public static function writeMappings ()
     {
         // Writes the data to the cache file.
-        if (!self::$mapping_cache) {
+        if (empty(self::$mapping_cache['mappings'])) {
             return false;
         }
 
