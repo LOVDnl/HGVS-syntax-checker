@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-07-03
+ * Modified    : 2026-07-17
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -84,7 +84,7 @@ class Caches
             $aMapping = self::getMapping($sVariantCorrected, $sBuild);
             if ($aMapping) {
                 // We have a mapping already. Are we asking for more?
-                if (isset($aMapping['VV']['s']) && $aMapping['VV']['s'] >= (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)) {
+                if (($aMapping['VV']['s'] ?? 1) >= (self::$aVV['transcript_options'][$aVVOptions['select_transcripts']] ?? 1)) {
                     // Nothing to do.
                     return 1; // Evaluates to true, indicates that addition was not needed.
                 }
