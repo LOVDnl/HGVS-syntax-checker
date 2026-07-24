@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-07-17
+ * Modified    : 2026-07-24
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -52,7 +52,7 @@ class Caches
         // 1     : Addition was not needed, variant already known (includes previously known errors, e.g., EREF).
         // 0     : Internal failure with VV. Failure may be non-permanent.
         // false : Internal failure when adding data to the cache. Failure is likely permanent.
-        if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
+        if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (empty(self::$mapping_cache['mappings']) && !self::loadMappings())) {
             return null;
         }
 
