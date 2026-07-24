@@ -18,6 +18,7 @@ require_once 'variant_validator.php';
 class Caches
 {
     // Class that handles the caches. Should be used statically.
+    private static array $liftover_cache = [];
     private static array $mapping_cache = [
         'hg19' => [], // Variant to key.
         'hg38' => [], // Variant to key.
@@ -37,8 +38,10 @@ class Caches
             'raw' => 5,
         ]
     ];
+    private static int $nNewLiftOversSinceWrite = 0;
     private static int $nNewMappingsSinceWrite = 0;
     private static int $nNewNCsSinceWrite = 0;
+    private static string $sFileLiftOvers = __DIR__ . '/cache/liftovers.txt';
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
     private static $oVV;
@@ -350,9 +353,61 @@ class Caches
                     }
                     // We have seen this variant already, but we have a different value here.
                     // This is a conflict we should let people know about.
-                    throw new \Exception("Conflict while merging cache files for {$aLine[0]}");
+                    throw new \Exception("Conflict while merging corrected NC value for {$aLine[0]}");
                 }
                 self::$NC_cache[$aLine[0]] = $aLine[1];
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+    public static function loadLiftOvers (string $sFile = ''): bool
+    {
+        // Loads the liftover cache when the data is requested.
+        if (!$sFile) {
+            $sFile = self::$sFileLiftOvers;
+        }
+        $aFile = @file($sFile, FILE_IGNORE_NEW_LINES);
+        if ($aFile !== false) {
+            foreach ($aFile as $sLine) {
+                $aLine = explode("\t", $sLine, 2);
+                if (empty($aLine[0]) || empty($aLine[1])) {
+                    // Skip empty answers.
+                    continue;
+                }
+
+                // Unpack the liftover data.
+                $aLiftOvers = json_decode($aLine[1], true);
+                if (!$aLiftOvers) {
+                    throw new \Exception("Error while parsing liftover data for {$aLine[0]}: {$aLine[1]}");
+                }
+
+                // If we didn't have this data yet, just store it.
+                if (!isset(self::$liftover_cache[$aLine[0]])) {
+                    self::$liftover_cache[$aLine[0]] = $aLiftOvers;
+                    continue;
+                }
+
+                // We've seen this variant before.
+                // We'll have to carefully merge the data, because we want to notice any differences.
+                foreach ($aLiftOvers as $sBuild => $sLiftOver) {
+                    if (isset(self::$liftover_cache[$aLine[0]][$sBuild])) {
+                        if (self::$liftover_cache[$aLine[0]][$sBuild] != $sLiftOver) {
+                            // We have seen this variant already, but we have a different value here.
+                            // This is a conflict we should let people know about.
+                            throw new \Exception("Conflict while merging {$sBuild} liftover value for {$aLine[0]}");
+                        }
+                    } else {
+                        self::$liftover_cache[$aLine[0]][$sBuild] = $sLiftOver;
+                    }
+                }
+                ksort(self::$liftover_cache[$aLine[0]]);
             }
             return true;
         }
