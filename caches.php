@@ -179,15 +179,15 @@ class Caches
 
 
 
-    public static function getCorrectedNC ($sNC)
+    public static function getCorrectedNC ($sVariant)
     {
         // Gets the corrected NC for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{') {
-            return self::$NC_cache[$sNC];
+        if (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] != '{') {
+            return self::$NC_cache[$sVariant];
         }
         return false;
     }
@@ -196,15 +196,15 @@ class Caches
 
 
 
-    public static function getErrors ($sNC)
+    public static function getErrors ($sVariant)
     {
         // Gets the errors for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
-            return json_decode(self::$NC_cache[$sNC], true);
+        if (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] == '{') {
+            return json_decode(self::$NC_cache[$sVariant], true);
         }
         return false;
     }
@@ -213,25 +213,25 @@ class Caches
 
 
 
-    public static function getLiftOver ($sNC, $sBuild = false)
+    public static function getLiftOver ($sVariant, $sBuild = false)
     {
-        // Checks if we have the liftover data (in the mapping file) for a certain input.
+        // Gets the liftover data (from the mapping file or the liftover file) for a certain input.
         if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
             return null;
         }
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuild = self::getBuildByNC($sVariant);
         }
 
         // Prepare the output.
         $aReturn = [
-            $sBuild => $sNC,
+            $sBuild => $sVariant,
         ];
 
         // Look for the liftover data in the mapping cache.
-        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        $nKey = (self::$mapping_cache[$sBuild][$sVariant] ?? false);
         if ($nKey !== false) {
             // Loop through all other builds to collect the liftover data.
             foreach (array_diff(array_keys(self::$mapping_cache), [$sBuild, 'mappings']) as $sBuild) {
@@ -249,7 +249,7 @@ class Caches
 
 
 
-    public static function getMapping ($sNC, $sBuild = false)
+    public static function getMapping ($sVariant, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
         if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
@@ -258,10 +258,10 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuild = self::getBuildByNC($sVariant);
         }
 
-        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        $nKey = (self::$mapping_cache[$sBuild][$sVariant] ?? false);
         if ($nKey !== false) {
             return (self::$mapping_cache['mappings'][$nKey] ?? false);
         }
@@ -272,35 +272,35 @@ class Caches
 
 
 
-    public static function hasCorrectedNC ($sNC)
+    public static function hasCorrectedNC ($sVariant)
     {
         // Checks if we have the corrected NC for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{');
+        return (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] != '{');
     }
 
 
 
 
 
-    public static function hasErrors ($sNC)
+    public static function hasErrors ($sVariant)
     {
         // Checks if we have errors for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{');
+        return (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] == '{');
     }
 
 
 
 
 
-    public static function hasMapping ($sNC, $sBuild = false)
+    public static function hasMapping ($sVariant, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
         if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
@@ -309,11 +309,11 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuild = self::getBuildByNC($sVariant);
         }
 
         if ($sBuild && isset(self::$mapping_cache[$sBuild])) {
-            return isset(self::$mapping_cache[$sBuild][$sNC]);
+            return isset(self::$mapping_cache[$sBuild][$sVariant]);
         }
 
         return false;
