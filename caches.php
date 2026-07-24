@@ -216,28 +216,29 @@ class Caches
 
 
 
-    public static function getLiftOver ($sVariant, $sBuild = false)
+    public static function getLiftOver ($sVariant, $sBuildFrom = false)
     {
         // Gets the liftover data (from the mapping file or the liftover file) for a certain input.
-        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
+        if ((empty(self::$mapping_cache['mappings']) && !self::loadMappings())
+            || (empty(self::$liftover_cache) && !self::loadLiftOvers())) {
             return null;
         }
 
-        if (!$sBuild) {
+        if (!$sBuildFrom) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
+            $sBuildFrom = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         // Prepare the output.
         $aReturn = [
-            $sBuild => $sVariant,
+            $sBuildFrom => $sVariant,
         ];
 
-        // Look for the liftover data in the mapping cache.
-        $nKey = (self::$mapping_cache[$sBuild][$sVariant] ?? false);
+        // Look for the liftover data in the mapping cache first, as this is the most reliable data source.
+        $nKey = (self::$mapping_cache[$sBuildFrom][$sVariant] ?? false);
         if ($nKey !== false) {
             // Loop through all other builds to collect the liftover data.
-            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuild, 'mappings']) as $sBuild) {
+            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuildFrom, 'mappings']) as $sBuild) {
                 $aReturn[$sBuild] = array_search($nKey, self::$mapping_cache[$sBuild]);
             }
 
@@ -245,6 +246,20 @@ class Caches
             ksort($aReturn);
             return $aReturn;
         }
+
+        // If that failed, try the liftover cache.
+        $aLiftOver = (self::$liftover_cache[$sVariant] ?? false);
+        if ($aLiftOver !== false) {
+            foreach ($aLiftOver as $sBuild => $sLiftOver) {
+                // Check if we actually have data; we can store false to indicate we couldn't lift over the variant.
+                if ($sLiftOver) {
+                    $aReturn[$sBuild] = $sLiftOver;
+                }
+            }
+            ksort($aReturn);
+            return $aReturn;
+        }
+
         return false;
     }
 
