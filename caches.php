@@ -58,7 +58,7 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sVariant);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         $aVVTranscriptOptions = array_keys(self::$aVV['transcript_options']); // mane_select, mane, select, all, raw.
@@ -222,7 +222,7 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sVariant);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         // Prepare the output.
@@ -258,7 +258,7 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sVariant);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         $nKey = (self::$mapping_cache[$sBuild][$sVariant] ?? false);
@@ -309,7 +309,7 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sVariant);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         if ($sBuild && isset(self::$mapping_cache[$sBuild])) {
