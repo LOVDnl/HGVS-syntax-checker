@@ -753,8 +753,15 @@ class Caches
     public static function shutdown ()
     {
         // Make sure the data gets written when the script ends for whatever reason.
-        self::writeCorrectedNCs();
-        self::writeMappings();
+        if (self::$nNewNCsSinceWrite) {
+            self::writeCorrectedNCs();
+        }
+        if (self::$nNewLiftOversSinceWrite) {
+            self::writeLiftOvers();
+        }
+        if (self::$nNewMappingsSinceWrite) {
+            self::writeMappings();
+        }
     }
 
 
