@@ -159,6 +159,94 @@ class Caches
 
 
 
+    public static function buildLiftOver ($sVariant, $sBuildFrom = false)
+    {
+        // Build the liftover cache. This is meant for CNVs that have imprecise positions and don't need mapping info.
+        // In the VKGL dataset (April 2026), we have 98K unique positions, but 105K unique variants.
+        // Optimizing for handling the positions separately is not worth it; just work with the variants.
+        // Return values:
+        // null  : Internal failure with the cache file.
+        // true  : Success.
+        // 1     : Addition was not needed, variant already known.
+        // 0     : Internal failure with GeneBe. Failure may be non-permanent.
+        // false : Internal failure when adding data to the cache. Failure is likely permanent.
+        if (empty(self::$liftover_cache) && !self::loadLiftOvers()) {
+            return null;
+        }
+
+        if (!$sBuildFrom) {
+            // If no build is given, we should be able to find it.
+            // We don't really need this for the CNV liftover cache, but the mapping cache has a liftover cache as well.
+            $sBuildFrom = self::getBuildByNC(strstr($sVariant, ':', true));
+        }
+
+        // We assume that the variant is valid. If we validate it here and change it,
+        //  the input of this function won't be usable for getLiftOver().
+        // Check if we need to call GeneBe.
+        if (self::hasLiftOver($sVariant, $sBuildFrom)) {
+            // Nothing to do.
+            return 1; // Evaluates to true, indicates that addition was not needed.
+        }
+
+        // Pull the variant apart into the separate positions, so we can query GeneBe.
+        $aPositions = [];
+        // I can't use self::getBuildByNC() as that only gets the build, not the chromosome that I also need.
+        // Luckily, the HGVS library has a cache on this method.
+        $aNCInfo = HGVS_Chromosome::getInfoByNC(strstr($sVariant, ':', true));
+        if (!$aNCInfo || !preg_match_all('/(?<=[.(_)])(pter|[0-9]+|qter)(?=[(_)ds])/', $sVariant, $aMatches)) {
+            // We should always be able to match like this... If not, we'll consider this an internal error.
+            // We're matching del, dup, and sup.
+            return null;
+        }
+        $sFrom = $aNCInfo['build'];
+        $sTo = ($sFrom == 'hg19'? 'hg38' : 'hg19');
+
+        $bFailed = false;
+        foreach ($aMatches[0] as $i => $Position) {
+            if (!in_array($Position, ['pter', 'qter'])) {
+                // Numeric positions; lift over. GeneBe is fast and allows for single positions to be lifted over.
+                // It's much faster than Ensembl and much much faster than VV.
+                // But let's cut them a break...
+                usleep(125000);
+                $sJSONResponse = @file_get_contents("https://api.genebe.net/cloud/api-public/v1/liftover?query=chr{$aNCInfo['chr']}%3A{$Position}&from={$sFrom}&dest={$sTo}");
+                if ($sJSONResponse) {
+                    $aJSONResponse = @json_decode($sJSONResponse, true);
+                    if ($aJSONResponse !== false && !empty($aJSONResponse['variants'][0]['pos'])) {
+                        $aPositions[$i] = $aJSONResponse['variants'][0]['pos'];
+                        continue;
+                    }
+                }
+                // If we get here, there was a problem. This happens quite a lot. CNVs don't always just liftover nicely.
+                // E.g.: https://api.genebe.net/cloud/api-public/v1/liftover?query=chr1%3A1584100&from=hg19&dest=hg38
+                // There are complicated regions, and we won't be able to provide proper liftover values for these.
+                $bFailed = true;
+                break;
+            }
+        }
+
+        // If we failed, we won't try to recover from it. Just store that we couldn't lift over anything.
+        // That way, we won't repeat the same request over and over.
+        if ($bFailed) {
+            return self::setLiftOver($sVariant, $sTo, false);
+        }
+
+        // OK, we succeeded to get all the data. Now, put all the positions back where they belong.
+        $sLiftOver = self::getNCByBuild($sTo, $aNCInfo['chr']) . strstr($sVariant, ':');
+        foreach ($aPositions as $i => $nPosition) {
+            // Hacky way of forcing a single-time str_replace().
+            $sLiftOver = implode($nPosition, explode($aMatches[0][$i], $sLiftOver, 2));
+        }
+
+        // Store the data in the caches.
+        $b = self::setLiftOver($sVariant, $sTo, $sLiftOver);
+
+        return $b; // Returns true or false.
+    }
+
+
+
+
+
     public static function getBuildByNC ($sNC)
     {
         // Gets the genome build for a certain input if we can.
