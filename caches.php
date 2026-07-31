@@ -657,6 +657,40 @@ class Caches
 
 
 
+    public static function writeLiftOvers ()
+    {
+        // Writes the data to the cache file.
+        if (empty(self::$liftover_cache)) {
+            return false;
+        }
+
+        ksort(self::$liftover_cache, SORT_NATURAL);
+        $b = @file_put_contents(
+            self::$sFileLiftOvers,
+            implode(
+                "\n",
+                array_map(
+                    function ($sVariant, $aLiftOvers)
+                    {
+                        return $sVariant . "\t" . json_encode($aLiftOvers);
+                    },
+                    array_keys(self::$liftover_cache),
+                    array_values(self::$liftover_cache)
+                )
+            )
+        );
+        if ($b !== false) {
+            self::$nNewLiftOversSinceWrite = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
     public static function writeMappings ()
     {
         // Writes the data to the cache file.
