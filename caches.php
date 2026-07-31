@@ -297,6 +297,28 @@ class Caches
 
 
 
+    public static function getNCByBuild ($sBuild, $sChr)
+    {
+        // Gets the NC for a certain genome build and chromosome.
+        static $aResults = []; // Store the results, as some pipelines use this a lot.
+        if (isset($aResults[$sBuild][$sChr])) {
+            return $aResults[$sBuild][$sChr];
+        }
+
+        $HGVS = HGVS_ReferenceSequence::check("chr$sChr($sBuild)");
+        if ($HGVS->getIdentifiedAs() == 'chr') {
+            $aResults[$sBuild][$sChr] = $HGVS->getCorrectedValue();
+            return $aResults[$sBuild][$sChr];
+        }
+
+        $aResults[$sBuild][$sChr] = false; // Cache this, too.
+        return false;
+    }
+
+
+
+
+
     public static function hasCorrectedNC ($sVariant)
     {
         // Checks if we have the corrected NC for a certain input.
