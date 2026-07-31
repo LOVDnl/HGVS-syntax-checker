@@ -325,7 +325,7 @@ class Caches
 
 
 
-    public static function hasLiftOver ($sVariant, $sBuildFrom = false)
+    public static function hasLiftOver ($sVariant, $sBuildFrom = false, $sBuildTo = false)
     {
         // Checks if we have the liftover data (in the liftover data or the mapping file) for a certain input.
         if ((empty(self::$mapping_cache['mappings']) && !self::loadMappings())
@@ -340,11 +340,22 @@ class Caches
 
         // Look for the liftover data in the mapping cache first, as this is the most reliable data source.
         if ($sBuildFrom && isset(self::$mapping_cache[$sBuildFrom][$sVariant])) {
-            return true;
+            if (!$sBuildTo) {
+                return true;
+            } else {
+                // NOTE: This returns true when $sBuildFrom == $sBuildTo.
+                return (bool) self::getLiftOver($sVariant, $sBuildFrom, $sBuildTo);
+            }
         }
 
         // If that failed, try the liftover cache.
-        return isset(self::$liftover_cache[$sVariant]);
+        if (!$sBuildTo) {
+            return isset(self::$liftover_cache[$sVariant]);
+        } else {
+            // NOTE: This returns false when $sBuildFrom == $sBuildTo. To fix that, use getLiftOver().
+            // NOTE: This deliberately returns false when our stored liftover value for that build is false, too.
+            return !empty(self::$liftover_cache[$sVariant][$sBuildTo]);
+        }
     }
 
 
