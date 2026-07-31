@@ -509,12 +509,40 @@ class Caches
             return null;
         }
 
+        // Set the values or just overwrite whatever we had already.
         self::$NC_cache[$sInput] = $sCorrected;
         self::$nNewNCsSinceWrite ++;
 
         if (self::$nNewNCsSinceWrite >= 25) {
             self::writeCorrectedNCs();
         }
+        return true;
+    }
+
+
+
+
+
+    public static function setLiftOver ($sVariant, $sBuildTo, $sLiftOver)
+    {
+        // Adds data to the liftover cache.
+        if (empty(self::$liftover_cache) && !self::loadLiftOvers()) {
+            return null;
+        }
+
+        // Set the values or just overwrite whatever we had already.
+        if (!isset(self::$liftover_cache[$sVariant])) {
+            self::$liftover_cache[$sVariant] = [$sBuildTo => $sLiftOver];
+        } else {
+            self::$liftover_cache[$sVariant][$sBuildTo] = $sLiftOver;
+            ksort(self::$liftover_cache[$sVariant]);
+        }
+        self::$nNewLiftOversSinceWrite ++;
+
+        if (self::$nNewLiftOversSinceWrite >= 25) {
+            self::writeLiftOvers();
+        }
+
         return true;
     }
 
