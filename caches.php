@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-07-17
+ * Modified    : 2026-07-31
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -18,6 +18,7 @@ require_once 'variant_validator.php';
 class Caches
 {
     // Class that handles the caches. Should be used statically.
+    private static array $liftover_cache = [];
     private static array $mapping_cache = [
         'hg19' => [], // Variant to key.
         'hg38' => [], // Variant to key.
@@ -37,8 +38,10 @@ class Caches
             'raw' => 5,
         ]
     ];
+    private static int $nNewLiftOversSinceWrite = 0;
     private static int $nNewMappingsSinceWrite = 0;
     private static int $nNewNCsSinceWrite = 0;
+    private static string $sFileLiftOvers = __DIR__ . '/cache/liftovers.txt';
     private static string $sFileMapping = __DIR__ . '/cache/mapping.txt';
     private static string $sFileNC = __DIR__ . '/cache/NC-variants.txt';
     private static $oVV;
@@ -52,13 +55,13 @@ class Caches
         // 1     : Addition was not needed, variant already known (includes previously known errors, e.g., EREF).
         // 0     : Internal failure with VV. Failure may be non-permanent.
         // false : Internal failure when adding data to the cache. Failure is likely permanent.
-        if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (!self::$mapping_cache && !self::loadMappings())) {
+        if ((!self::$NC_cache && !self::loadCorrectedNCs()) || (empty(self::$mapping_cache['mappings']) && !self::loadMappings())) {
             return null;
         }
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sVariant);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         $aVVTranscriptOptions = array_keys(self::$aVV['transcript_options']); // mane_select, mane, select, all, raw.
@@ -156,6 +159,94 @@ class Caches
 
 
 
+    public static function buildLiftOver ($sVariant, $sBuildFrom = false)
+    {
+        // Build the liftover cache. This is meant for CNVs that have imprecise positions and don't need mapping info.
+        // In the VKGL dataset (April 2026), we have 98K unique positions, but 105K unique variants.
+        // Optimizing for handling the positions separately is not worth it; just work with the variants.
+        // Return values:
+        // null  : Internal failure with the cache file.
+        // true  : Success.
+        // 1     : Addition was not needed, variant already known.
+        // 0     : Internal failure with GeneBe. Failure may be non-permanent.
+        // false : Internal failure when adding data to the cache. Failure is likely permanent.
+        if (empty(self::$liftover_cache) && !self::loadLiftOvers()) {
+            return null;
+        }
+
+        if (!$sBuildFrom) {
+            // If no build is given, we should be able to find it.
+            // We don't really need this for the CNV liftover cache, but the mapping cache has a liftover cache as well.
+            $sBuildFrom = self::getBuildByNC(strstr($sVariant, ':', true));
+        }
+
+        // We assume that the variant is valid. If we validate it here and change it,
+        //  the input of this function won't be usable for getLiftOver().
+        // Check if we need to call GeneBe.
+        if (self::hasLiftOver($sVariant, $sBuildFrom)) {
+            // Nothing to do.
+            return 1; // Evaluates to true, indicates that addition was not needed.
+        }
+
+        // Pull the variant apart into the separate positions, so we can query GeneBe.
+        $aPositions = [];
+        // I can't use self::getBuildByNC() as that only gets the build, not the chromosome that I also need.
+        // Luckily, the HGVS library has a cache on this method.
+        $aNCInfo = HGVS_Chromosome::getInfoByNC(strstr($sVariant, ':', true));
+        if (!$aNCInfo || !preg_match_all('/(?<=[.(_)])(pter|[0-9]+|qter)(?=[(_)ds])/', $sVariant, $aMatches)) {
+            // We should always be able to match like this... If not, we'll consider this an internal error.
+            // We're matching del, dup, and sup.
+            return null;
+        }
+        $sFrom = $aNCInfo['build'];
+        $sTo = ($sFrom == 'hg19'? 'hg38' : 'hg19');
+
+        $bFailed = false;
+        foreach ($aMatches[0] as $i => $Position) {
+            if (!in_array($Position, ['pter', 'qter'])) {
+                // Numeric positions; lift over. GeneBe is fast and allows for single positions to be lifted over.
+                // It's much faster than Ensembl and much much faster than VV.
+                // But let's cut them a break...
+                usleep(125000);
+                $sJSONResponse = @file_get_contents("https://api.genebe.net/cloud/api-public/v1/liftover?query=chr{$aNCInfo['chr']}%3A{$Position}&from={$sFrom}&dest={$sTo}");
+                if ($sJSONResponse) {
+                    $aJSONResponse = @json_decode($sJSONResponse, true);
+                    if ($aJSONResponse !== false && !empty($aJSONResponse['variants'][0]['pos'])) {
+                        $aPositions[$i] = $aJSONResponse['variants'][0]['pos'];
+                        continue;
+                    }
+                }
+                // If we get here, there was a problem. This happens quite a lot. CNVs don't always just liftover nicely.
+                // E.g.: https://api.genebe.net/cloud/api-public/v1/liftover?query=chr1%3A1584100&from=hg19&dest=hg38
+                // There are complicated regions, and we won't be able to provide proper liftover values for these.
+                $bFailed = true;
+                break;
+            }
+        }
+
+        // If we failed, we won't try to recover from it. Just store that we couldn't lift over anything.
+        // That way, we won't repeat the same request over and over.
+        if ($bFailed) {
+            return self::setLiftOver($sVariant, $sTo, false);
+        }
+
+        // OK, we succeeded to get all the data. Now, put all the positions back where they belong.
+        $sLiftOver = self::getNCByBuild($sTo, $aNCInfo['chr']) . strstr($sVariant, ':');
+        foreach ($aPositions as $i => $nPosition) {
+            // Hacky way of forcing a single-time str_replace().
+            $sLiftOver = implode($nPosition, explode($aMatches[0][$i], $sLiftOver, 2));
+        }
+
+        // Store the data in the caches.
+        $b = self::setLiftOver($sVariant, $sTo, $sLiftOver);
+
+        return $b; // Returns true or false.
+    }
+
+
+
+
+
     public static function getBuildByNC ($sNC)
     {
         // Gets the genome build for a certain input if we can.
@@ -179,15 +270,15 @@ class Caches
 
 
 
-    public static function getCorrectedNC ($sNC)
+    public static function getCorrectedNC ($sVariant)
     {
         // Gets the corrected NC for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{') {
-            return self::$NC_cache[$sNC];
+        if (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] != '{') {
+            return self::$NC_cache[$sVariant];
         }
         return false;
     }
@@ -196,15 +287,15 @@ class Caches
 
 
 
-    public static function getErrors ($sNC)
+    public static function getErrors ($sVariant)
     {
         // Gets the errors for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        if (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{') {
-            return json_decode(self::$NC_cache[$sNC], true);
+        if (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] == '{') {
+            return json_decode(self::$NC_cache[$sVariant], true);
         }
         return false;
     }
@@ -213,35 +304,57 @@ class Caches
 
 
 
-    public static function getLiftOver ($sNC, $sBuild = false)
+    public static function getLiftOver ($sVariant, $sBuildFrom = false, $sBuildTo = false)
     {
-        // Checks if we have the liftover data (in the mapping file) for a certain input.
-        if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
+        // Gets the liftover data (from the mapping file or the liftover file) for a certain input.
+        if ((empty(self::$mapping_cache['mappings']) && !self::loadMappings())
+            || (empty(self::$liftover_cache) && !self::loadLiftOvers())) {
             return null;
         }
 
-        if (!$sBuild) {
+        if (!$sBuildFrom) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuildFrom = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         // Prepare the output.
         $aReturn = [
-            $sBuild => $sNC,
+            $sBuildFrom => $sVariant,
         ];
 
-        // Look for the liftover data in the mapping cache.
-        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        // Look for the liftover data in the mapping cache first, as this is the most reliable data source.
+        $nKey = (self::$mapping_cache[$sBuildFrom][$sVariant] ?? false);
         if ($nKey !== false) {
             // Loop through all other builds to collect the liftover data.
-            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuild, 'mappings']) as $sBuild) {
+            foreach (array_diff(array_keys(self::$mapping_cache), [$sBuildFrom, 'mappings']) as $sBuild) {
+                if ($sBuildTo && $sBuild != $sBuildTo) {
+                    continue;
+                }
                 $aReturn[$sBuild] = array_search($nKey, self::$mapping_cache[$sBuild]);
             }
 
             $aReturn = array_filter($aReturn); // Remove empty entries.
-            ksort($aReturn);
-            return $aReturn;
+            if (!$sBuildTo) {
+                ksort($aReturn);
+                return $aReturn;
+            } else {
+                return ($aReturn[$sBuildTo] ?? false);
+            }
         }
+
+        // If that failed, try the liftover cache.
+        $aLiftOver = (self::$liftover_cache[$sVariant] ?? false);
+        if ($aLiftOver !== false) {
+            // Remove false from the liftover data; we use false to indicate we couldn't lift over the variant.
+            $aReturn = array_merge($aReturn, array_filter($aLiftOver));
+            if (!$sBuildTo) {
+                ksort($aReturn);
+                return $aReturn;
+            } else {
+                return ($aReturn[$sBuildTo] ?? false);
+            }
+        }
+
         return false;
     }
 
@@ -249,7 +362,7 @@ class Caches
 
 
 
-    public static function getMapping ($sNC, $sBuild = false)
+    public static function getMapping ($sVariant, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
         if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
@@ -258,10 +371,10 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
-        $nKey = (self::$mapping_cache[$sBuild][$sNC] ?? false);
+        $nKey = (self::$mapping_cache[$sBuild][$sVariant] ?? false);
         if ($nKey !== false) {
             return (self::$mapping_cache['mappings'][$nKey] ?? false);
         }
@@ -272,35 +385,94 @@ class Caches
 
 
 
-    public static function hasCorrectedNC ($sNC)
+    public static function getNCByBuild ($sBuild, $sChr)
+    {
+        // Gets the NC for a certain genome build and chromosome.
+        static $aResults = []; // Store the results, as some pipelines use this a lot.
+        if (isset($aResults[$sBuild][$sChr])) {
+            return $aResults[$sBuild][$sChr];
+        }
+
+        $HGVS = HGVS_ReferenceSequence::check("chr$sChr($sBuild)");
+        if ($HGVS->getIdentifiedAs() == 'chr') {
+            $aResults[$sBuild][$sChr] = $HGVS->getCorrectedValue();
+            return $aResults[$sBuild][$sChr];
+        }
+
+        $aResults[$sBuild][$sChr] = false; // Cache this, too.
+        return false;
+    }
+
+
+
+
+
+    public static function hasCorrectedNC ($sVariant)
     {
         // Checks if we have the corrected NC for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] != '{');
+        return (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] != '{');
     }
 
 
 
 
 
-    public static function hasErrors ($sNC)
+    public static function hasErrors ($sVariant)
     {
         // Checks if we have errors for a certain input.
         if (!self::$NC_cache && !self::loadCorrectedNCs()) {
             return null;
         }
 
-        return (isset(self::$NC_cache[$sNC]) && self::$NC_cache[$sNC][0] == '{');
+        return (isset(self::$NC_cache[$sVariant]) && self::$NC_cache[$sVariant][0] == '{');
     }
 
 
 
 
 
-    public static function hasMapping ($sNC, $sBuild = false)
+    public static function hasLiftOver ($sVariant, $sBuildFrom = false, $sBuildTo = false)
+    {
+        // Checks if we have the liftover data (in the liftover data or the mapping file) for a certain input.
+        if ((empty(self::$mapping_cache['mappings']) && !self::loadMappings())
+            || (empty(self::$liftover_cache) && !self::loadLiftOvers())) {
+            return null;
+        }
+
+        if (!$sBuildFrom) {
+            // If no build is given, we should be able to find it.
+            $sBuildFrom = self::getBuildByNC(strstr($sVariant, ':', true));
+        }
+
+        // Look for the liftover data in the mapping cache first, as this is the most reliable data source.
+        if ($sBuildFrom && isset(self::$mapping_cache[$sBuildFrom][$sVariant])) {
+            if (!$sBuildTo) {
+                return true;
+            } else {
+                // NOTE: This returns true when $sBuildFrom == $sBuildTo.
+                return (bool) self::getLiftOver($sVariant, $sBuildFrom, $sBuildTo);
+            }
+        }
+
+        // If that failed, try the liftover cache.
+        if (!$sBuildTo) {
+            return isset(self::$liftover_cache[$sVariant]);
+        } else {
+            // NOTE: This returns false when $sBuildFrom == $sBuildTo. To fix that, use getLiftOver().
+            // NOTE: This deliberately returns false when our stored liftover value for that build is false, too.
+            return !empty(self::$liftover_cache[$sVariant][$sBuildTo]);
+        }
+    }
+
+
+
+
+
+    public static function hasMapping ($sVariant, $sBuild = false)
     {
         // Checks if we have the mapping for a certain input.
         if (empty(self::$mapping_cache['mappings']) && !self::loadMappings()) {
@@ -309,11 +481,11 @@ class Caches
 
         if (!$sBuild) {
             // If no build is given, we should be able to find it.
-            $sBuild = self::getBuildByNC($sNC);
+            $sBuild = self::getBuildByNC(strstr($sVariant, ':', true));
         }
 
         if ($sBuild && isset(self::$mapping_cache[$sBuild])) {
-            return isset(self::$mapping_cache[$sBuild][$sNC]);
+            return isset(self::$mapping_cache[$sBuild][$sVariant]);
         }
 
         return false;
@@ -350,9 +522,61 @@ class Caches
                     }
                     // We have seen this variant already, but we have a different value here.
                     // This is a conflict we should let people know about.
-                    throw new \Exception("Conflict while merging cache files for {$aLine[0]}");
+                    throw new \Exception("Conflict while merging corrected NC value for {$aLine[0]}");
                 }
                 self::$NC_cache[$aLine[0]] = $aLine[1];
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+    public static function loadLiftOvers (string $sFile = ''): bool
+    {
+        // Loads the liftover cache when the data is requested.
+        if (!$sFile) {
+            $sFile = self::$sFileLiftOvers;
+        }
+        $aFile = @file($sFile, FILE_IGNORE_NEW_LINES);
+        if ($aFile !== false) {
+            foreach ($aFile as $sLine) {
+                $aLine = explode("\t", $sLine, 2);
+                if (empty($aLine[0]) || empty($aLine[1])) {
+                    // Skip empty answers.
+                    continue;
+                }
+
+                // Unpack the liftover data.
+                $aLiftOvers = json_decode($aLine[1], true);
+                if (!$aLiftOvers) {
+                    throw new \Exception("Error while parsing liftover data for {$aLine[0]}: {$aLine[1]}");
+                }
+
+                // If we didn't have this data yet, just store it.
+                if (!isset(self::$liftover_cache[$aLine[0]])) {
+                    self::$liftover_cache[$aLine[0]] = $aLiftOvers;
+                    continue;
+                }
+
+                // We've seen this variant before.
+                // We'll have to carefully merge the data, because we want to notice any differences.
+                foreach ($aLiftOvers as $sBuild => $sLiftOver) {
+                    if (isset(self::$liftover_cache[$aLine[0]][$sBuild])) {
+                        if (self::$liftover_cache[$aLine[0]][$sBuild] != $sLiftOver) {
+                            // We have seen this variant already, but we have a different value here.
+                            // This is a conflict we should let people know about.
+                            throw new \Exception("Conflict while merging {$sBuild} liftover value for {$aLine[0]}");
+                        }
+                    } else {
+                        self::$liftover_cache[$aLine[0]][$sBuild] = $sLiftOver;
+                    }
+                }
+                ksort(self::$liftover_cache[$aLine[0]]);
             }
             return true;
         }
@@ -395,12 +619,40 @@ class Caches
             return null;
         }
 
+        // Set the values or just overwrite whatever we had already.
         self::$NC_cache[$sInput] = $sCorrected;
         self::$nNewNCsSinceWrite ++;
 
         if (self::$nNewNCsSinceWrite >= 25) {
             self::writeCorrectedNCs();
         }
+        return true;
+    }
+
+
+
+
+
+    public static function setLiftOver ($sVariant, $sBuildTo, $sLiftOver)
+    {
+        // Adds data to the liftover cache.
+        if (empty(self::$liftover_cache) && !self::loadLiftOvers()) {
+            return null;
+        }
+
+        // Set the values or just overwrite whatever we had already.
+        if (!isset(self::$liftover_cache[$sVariant])) {
+            self::$liftover_cache[$sVariant] = [$sBuildTo => $sLiftOver];
+        } else {
+            self::$liftover_cache[$sVariant][$sBuildTo] = $sLiftOver;
+            ksort(self::$liftover_cache[$sVariant]);
+        }
+        self::$nNewLiftOversSinceWrite ++;
+
+        if (self::$nNewLiftOversSinceWrite >= 25) {
+            self::writeLiftOvers();
+        }
+
         return true;
     }
 
@@ -501,8 +753,15 @@ class Caches
     public static function shutdown ()
     {
         // Make sure the data gets written when the script ends for whatever reason.
-        self::writeCorrectedNCs();
-        self::writeMappings();
+        if (self::$nNewNCsSinceWrite) {
+            self::writeCorrectedNCs();
+        }
+        if (self::$nNewLiftOversSinceWrite) {
+            self::writeLiftOvers();
+        }
+        if (self::$nNewMappingsSinceWrite) {
+            self::writeMappings();
+        }
     }
 
 
@@ -533,6 +792,40 @@ class Caches
         );
         if ($b !== false) {
             self::$nNewNCsSinceWrite = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
+
+    public static function writeLiftOvers ()
+    {
+        // Writes the data to the cache file.
+        if (empty(self::$liftover_cache)) {
+            return false;
+        }
+
+        ksort(self::$liftover_cache, SORT_NATURAL);
+        $b = @file_put_contents(
+            self::$sFileLiftOvers,
+            implode(
+                "\n",
+                array_map(
+                    function ($sVariant, $aLiftOvers)
+                    {
+                        return $sVariant . "\t" . json_encode($aLiftOvers);
+                    },
+                    array_keys(self::$liftover_cache),
+                    array_values(self::$liftover_cache)
+                )
+            )
+        );
+        if ($b !== false) {
+            self::$nNewLiftOversSinceWrite = 0;
             return true;
         }
 
