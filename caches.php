@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2025-06-06
- * Modified    : 2026-07-24
+ * Modified    : 2026-07-31
  *
  * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -216,7 +216,7 @@ class Caches
 
 
 
-    public static function getLiftOver ($sVariant, $sBuildFrom = false)
+    public static function getLiftOver ($sVariant, $sBuildFrom = false, $sBuildTo = false)
     {
         // Gets the liftover data (from the mapping file or the liftover file) for a certain input.
         if ((empty(self::$mapping_cache['mappings']) && !self::loadMappings())
@@ -239,25 +239,32 @@ class Caches
         if ($nKey !== false) {
             // Loop through all other builds to collect the liftover data.
             foreach (array_diff(array_keys(self::$mapping_cache), [$sBuildFrom, 'mappings']) as $sBuild) {
+                if ($sBuildTo && $sBuild != $sBuildTo) {
+                    continue;
+                }
                 $aReturn[$sBuild] = array_search($nKey, self::$mapping_cache[$sBuild]);
             }
 
             $aReturn = array_filter($aReturn); // Remove empty entries.
-            ksort($aReturn);
-            return $aReturn;
+            if (!$sBuildTo) {
+                ksort($aReturn);
+                return $aReturn;
+            } else {
+                return ($aReturn[$sBuildTo] ?? false);
+            }
         }
 
         // If that failed, try the liftover cache.
         $aLiftOver = (self::$liftover_cache[$sVariant] ?? false);
         if ($aLiftOver !== false) {
-            foreach ($aLiftOver as $sBuild => $sLiftOver) {
-                // Check if we actually have data; we can store false to indicate we couldn't lift over the variant.
-                if ($sLiftOver) {
-                    $aReturn[$sBuild] = $sLiftOver;
-                }
+            // Remove false from the liftover data; we use false to indicate we couldn't lift over the variant.
+            $aReturn = array_merge($aReturn, array_filter($aLiftOver));
+            if (!$sBuildTo) {
+                ksort($aReturn);
+                return $aReturn;
+            } else {
+                return ($aReturn[$sBuildTo] ?? false);
             }
-            ksort($aReturn);
-            return $aReturn;
         }
 
         return false;
